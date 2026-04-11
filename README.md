@@ -22,4 +22,4 @@ HTML, CSS, JavaScript
 📌 Purpose:
 To create a strong personal brand and provide a centralized platform for recruiters and collaborators to explore my work.
 
-🔗 Live Preview: (Add your deployed link here)
+🔗 Live Preview: https://shaan-alpha.github.io/Portfolio/
