@@ -1109,30 +1109,30 @@ footer span{color:var(--blue);}
     </p>
 
     <div class="contact-wrapper">
-      <div class="contact-form r d3">
+      <form id="contact-form" class="contact-form r d3">
         <div class="form-row">
           <div class="fg">
             <label>Your Name</label>
-            <input type="text" id="fn" placeholder="John Smith"/>
+            <input type="text" id="fn" name="name" placeholder="John Smith" required/>
           </div>
           <div class="fg">
             <label>Email Address</label>
-            <input type="email" id="fe" placeholder="john@example.com"/>
+            <input type="email" id="fe" name="email" placeholder="john@example.com" required/>
           </div>
         </div>
         <div class="fg">
           <label>Subject</label>
-          <input type="text" id="fs" placeholder="Project idea, internship, collaboration…"/>
+          <input type="text" id="fs" name="subject" placeholder="Project idea, internship, collaboration…"/>
         </div>
         <div class="fg">
           <label>Message</label>
-          <textarea id="fm" placeholder="Tell me what's on your mind…"></textarea>
+          <textarea id="fm" name="message" placeholder="Tell me what's on your mind…" required></textarea>
         </div>
-        <button class="btn btn-blue" style="width:100%;justify-content:center;font-size:15px;" onclick="handleSend()" id="sbtn">
+        <button class="btn btn-blue" style="width:100%;justify-content:center;font-size:15px;" type="submit" id="sbtn">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
           Send Message
         </button>
-      </div>
+      </form>
 
       <div class="contact-socials r d4">
         <a class="soc" href="mailto:shaansatsangi@gmail.com">
@@ -1257,27 +1257,74 @@ window.addEventListener('scroll',()=>{
 },{passive:true});
 
 /* ── SEND FORM ───────────────────────── */
+const contactForm = document.getElementById('contact-form');
+const sendButton = document.getElementById('sbtn');
+const defaultSendButtonHtml = sendButton ? sendButton.innerHTML : '';
+const CONTACT_FORM_ENDPOINT = 'https://portfolio-backend-wrwo.onrender.com/contact';
+
+if(contactForm && sendButton){
+  contactForm.addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const name = document.getElementById('fn').value.trim();
+    const email = document.getElementById('fe').value.trim();
+    const subject = document.getElementById('fs').value.trim();
+    const message = document.getElementById('fm').value.trim();
+
+    if(!name || !email || !message){
+      showToast('Please fill in all required fields.');
+      return;
+    }
+
+    if(!email.includes('@')){
+      showToast('Please enter a valid email address.');
+      return;
+    }
+
+    sendButton.disabled = true;
+    sendButton.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Sending...';
+    sendButton.style.opacity = '.7';
+
+    try{
+      const res = await fetch(CONTACT_FORM_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email, subject, message })
+      });
+
+      const contentType = res.headers.get('content-type') || '';
+      const data = contentType.includes('application/json') ? await res.json() : null;
+
+      if(!res.ok || data?.status !== 'success'){
+        throw new Error(data?.message || 'Request failed');
+      }
+
+      contactForm.reset();
+      sendButton.innerHTML = 'Message Sent!';
+      sendButton.style.background = 'var(--green)';
+      sendButton.style.opacity = '1';
+      showToast('Message sent successfully.');
+
+      setTimeout(() => {
+        sendButton.innerHTML = defaultSendButtonHtml;
+        sendButton.style.background = '';
+        sendButton.style.opacity = '';
+        sendButton.disabled = false;
+      }, 3500);
+    }catch(error){
+      console.error('Contact form error:', error);
+      sendButton.innerHTML = defaultSendButtonHtml;
+      sendButton.style.background = '';
+      sendButton.style.opacity = '';
+      sendButton.disabled = false;
+      showToast('Something went wrong. Please try again.');
+    }
+  });
+}
 function handleSend(){
-  const n=document.getElementById('fn').value.trim();
-  const e=document.getElementById('fe').value.trim();
-  const s=document.getElementById('fs').value.trim();
-  const m=document.getElementById('fm').value.trim();
-  if(!n||!e||!m){ showToast('⚠️  Please fill in all required fields'); return; }
-  if(!e.includes('@')){ showToast('⚠️  Please enter a valid email'); return; }
-  const btn=document.getElementById('sbtn');
-  btn.innerHTML='<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Sending…';
-  btn.style.opacity='.7';
-  setTimeout(()=>{
-    ['fn','fe','fs','fm'].forEach(id=>document.getElementById(id).value='');
-    btn.innerHTML='✅ Message Sent!';
-    btn.style.background='var(--green)';
-    btn.style.opacity='1';
-    showToast('✅ Message sent! I\'ll get back to you soon.');
-    setTimeout(()=>{
-      btn.innerHTML='<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Send Message';
-      btn.style.background=''; btn.style.opacity='';
-    },3500);
-  },1600);
+  contactForm?.requestSubmit();
 }
 function showToast(msg){
   const t=document.getElementById('toast');
