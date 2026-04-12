@@ -1301,11 +1301,14 @@ if(contactForm && sendButton){
         throw new Error(data?.message || 'Request failed');
       }
 
+      const feedbackMessage = data?.message || 'Message sent successfully.';
+      const emailWasSent = data?.email_sent !== false;
+
       contactForm.reset();
-      sendButton.innerHTML = 'Message Sent!';
-      sendButton.style.background = 'var(--green)';
+      sendButton.innerHTML = emailWasSent ? 'Message Sent!' : 'Saved';
+      sendButton.style.background = emailWasSent ? 'var(--green)' : 'var(--orange)';
       sendButton.style.opacity = '1';
-      showToast('Message sent successfully.');
+      showToast(feedbackMessage);
 
       setTimeout(() => {
         sendButton.innerHTML = defaultSendButtonHtml;
