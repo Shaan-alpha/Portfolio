@@ -115,7 +115,7 @@ nav{
   box-shadow:0 12px 40px rgba(0,0,0,0.45),inset 0 0 0 0.5px rgba(255,255,255,0.04);
   animation:navSlide .9s var(--ease) .2s both;
 }
-@keyframes navSlide{from{opacity:0;transform:translateX(-50%) translateY(-24px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes navSlide{from{opacity:0;transform:translateX(var(--nav-tx,-50%)) translateY(-24px)}to{opacity:1;transform:translateX(var(--nav-tx,-50%)) translateY(0)}}
 .nl{
   position:relative;color:var(--muted);text-decoration:none;
   font-size:13px;font-weight:500;letter-spacing:0.015em;
@@ -170,7 +170,7 @@ section{padding:120px 0;}
 .grad-blue{background:linear-gradient(135deg,var(--blue),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .grad-purple{background:linear-gradient(135deg,var(--purple),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .grad-green{background:linear-gradient(135deg,var(--green),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.body-text{font-size:17px;line-height:1.75;color:var(--muted2);}
+.body-text{font-size:17px;line-height:1.75;color:var(--muted2);overflow-wrap:break-word;}
 
 /* ═══════════════════════════════════════════════
    ① HERO
@@ -204,7 +204,7 @@ section{padding:120px 0;}
 }
 @keyframes shimmer{0%,100%{filter:brightness(1)}50%{filter:brightness(1.25)}}
 .hero-sub{
-  font-size:clamp(16px,2vw,21px);font-weight:300;
+  font-size:clamp(15px,2.2vw,21px);font-weight:300;
   color:var(--muted2);max-width:600px;margin:28px auto 40px;
   animation:fadeIn 1s var(--ease) .7s both;
 }
@@ -307,8 +307,9 @@ section{padding:120px 0;}
   display:flex;align-items:center;gap:10px;
   background:var(--glass);border:1px solid var(--border);border-radius:var(--r);
   padding:10px 14px;color:var(--muted2);text-decoration:none;font-size:13px;
-  transition:all .35s var(--ease);
+  transition:all .35s var(--ease);overflow:hidden;
 }
+.av-contact a span,.av-contact a{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .av-contact a:hover{background:var(--glass2);border-color:var(--border2);color:var(--text);transform:translateX(4px);}
 .av-contact a svg{width:15px;height:15px;flex-shrink:0;color:var(--blue);}
 .av-orbs{
@@ -344,7 +345,7 @@ section{padding:120px 0;}
    ③ SKILLS
 ═══════════════════════════════════════════════ */
 #skills{background:var(--bg1);}
-.skills-categories{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:60px;}
+.skills-categories{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:60px;}
 .sk-cat{
   background:var(--glass);border:1px solid var(--border);border-radius:var(--r2);
   padding:28px;transition:all .5s var(--ease);position:relative;overflow:hidden;
@@ -460,7 +461,7 @@ section{padding:120px 0;}
 .intern-bullets{list-style:none;display:flex;flex-direction:column;gap:8px;}
 .intern-bullets li{
   font-size:13.5px;color:var(--muted2);line-height:1.6;
-  padding-left:18px;position:relative;
+  padding-left:18px;position:relative;overflow-wrap:break-word;
 }
 .intern-bullets li::before{
   content:'';position:absolute;left:0;top:9px;
@@ -579,19 +580,100 @@ footer span{color:var(--blue);}
 /* ═══════════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════════ */
+
+/* ── Tablet & small laptop (≤960px) ── */
 @media(max-width:960px){
   #about .wrap{grid-template-columns:1fr;gap:48px;}
-  .about-visual{max-width:380px;margin:0 auto;}
+  .about-visual{max-width:400px;margin:0 auto;}
   .skills-categories{grid-template-columns:1fr 1fr;}
   .intern-grid{grid-template-columns:1fr;}
-  .edu-card{grid-template-columns:1fr;}
+  .edu-card{grid-template-columns:1fr;text-align:left;}
+  .edu-cgpa{display:inline-flex;flex-direction:column;align-items:center;padding:18px 28px;}
   .form-row{grid-template-columns:1fr;}
+  .proj-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));}
 }
+
+/* ── Nav: scrollable pill on narrow viewports ── */
+@media(max-width:680px){
+  nav{
+    left:12px;right:12px;
+    transform:none;
+    width:calc(100% - 24px);
+    overflow-x:auto;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+    justify-content:flex-start;
+  }
+  nav::-webkit-scrollbar{display:none;}
+  .nl,.nav-status{flex-shrink:0;}
+  .nl{padding:6px 12px;font-size:12px;}
+}
+
+/* ── Large mobile (≤640px) ── */
 @media(max-width:640px){
-  .skills-categories,.proj-grid,.certs-grid{grid-template-columns:1fr;}
-  .hf{display:none;}
-  nav .nl{padding:6px 10px;font-size:12px;}
   section{padding:80px 0;}
+  .hf{display:none;}
+
+  .skills-categories,.certs-grid{grid-template-columns:1fr;}
+  .proj-grid{grid-template-columns:1fr;}
+
+  .stat-row{grid-template-columns:1fr 1fr;gap:10px;}
+  .stat-n{font-size:22px;}
+
+  .hero-sub br{display:none;}
+  .hero-sub{font-size:15px;margin:20px auto 32px;}
+
+  .contact-form{padding:28px 20px;}
+  .contact-socials{gap:8px;}
+  .soc{padding:9px 14px;font-size:12px;}
+
+  .intern-bullets li{font-size:12.5px;}
+  .body-text{font-size:15px;}
+
+  .tools-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;}
+}
+
+/* ── Small mobile (≤480px) ── */
+@media(max-width:480px){
+  section{padding:60px 0;}
+  .wrap{padding:0 4vw;}
+
+  .display{font-size:clamp(36px,9vw,56px);margin-bottom:14px;}
+  .hero-badge{margin-bottom:24px;font-size:11px;}
+
+  .hero-cta{flex-direction:column;align-items:stretch;}
+  .btn{justify-content:center;padding:13px 20px;}
+
+  .av-card{padding:28px 20px;border-radius:24px;}
+  .stat-row{grid-template-columns:1fr 1fr;}
+
+  .skills-categories{grid-template-columns:1fr;}
+  .sk-cat{padding:20px;}
+
+  .proj-body{padding:18px;}
+  .proj-title{font-size:19px;}
+
+  .intern-card{padding:22px 18px;}
+  .intern-company{font-size:18px;}
+
+  .cert-card{padding:18px;}
+
+  .edu-card{padding:24px 20px;}
+  .edu-inst{font-size:20px;}
+
+  .contact-form{padding:22px 16px;}
+  .contact-socials{flex-wrap:wrap;gap:8px;}
+  .soc{flex:1;min-width:120px;justify-content:center;}
+
+  footer{padding:24px 4vw;font-size:12px;}
+}
+
+/* ── Very small (≤380px) ── */
+@media(max-width:380px){
+  .stat-row{grid-template-columns:1fr;}
+  nav{gap:0;}
+  .nl{padding:5px 9px;font-size:11px;}
+  .nav-status{margin-right:4px;}
 }
 </style>
 </head>
@@ -638,9 +720,9 @@ footer span{color:var(--blue);}
       <div class="hf-lab">Flutter · Firebase</div>
     </div>
     <div class="hf hf3">
-      <div class="hf-icon">🐍</div>
-      <div class="hf-val">Python First</div>
-      <div class="hf-lab">Pandas · NumPy · OpenCV</div>
+      <div class="hf-icon">⚙️</div>
+      <div class="hf-val">Data Engineering</div>
+      <div class="hf-lab">Airflow · Spark · dbt</div>
     </div>
     <div class="hf hf4">
       <div class="hf-icon">🎓</div>
@@ -659,8 +741,8 @@ footer span{color:var(--blue);}
       <span class="line2">Satsangi.</span>
     </h1>
     <p class="hero-sub">
-      <strong>CS undergrad → AI/ML engineer</strong> building real-world intelligent systems —<br/>
-      from voice assistants to safety apps, driven by curiosity and code.
+      <strong>CS undergrad → Data Engineer in the making</strong> building intelligent, data-driven systems —<br/>
+      from ML pipelines to facial recognition platforms, driven by curiosity and clean code.
     </p>
     <div class="hero-cta">
       <a href="#projects" class="btn btn-blue">
@@ -699,7 +781,7 @@ footer span{color:var(--blue);}
           </div>
           <div class="av-avatar">👨‍💻</div>
           <div class="av-name">Shaan Satsangi</div>
-          <div class="av-role">CS undergrad · AI/ML developer</div>
+          <div class="av-role">CS undergrad · Data Engineer & AI/ML developer</div>
           <div class="av-location">
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
             Jaipur, Rajasthan, India
@@ -725,7 +807,7 @@ footer span{color:var(--blue);}
         </div>
       </div>
       <div class="stat-row r d2">
-        <div class="stat-box"><div class="stat-n grad-blue">3</div><div class="stat-l">Projects Shipped</div></div>
+        <div class="stat-box"><div class="stat-n grad-blue">5</div><div class="stat-l">Projects Shipped</div></div>
         <div class="stat-box"><div class="stat-n grad-purple">2</div><div class="stat-l">Internships</div></div>
         <div class="stat-box"><div class="stat-n grad-green">5+</div><div class="stat-l">Certifications</div></div>
       </div>
@@ -736,26 +818,30 @@ footer span{color:var(--blue);}
       <div class="eyebrow r">About me</div>
       <h2 class="display r d1">Dedicated. <br/><span class="grad-blue">Innovative.</span></h2>
       <p class="body-text r d2">
-        I'm a Computer Science undergraduate at JECRC, Jaipur, passionate about building intelligent systems that solve real problems. 
-        My journey spans from front-end design to deep learning pipelines — I love every layer of the stack.
+        I'm a Computer Science undergraduate at JECRC, Jaipur, aspiring to become a Data Engineer.
+        My philosophy: <em>clean data &gt; clever models, reliable pipelines &gt; cool demos</em>.
+        I love building systems that solve real problems across the full stack.
       </p>
       <p class="body-text r d3" style="margin-top:14px;">
-        I've trained ML models locally, built cross-platform safety apps, and implemented NLP sentiment pipelines — 
-        always pushing for projects that have genuine real-world impact, not just academic exercise.
+        From ETL/ELT pipelines with Airflow &amp; Spark, to facial recognition platforms, cross-platform safety apps,
+        and offline AI voice assistants — every project I ship has genuine real-world impact.
       </p>
       <div class="skill-pills r d4">
-        <span class="pill">C / C++</span>
         <span class="pill">Python</span>
-        <span class="pill">HTML · CSS</span>
+        <span class="pill">SQL</span>
+        <span class="pill">Apache Airflow</span>
+        <span class="pill">Apache Spark</span>
+        <span class="pill">dbt</span>
         <span class="pill">TensorFlow</span>
         <span class="pill">Scikit-learn</span>
-        <span class="pill">Flutter</span>
-        <span class="pill">Firebase</span>
         <span class="pill">OpenCV</span>
-        <span class="pill">Git · GitHub</span>
-        <span class="pill">Power BI</span>
+        <span class="pill">Flutter</span>
+        <span class="pill">Flask</span>
+        <span class="pill">Docker</span>
+        <span class="pill">PostgreSQL</span>
+        <span class="pill">Firebase</span>
         <span class="pill">Google Cloud</span>
-        <span class="pill">Jupyter</span>
+        <span class="pill">C / C++</span>
       </div>
     </div>
   </div>
@@ -835,6 +921,11 @@ footer span{color:var(--blue);}
             <span class="sk-pct">87%</span>
           </div>
           <div class="sk-item">
+            <span class="sk-item-name">Flask / REST APIs</span>
+            <div class="sk-bar-wrap"><div class="sk-bar" data-w="82" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div>
+            <span class="sk-pct">82%</span>
+          </div>
+          <div class="sk-item">
             <span class="sk-item-name">Flutter</span>
             <div class="sk-bar-wrap"><div class="sk-bar" data-w="75" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div>
             <span class="sk-pct">75%</span>
@@ -844,9 +935,32 @@ footer span{color:var(--blue);}
             <div class="sk-bar-wrap"><div class="sk-bar" data-w="78" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div>
             <span class="sk-pct">78%</span>
           </div>
+        </div>
+      </div>
+
+      <!-- Data Engineering -->
+      <div class="sk-cat r d4" style="--cat-bg:linear-gradient(135deg,rgba(255,159,10,0.09),transparent)">
+        <div class="sk-cat-icon">⚙️</div>
+        <div class="sk-cat-title">Data Engineering</div>
+        <div class="sk-items">
           <div class="sk-item">
-            <span class="sk-item-name">C / C++</span>
-            <div class="sk-bar-wrap"><div class="sk-bar" data-w="80" style="background:linear-gradient(90deg,var(--green),var(--teal))"></div></div>
+            <span class="sk-item-name">Apache Airflow</span>
+            <div class="sk-bar-wrap"><div class="sk-bar" data-w="75" style="background:linear-gradient(90deg,var(--orange),var(--yellow))"></div></div>
+            <span class="sk-pct">75%</span>
+          </div>
+          <div class="sk-item">
+            <span class="sk-item-name">Apache Spark</span>
+            <div class="sk-bar-wrap"><div class="sk-bar" data-w="70" style="background:linear-gradient(90deg,var(--orange),var(--yellow))"></div></div>
+            <span class="sk-pct">70%</span>
+          </div>
+          <div class="sk-item">
+            <span class="sk-item-name">dbt</span>
+            <div class="sk-bar-wrap"><div class="sk-bar" data-w="72" style="background:linear-gradient(90deg,var(--orange),var(--yellow))"></div></div>
+            <span class="sk-pct">72%</span>
+          </div>
+          <div class="sk-item">
+            <span class="sk-item-name">ETL / ELT Pipelines</span>
+            <div class="sk-bar-wrap"><div class="sk-bar" data-w="80" style="background:linear-gradient(90deg,var(--orange),var(--yellow))"></div></div>
             <span class="sk-pct">80%</span>
           </div>
         </div>
@@ -864,6 +978,14 @@ footer span{color:var(--blue);}
       <div class="tool-badge r d3"><div class="t-icon">📊</div>Power BI</div>
       <div class="tool-badge r d4"><div class="t-icon">🔥</div>Firebase</div>
       <div class="tool-badge r d4"><div class="t-icon">🗺️</div>Google Maps API</div>
+      <div class="tool-badge r d1"><div class="t-icon">🐳</div>Docker</div>
+      <div class="tool-badge r d2"><div class="t-icon">🌊</div>Apache Airflow</div>
+      <div class="tool-badge r d3"><div class="t-icon">⚡</div>Apache Spark</div>
+      <div class="tool-badge r d4"><div class="t-icon">🔧</div>dbt</div>
+      <div class="tool-badge r d1"><div class="t-icon">🐘</div>PostgreSQL</div>
+      <div class="tool-badge r d2"><div class="t-icon">🧮</div>SQLite</div>
+      <div class="tool-badge r d3"><div class="t-icon">🐍</div>Flask</div>
+      <div class="tool-badge r d4"><div class="t-icon">🐧</div>Linux / Bash</div>
     </div>
   </div>
 </section>
@@ -899,8 +1021,7 @@ footer span{color:var(--blue);}
             <li>Built on Python + TensorFlow + NLP for real-time command processing</li>
           </ul>
           <div class="proj-links">
-            <a href="https://github.com/Shaan-alpha" target="_blank" class="pl pl-main">View on GitHub ↗</a>
-            <a href="#" class="pl pl-sec">Details</a>
+            <a href="https://github.com/Shaan-alpha/jarvis-py" target="_blank" class="pl pl-main">View on GitHub ↗</a>
           </div>
         </div>
       </div>
@@ -926,7 +1047,6 @@ footer span{color:var(--blue);}
           </ul>
           <div class="proj-links">
             <a href="https://github.com/Shaan-alpha" target="_blank" class="pl pl-main">View on GitHub ↗</a>
-            <a href="#" class="pl pl-sec">Details</a>
           </div>
         </div>
       </div>
@@ -950,8 +1070,33 @@ footer span{color:var(--blue);}
             <li>Emergency alerts to saved contacts for fast &amp; effective crisis response</li>
           </ul>
           <div class="proj-links">
-            <a href="https://github.com/Shaan-alpha" target="_blank" class="pl pl-main">View on GitHub ↗</a>
-            <a href="#" class="pl pl-sec">Details</a>
+            <a href="https://github.com/Shaan-alpha/Sahaara_APP" target="_blank" class="pl pl-main">View on GitHub ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- FaceFilter AI -->
+      <div class="proj r d4" style="--proj-accent:var(--teal);--proj-glow:var(--teal-glow)">
+        <div class="proj-hero" style="background:linear-gradient(135deg,#041515,#082525)">👁️</div>
+        <div class="proj-body">
+          <div class="proj-badge" style="background:rgba(90,200,250,0.1);border:1px solid rgba(90,200,250,0.25);color:var(--teal);">● 2025</div>
+          <div class="proj-stack">
+            <span class="proj-tag">Python</span>
+            <span class="proj-tag">Flask</span>
+            <span class="proj-tag">OpenCV</span>
+            <span class="proj-tag">DeepFace</span>
+            <span class="proj-tag">SQLite</span>
+            <span class="proj-tag">SSE</span>
+          </div>
+          <div class="proj-title">FaceFilter AI — Facial Recognition</div>
+          <div class="proj-desc">A locally-run deep learning platform that detects, matches, and organizes photos by face — no cloud uploads, no API keys required.</div>
+          <ul class="proj-bullets">
+            <li>Facenet512 embeddings persisted in SQLite with cosine-distance similarity matching and configurable threshold</li>
+            <li>Caches pre-computed embeddings to eliminate redundant inference on previously indexed images</li>
+            <li>Real-time progress streaming via SSE; drag-and-drop dark UI with flexible match modes and JSON reports</li>
+          </ul>
+          <div class="proj-links">
+            <a href="https://github.com/Shaan-alpha/face-sort-studio" target="_blank" class="pl pl-main" style="background:var(--teal)">View on GitHub ↗</a>
           </div>
         </div>
       </div>
@@ -1028,7 +1173,7 @@ footer span{color:var(--blue);}
         </div>
       </div>
       <div class="edu-cgpa">
-        <div class="edu-cgpa-n grad-blue">7.07</div>
+        <div class="edu-cgpa-n grad-blue">7.21</div>
         <div class="edu-cgpa-l">CGPA</div>
       </div>
     </div>
@@ -1158,7 +1303,7 @@ footer span{color:var(--blue);}
 
 <!-- FOOTER -->
 <footer>
-  <p>Crafted with ❤️ by <span>Shaan Satsangi</span> · Jaipur, Rajasthan · 2025</p>
+  <p>Crafted with ❤️ by <span>Shaan Satsangi</span> · Jaipur, Rajasthan · 2026</p>
 </footer>
 
 <!-- ══════════════════════════════════════
