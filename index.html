@@ -596,10 +596,13 @@ footer span{color:var(--blue);}
 /* ── Nav: scrollable pill on narrow viewports ── */
 @media(max-width:680px){
   nav{
+    --nav-tx:0;
     left:12px;right:12px;
-    transform:none;
     width:calc(100% - 24px);
+    max-width:calc(100vw - 24px);
+    padding:5px 6px;
     overflow-x:auto;
+    overflow-y:hidden;
     scrollbar-width:none;
     -webkit-overflow-scrolling:touch;
     justify-content:flex-start;
@@ -607,6 +610,7 @@ footer span{color:var(--blue);}
   nav::-webkit-scrollbar{display:none;}
   .nl,.nav-status{flex-shrink:0;}
   .nl{padding:6px 12px;font-size:12px;}
+  .nav-status{margin-left:6px;}
 }
 
 /* ── Large mobile (≤640px) ── */
@@ -671,9 +675,15 @@ footer span{color:var(--blue);}
 /* ── Very small (≤380px) ── */
 @media(max-width:380px){
   .stat-row{grid-template-columns:1fr;}
-  nav{gap:0;}
+  nav{gap:0;padding:4px 6px;}
   .nl{padding:5px 9px;font-size:11px;}
-  .nav-status{margin-right:4px;}
+  .nav-status{margin-left:4px;margin-right:4px;}
+}
+
+/* ── Touch devices: restore native cursor, hide custom dots ── */
+@media(hover:none) and (pointer:coarse){
+  body,.btn,.proj,.pl{cursor:auto;}
+  #cur-dot,#cur-ring{display:none !important;}
 }
 </style>
 </head>
