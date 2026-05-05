@@ -4,10 +4,11 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useScroll, useTransform, useMotionValueEvent, useSpring } from "framer-motion";
 
 const FRAME_COUNT = 240;
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const getFramePath = (index: number) => {
   const paddedIndex = index.toString().padStart(3, "0");
-  return `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/frames/ezgif-frame-${paddedIndex}.png`;
+  return `${BASE_PATH}/frames-webp/frame-${paddedIndex}.webp`;
 };
 
 export default function CanvasScrollSequence({ children }: { children?: React.ReactNode }) {
@@ -16,7 +17,7 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const lastRenderedRef = useRef<number>(-1);
   const rafIdRef = useRef<number>(0);
-  
+
   const [loaded, setLoaded] = useState(false);
 
   const { scrollYProgress } = useScroll({
@@ -24,14 +25,12 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
     offset: ["start start", "end end"]
   });
 
-  // Basic frame index based on scroll
   const rawFrameIndex = useTransform(scrollYProgress, [0, 1], [1, FRAME_COUNT]);
-  
-  // ADD SPRING: This makes the frame index change smoothly with momentum
+
   const smoothFrameIndex = useSpring(rawFrameIndex, {
-    damping: 35,
-    stiffness: 300,
-    mass: 0.2
+    damping: 40,
+    stiffness: 200,
+    mass: 0.3
   });
 
   const drawImage = useCallback((ctx: CanvasRenderingContext2D, img: HTMLImageElement, w: number, h: number) => {
@@ -42,7 +41,7 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
     ctx.drawImage(img, x, y, img.naturalWidth * scale, img.naturalHeight * scale);
   }, []);
 
-  const renderInterpolated = useCallback((floatIndex: number) => {
+  const renderFrame = useCallback((floatIndex: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d", { alpha: false });
@@ -56,8 +55,7 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
     const ceil = Math.min(FRAME_COUNT, floor + 1);
     const blend = clamped - floor;
 
-    // Quantize to avoid over-drawing if change is microscopic
-    const quantized = Math.round(clamped * 100);
+    const quantized = Math.round(clamped * 50);
     if (quantized === lastRenderedRef.current) return;
     lastRenderedRef.current = quantized;
 
@@ -66,12 +64,10 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
 
     if (!imgA) return;
 
-    // Fast path: No blending if at integer frame or near it
     if (!imgB || blend < 0.05 || floor === ceil) {
       ctx.globalAlpha = 1;
       drawImage(ctx, imgA, w, h);
     } else {
-      // Draw A then B with alpha for smooth crossfade
       drawImage(ctx, imgA, w, h);
       ctx.globalAlpha = blend;
       drawImage(ctx, imgB, w, h);
@@ -79,23 +75,26 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
     }
   }, [drawImage]);
 
-  // Preload images
+  // Preload all frames — small WebP files load fast in parallel
   useEffect(() => {
     let cancelled = false;
 
     const preload = async () => {
+      // Load first frame immediately to show something
       const first = new Image();
       first.src = getFramePath(1);
       try { await first.decode(); } catch {}
       if (cancelled) return;
       imagesRef.current[1] = first;
       setLoaded(true);
-      renderInterpolated(1);
+      renderFrame(1);
 
-      for (let b = 2; b <= FRAME_COUNT; b += 12) {
+      // Load remaining frames in larger parallel batches (files are small now)
+      const BATCH_SIZE = 30;
+      for (let b = 2; b <= FRAME_COUNT; b += BATCH_SIZE) {
         if (cancelled) return;
         const batch = [];
-        for (let i = b; i < Math.min(b + 12, FRAME_COUNT + 1); i++) {
+        for (let i = b; i < Math.min(b + BATCH_SIZE, FRAME_COUNT + 1); i++) {
           const img = new Image();
           img.src = getFramePath(i);
           batch.push(img.decode().then(() => {
@@ -111,31 +110,33 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Use the SPRING index for rendering
   useMotionValueEvent(smoothFrameIndex, "change", (latest) => {
     cancelAnimationFrame(rafIdRef.current);
     rafIdRef.current = requestAnimationFrame(() => {
-      renderInterpolated(latest);
+      renderFrame(latest);
     });
   });
 
   // Resize
   useEffect(() => {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const setSize = () => {
-      if (canvasRef.current) {
-        canvasRef.current.width = window.innerWidth;
-        canvasRef.current.height = window.innerHeight;
-        lastRenderedRef.current = -1;
-        renderInterpolated(smoothFrameIndex.get());
-      }
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      const ctx = canvas.getContext("2d");
+      if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      lastRenderedRef.current = -1;
+      renderFrame(smoothFrameIndex.get());
     };
     setSize();
-    
+
     let timer: NodeJS.Timeout;
     const onResize = () => { clearTimeout(timer); timer = setTimeout(setSize, 100); };
     window.addEventListener("resize", onResize);
     return () => { clearTimeout(timer); window.removeEventListener("resize", onResize); };
-  }, [smoothFrameIndex, renderInterpolated]);
+  }, [smoothFrameIndex, renderFrame]);
 
   return (
     <div ref={containerRef} className="relative w-full h-[600vh]">
@@ -143,9 +144,10 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
         <canvas
           ref={canvasRef}
           className="absolute inset-0 w-full h-full canvas-filter-wrap"
-          style={{ 
+          style={{
             opacity: loaded ? 1 : 0,
-            willChange: "transform, opacity",
+            transition: "opacity 0.3s ease",
+            willChange: "transform",
             transform: "translateZ(0)"
           }}
         />
