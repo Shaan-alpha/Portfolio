@@ -1,31 +1,71 @@
-🚀 Personal Portfolio Website
+# 🚀 Premium Developer Portfolio
 
-A fully responsive and interactive developer portfolio showcasing my journey as a Computer Science undergraduate aspiring to become a Data Engineer.
+A high-performance, scrollytelling developer portfolio built with **Next.js 14+**, **Framer Motion**, and **Tailwind CSS**. This project features a GPU-accelerated canvas animation sequence and a modern, glassmorphic UI optimized for 60fps performance.
 
-Built with modern UI/UX principles, this portfolio highlights my projects, skills, internships, and certifications through a visually rich and dynamic interface.
+## 🌟 Key Features
 
-✨ Features:
-- Smooth animations, custom cursor, and 3D interactive effects
-- Fully responsive design across all devices (380px → 1440px+)
-- Dedicated sections for projects, skills, experience, and contact
-- Modern glassmorphism UI with gradient aesthetics
-- Live contact form backed by a Node.js/Express backend on Render
+- **High-Performance Scrollytelling**: Custom HTML5 Canvas rendering engine with sub-frame interpolation for buttery-smooth animation.
+- **60FPS Optimization**: Zero layout thrashing, hardware-accelerated transforms, and optimized GPU rendering pipelines.
+- **Dynamic Theme Engine**: Responsive Light/Dark modes with a custom-built animated "lightbulb" toggle.
+- **Interactive 3D UI**: Skill cards with mouse-following glare effects and staggered spring animations.
+- **Responsive Layout**: Fluid design system supporting everything from mobile (375px) to ultra-wide displays.
+- **Integrated Backend**: Live contact form connected to a custom Node.js/Express backend on Render.
 
-🛠️ Tech Stack:
-HTML, CSS, JavaScript
+## 🛠️ Technical Stack
 
-💡 Highlights:
-- Showcases 5 real-world projects:
-  - FaceFilter AI — Facial recognition platform (Flask, OpenCV, DeepFace, SQLite)
-  - JARVIS — Offline AI voice assistant (TensorFlow, Keras, NLP)
-  - Sahara — Cross-platform women's safety app (Flutter, Firebase, Google Maps)
-  - Review Reader — NLP sentiment analysis pipeline (Scikit-learn, NLTK, TF-IDF)
-  - This Portfolio — ES5-compatible, dependency-free frontend
-- Data Engineering skills: Apache Airflow, Apache Spark, dbt, ETL/ELT pipelines
-- AI/ML depth: TensorFlow, Keras, Scikit-learn, OpenCV, DeepFace
-- Focus on both design quality and technical depth
+- **Frontend**: Next.js (App Router), TypeScript, Tailwind CSS
+- **Animations**: Framer Motion, Lenis (Smooth Scroll)
+- **Visuals**: HTML5 Canvas, GPU-Accelerated CSS Filters
+- **Deployment**: Vercel (Frontend), Render (Backend), Neon (Postgres)
 
-📌 Purpose:
-To create a strong personal brand and provide a centralized platform for recruiters and collaborators to explore my work.
+## 💡 Featured Projects
 
-🔗 Live Preview: https://shaan-alpha.github.io/Portfolio/
+- **🎬 YouTube Wrapped — Data Pipeline**
+  - End-to-end Medallion lakehouse pipeline (Bronze → Silver → Gold) in Databricks.
+  - Transforms Google Takeout exports into a polished Next.js analytics dashboard.
+  - [Live Demo](https://youtube-wrapped-by-shaan.vercel.app) | [GitHub](https://github.com/Shaan-alpha/youtube-wrapped)
+
+- **🛡️ Sahara — Women's Safety App**
+  - Cross-platform Flutter app with gesture-based SOS and real-time location tracking.
+  - Features Firebase integration and Google Maps API for emergency alerts.
+  - [Live Demo](https://sahaara-app.vercel.app/) | [GitHub](https://github.com/Shaan-alpha/Sahaara_APP)
+
+- **🤖 JARVIS — AI Voice Assistant**
+  - Offline-first AI assistant using TensorFlow, Keras, and custom NLP pipelines.
+  - [GitHub](https://github.com/Shaan-alpha/JARVIS)
+
+- **🧬 FaceFilter AI**
+  - Facial recognition platform using OpenCV, DeepFace, and Flask.
+
+- **📊 Review Reader**
+  - NLP sentiment analysis pipeline using Scikit-learn, NLTK, and TF-IDF.
+
+## 🎓 Certifications
+
+- **micro1 AI Certified**: Data Science, AI/ML Engineer & Data Engineer.
+- **IEEE**: 2nd Position in Regional Debate Competition.
+
+## 🚀 Getting Started
+
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/Shaan-alpha/Portfolio.git
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Run development server**
+   ```bash
+   npm run dev
+   ```
+
+4. **Build for production**
+   ```bash
+   npm run build
+   ```
+
+---
+Crafted with ❤️ by **Shaan Satsangi**

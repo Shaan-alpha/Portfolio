@@ -1,0 +1,197 @@
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --bg1: #ffffff;
+  --bg2: #e2e8f0;
+  --glass: rgba(255, 255, 255, 0.9);
+  --glass2: rgba(255, 255, 255, 1);
+  --border: rgba(15, 23, 42, 0.14);
+  --border2: rgba(15, 23, 42, 0.25);
+  --muted: rgba(15, 23, 42, 0.55);
+  --muted2: rgba(15, 23, 42, 0.75);
+
+  /* Apple System Colors */
+  --color-blue: #0A84FF;
+  --color-blue-glow: rgba(10, 132, 255, 0.22);
+  --color-purple: #BF5AF2;
+  --color-purple-glow: rgba(191, 90, 242, 0.18);
+  --color-pink: #FF375F;
+  --color-pink-glow: rgba(255, 55, 95, 0.18);
+  --color-teal: #5AC8FA;
+  --color-teal-glow: rgba(90, 200, 250, 0.16);
+  --color-green: #32D74B;
+  --color-green-glow: rgba(50, 215, 75, 0.16);
+  --color-orange: #FF9F0A;
+  --color-yellow: #FFD60A;
+
+  --r: 14px;
+  --r2: 22px;
+  --r3: 32px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease2: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Stronger 3D Shadows for Light Mode */
+  --card-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.14), 0 4px 12px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(15, 23, 42, 0.04);
+  --card-shadow-hover: 0 24px 48px -12px rgba(15, 23, 42, 0.2), 0 8px 24px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(15, 23, 42, 0.06);
+  --nav-shadow: 0 8px 32px -8px rgba(15, 23, 42, 0.2), 0 0 0 1px rgba(15, 23, 42, 0.06);
+}
+
+.dark {
+  --background: #05060f;
+  --foreground: #eeeef5;
+  --bg1: #080a18;
+  --bg2: #0c0e20;
+  --glass: rgba(255, 255, 255, 0.035);
+  --glass2: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.07);
+  --border2: rgba(255, 255, 255, 0.12);
+  --muted: rgba(238, 238, 245, 0.42);
+  --muted2: rgba(238, 238, 245, 0.65);
+  
+  /* 3D Shadows for Dark Mode */
+  --card-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
+  --card-shadow-hover: 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
+  --nav-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.5);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-bg1: var(--bg1);
+  --color-bg2: var(--bg2);
+  --color-glass: var(--glass);
+  --color-glass2: var(--glass2);
+  --color-border: var(--border);
+  --color-border2: var(--border2);
+  --color-muted: var(--muted);
+  --color-muted2: var(--muted2);
+  --font-outfit: var(--font-outfit);
+  --font-mono: var(--font-dm-mono);
+  /* The original HTML uses Cabinet Grotesk, which isn't on Google Fonts. We'll use local fallback or inter */
+  --font-display: "Cabinet Grotesk", var(--font-outfit), sans-serif;
+  
+  --shadow-card: var(--card-shadow);
+  --shadow-card-hover: var(--card-shadow-hover);
+  --shadow-nav: var(--nav-shadow);
+
+  /* Map Apple Colors */
+  --color-color-blue: var(--color-blue);
+  --color-color-purple: var(--color-purple);
+  --color-color-pink: var(--color-pink);
+  --color-color-teal: var(--color-teal);
+  --color-color-green: var(--color-green);
+  --color-color-orange: var(--color-orange);
+  --color-color-yellow: var(--color-yellow);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-outfit), sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+::selection {
+  background: rgba(10, 132, 255, 0.4);
+  color: #fff;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Typography Utilities */
+.display {
+  font-family: var(--font-display);
+  font-size: clamp(42px, 6.5vw, 96px);
+  font-weight: 900;
+  line-height: .95;
+  letter-spacing: -.04em;
+}
+
+.grad-blue {
+  background: linear-gradient(135deg, var(--color-blue), var(--color-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.grad-purple {
+  background: linear-gradient(135deg, var(--color-purple), var(--color-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.grad-green {
+  background: linear-gradient(135deg, var(--color-green), var(--color-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ambient-blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;
+}
+
+/* Animations */
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+@keyframes avatarFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes orbDrift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(12px, -15px); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* Hide native cursor */
+@media (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
+}
+
+/* Hide Next.js dev indicator */
+[data-nextjs-dialog-overlay],
+nextjs-portal,
+[data-nextjs-toast] {
+  display: none !important;
+}
+
+/* Light mode canvas filter — applied directly on canvas, no wrapper div */
+canvas.canvas-filter-wrap {
+  filter: invert(1) hue-rotate(180deg) brightness(1.15);
+}
+.dark canvas.canvas-filter-wrap {
+  filter: none;
+}
+
+/* Bulb glow pulse */
+@keyframes bulbPulse {
+  0%, 100% { box-shadow: 0 0 30px 6px rgba(255,200,50,0.3), 0 0 60px 15px rgba(255,180,30,0.1); }
+  50% { box-shadow: 0 0 45px 10px rgba(255,200,50,0.4), 0 0 80px 25px rgba(255,180,30,0.15); }
+}
