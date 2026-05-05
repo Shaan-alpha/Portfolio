@@ -26,7 +26,6 @@ export default function Projects() {
         "Next.js dashboard with animated cards, genre splits, binge sessions & listening rhythm charts"
       ],
       link: "https://github.com/Shaan-alpha/youtube-wrapped",
-      liveLink: "https://youtube-wrapped-by-shaan.vercel.app",
       colors: {
         bg: "bg-gradient-to-br from-[#1a0005] to-[#330010]",
         accent: "var(--color-pink)",
@@ -108,12 +107,12 @@ export default function Projects() {
       icon: "👁️",
       date: "2025",
       title: "FaceFilter AI — Facial Recognition",
-      desc: "A locally-run deep learning platform that detects, matches, and organizes photos by face — no cloud uploads, no API keys required.",
-      tags: ["Python", "Flask", "OpenCV", "DeepFace", "SQLite", "SSE"],
+      desc: "A locally-run face-recognition platform that detects, matches, and organizes photos by face — no cloud uploads, no API keys.",
+      tags: ["Python", "Flask", "OpenCV DNN", "SQLite", "SSE"],
       bullets: [
-        "Facenet512 embeddings persisted in SQLite with cosine-distance similarity matching and configurable threshold",
-        "Caches pre-computed embeddings to eliminate redundant inference on previously indexed images",
-        "Real-time progress streaming via SSE; drag-and-drop dark UI with flexible match modes and JSON reports"
+        "YuNet face detection + SFace 128-dimensional embeddings (ONNX) with cosine-similarity matching at a configurable threshold",
+        "Caches pre-computed embeddings keyed on file hash to eliminate redundant inference",
+        "Real-time progress streaming via Server-Sent Events; three-table SQLite schema for resumable runs"
       ],
       link: "https://github.com/Shaan-alpha/face-sort-studio",
       colors: {
