@@ -47,8 +47,9 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
     const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
 
-    const w = canvas.width;
-    const h = canvas.height;
+    // Use CSS dimensions (not buffer dimensions) since setTransform handles DPR scaling
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
 
     const clamped = Math.max(1, Math.min(FRAME_COUNT, floatIndex));
     const floor = Math.floor(clamped);
