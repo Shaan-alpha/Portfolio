@@ -62,18 +62,18 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-[18px] left-1/2 z-[1000] flex items-center gap-0.5 rounded-full border border-border p-1.5 shadow-nav transition-[background-color,border-color] duration-300 ${
+      className={`fixed top-[18px] left-1/2 z-[1000] flex items-center gap-0.5 rounded-full border border-border p-1 sm:p-1.5 shadow-nav transition-[background-color,border-color] duration-300 max-w-[calc(100vw-24px)] overflow-x-auto no-scrollbar ${
         scrolled ? "bg-bg1/95" : "bg-bg1/80"
       }`}
       style={{ transform: "translateX(-50%) translateZ(0)", backfaceVisibility: "hidden" }}
     >
-      <div className="w-[7px] h-[7px] rounded-full bg-color-green ml-1 mr-2 shadow-[0_0_10px_var(--color-green)] animate-[statusPulse_2.5s_ease-in-out_infinite]"></div>
-      
+      <div className="w-[7px] h-[7px] rounded-full bg-color-green ml-1 mr-1.5 sm:mr-2 shrink-0 shadow-[0_0_10px_var(--color-green)] animate-[statusPulse_2.5s_ease-in-out_infinite]"></div>
+
       {navLinks.map((link) => (
         <a
           key={link.id}
           href={`#${link.id}`}
-          className={`relative px-4 py-1.5 rounded-full text-[13px] font-medium tracking-[0.015em] transition-colors duration-300 ${
+          className={`relative px-2.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-[13px] font-medium tracking-[0.015em] transition-colors duration-300 whitespace-nowrap ${
             activeSection === link.id ? "text-foreground bg-white/10" : "text-muted hover:text-foreground"
           }`}
         >

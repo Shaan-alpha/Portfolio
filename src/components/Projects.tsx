@@ -128,7 +128,7 @@ export default function Projects() {
   ];
 
   return (
-    <section id="projects" className="py-[120px] relative z-10">
+    <section id="projects" className="py-16 sm:py-[120px] relative z-10">
       <div className="max-w-[1200px] mx-auto px-[5vw]">
         <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}>
           <motion.div variants={itemVariants} className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.1em] uppercase text-muted mb-4.5 before:content-[''] before:block before:w-[22px] before:h-[1px] before:bg-current">What I&apos;ve built</motion.div>
@@ -143,11 +143,11 @@ export default function Projects() {
                 style={{ "--proj-accent": proj.colors.accent, "--proj-glow": proj.colors.glow } as React.CSSProperties}
                 className={`bg-glass border border-border rounded-[22px] overflow-hidden transition-[transform,background-color,border-color,color,box-shadow] duration-500 transform-gpu hover:-translate-y-3 hover:border-border2 shadow-card hover:shadow-card-hover flex flex-col ${i === 0 ? 'md:col-span-2' : ''}`}
               >
-                <div className={`h-[180px] flex items-center justify-center text-[68px] relative overflow-hidden ${proj.colors.bg}`}>
+                <div className={`h-[120px] sm:h-[180px] flex items-center justify-center text-[48px] sm:text-[68px] relative overflow-hidden ${proj.colors.bg}`}>
                   {proj.icon}
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/100"></div>
                 </div>
-                <div className="p-6 flex-1 flex flex-col">
+                <div className="p-4 sm:p-6 flex-1 flex flex-col">
                   <div className={`inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.06em] uppercase px-2.5 py-1 rounded-full mb-3 self-start ${proj.colors.badgeBg} border ${proj.colors.badgeBorder} ${proj.colors.badgeText}`}>
                     ● {proj.date}
                   </div>
@@ -158,11 +158,11 @@ export default function Projects() {
                       </span>
                     ))}
                   </div>
-                  <div className="font-display text-[22px] font-extrabold mb-2.5">{proj.title}</div>
-                  <div className="text-[13.5px] text-muted leading-[1.7] mb-5">{proj.desc}</div>
+                  <div className="font-display text-[18px] sm:text-[22px] font-extrabold mb-2.5">{proj.title}</div>
+                  <div className="text-[12.5px] sm:text-[13.5px] text-muted leading-[1.7] mb-5">{proj.desc}</div>
                   <ul className="flex flex-col gap-1.5 mb-5.5 flex-1">
                     {proj.bullets.map((b, bi) => (
-                      <li key={bi} className="text-[12.5px] text-muted leading-[1.5] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-2 before:w-[5px] before:h-[5px] before:rounded-full before:bg-[var(--proj-accent)]">
+                      <li key={bi} className="text-[11.5px] sm:text-[12.5px] text-muted leading-[1.5] pl-3 sm:pl-4 relative before:content-[''] before:absolute before:left-0 before:top-2 before:w-[5px] before:h-[5px] before:rounded-full before:bg-[var(--proj-accent)]">
                         {b}
                       </li>
                     ))}

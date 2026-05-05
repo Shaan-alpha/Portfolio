@@ -60,7 +60,7 @@ export default function Skills() {
   ];
 
   return (
-    <section id="skills" className="py-[120px] bg-bg1 relative z-10">
+    <section id="skills" className="py-16 sm:py-[120px] bg-bg1 relative z-10">
       <div className="max-w-[1200px] mx-auto px-[5vw]">
         <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}>
           <motion.div variants={itemVariants} className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.1em] uppercase text-muted mb-4.5 before:content-[''] before:block before:w-[22px] before:h-[1px] before:bg-current">What I work with</motion.div>
@@ -105,7 +105,7 @@ export default function Skills() {
           </div>
 
           <motion.div variants={itemVariants} className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.1em] uppercase text-muted mt-[60px] mb-4.5 before:content-[''] before:block before:w-[22px] before:h-[1px] before:bg-current">Developer tools</motion.div>
-          <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3 mt-4">
+          <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 mt-4">
             {[
               { icon: "🐙", name: "Git / GitHub" }, { icon: "☁️", name: "Google Cloud" },
               { icon: "🧪", name: "Jupyter" }, { icon: "🤝", name: "Google Colab" },

@@ -43,7 +43,7 @@ export default function Experience() {
   ];
 
   return (
-    <section id="internships" className="py-[120px] bg-bg1 relative z-10">
+    <section id="internships" className="py-16 sm:py-[120px] bg-bg1 relative z-10">
       <div className="max-w-[1200px] mx-auto px-[5vw]">
         <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}>
           <motion.div variants={itemVariants} className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.1em] uppercase text-muted mb-4.5 before:content-[''] before:block before:w-[22px] before:h-[1px] before:bg-current">Work experience</motion.div>
@@ -55,22 +55,22 @@ export default function Experience() {
                 key={i} 
                 variants={itemVariants}
                 style={{ "--ic-color": exp.color } as React.CSSProperties}
-                className="bg-glass border border-border rounded-[22px] p-8 transition-[transform,background-color,border-color,color,box-shadow] duration-500 relative overflow-hidden group hover:border-border2 hover:-translate-y-1.5 shadow-card hover:shadow-card-hover"
+                className="bg-glass border border-border rounded-[22px] p-5 sm:p-8 transition-[transform,background-color,border-color,color,box-shadow] duration-500 relative overflow-hidden group hover:border-border2 hover:-translate-y-1.5 shadow-card hover:shadow-card-hover"
               >
                 <div className={`absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r ${exp.grad} scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100`}></div>
                 
                 <div className="text-[11px] font-mono text-muted mb-3.5 flex items-center gap-2 before:content-[''] before:block before:w-4 before:h-[1px] before:bg-muted">
                   {exp.period}
                 </div>
-                <div className="font-display text-[22px] font-extrabold mb-1">{exp.company}</div>
-                <div className="text-[14px] font-medium text-muted2 mb-4.5">{exp.role}</div>
+                <div className="font-display text-[18px] sm:text-[22px] font-extrabold mb-1">{exp.company}</div>
+                <div className="text-[13px] sm:text-[14px] font-medium text-muted2 mb-4.5">{exp.role}</div>
                 <div className="inline-flex items-center gap-1.5 text-[12px] text-muted mb-4.5">
                   <MapPin className="w-3.5 h-3.5" />
                   {exp.location}
                 </div>
                 <ul className="flex flex-col gap-2">
                   {exp.bullets.map((b, bi) => (
-                    <li key={bi} className="text-[13.5px] text-muted2 leading-[1.6] pl-4.5 relative break-words before:content-[''] before:absolute before:left-0 before:top-2 before:w-[5px] before:h-[5px] before:rounded-full before:bg-[var(--ic-color)] before:shadow-[0_0_8px_var(--ic-color)]">
+                    <li key={bi} className="text-[12.5px] sm:text-[13.5px] text-muted2 leading-[1.6] pl-3.5 sm:pl-4.5 relative break-words before:content-[''] before:absolute before:left-0 before:top-2 before:w-[5px] before:h-[5px] before:rounded-full before:bg-[var(--ic-color)] before:shadow-[0_0_8px_var(--ic-color)]">
                       {b}
                     </li>
                   ))}

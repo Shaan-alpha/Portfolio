@@ -22,18 +22,18 @@ export default function About() {
   };
 
   return (
-    <section id="about" className="py-[120px] relative z-10 max-w-[1200px] mx-auto px-[5vw]">
+    <section id="about" className="py-16 sm:py-[120px] relative z-10 max-w-[1200px] mx-auto px-[5vw]">
       <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }} className="grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-12 lg:gap-20 items-center">
         {/* Visual col */}
         <div className="relative max-w-[400px] lg:max-w-none mx-auto lg:mx-0">
           <motion.div variants={itemVariants}>
-            <div className="bg-gradient-to-br from-color-blue/8 to-color-purple/6 border border-border2 rounded-[36px] p-8 lg:p-11 text-center relative overflow-hidden shadow-card">
+            <div className="bg-gradient-to-br from-color-blue/8 to-color-purple/6 border border-border2 rounded-[24px] sm:rounded-[36px] p-5 sm:p-8 lg:p-11 text-center relative overflow-hidden shadow-card">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(10,132,255,0.12),transparent_60%)] pointer-events-none"></div>
               
               <div className="w-[110px] h-[110px] rounded-full mx-auto mb-5 bg-gradient-to-br from-color-blue to-color-purple flex items-center justify-center text-[52px] shadow-[0_0_48px_rgba(10,132,255,0.22)] animate-[avatarFloat_5s_ease-in-out_infinite]">
                 👨‍💻
               </div>
-              <div className="font-display text-[26px] font-extrabold mb-1">Shaan Satsangi</div>
+              <div className="font-display text-[22px] sm:text-[26px] font-extrabold mb-1">Shaan Satsangi</div>
               <div className="text-muted text-[13px] font-mono">CS undergrad · Data Engineer & AI/ML developer</div>
               <div className="inline-flex items-center gap-1.5 text-muted text-[12px] mt-2.5">
                 <MapPin className="w-3.5 h-3.5" />
