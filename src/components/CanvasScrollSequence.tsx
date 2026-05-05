@@ -7,7 +7,7 @@ const FRAME_COUNT = 240;
 
 const getFramePath = (index: number) => {
   const paddedIndex = index.toString().padStart(3, "0");
-  return `/frames/ezgif-frame-${paddedIndex}.png`;
+  return `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/frames/ezgif-frame-${paddedIndex}.png`;
 };
 
 export default function CanvasScrollSequence({ children }: { children?: React.ReactNode }) {
