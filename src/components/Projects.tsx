@@ -84,12 +84,12 @@ export default function Projects() {
       icon: "🛡️",
       date: "Feb 2025",
       title: "Sahara — Women Safety App",
-      desc: "A cross-platform safety application with gesture-based SOS, real-time location tracking, and instant emergency alerts to trusted contacts.",
-      tags: ["Flutter", "Firebase", "Google Maps API", "Express.js"],
+      desc: "A mobile-first safety web app with gesture-based SOS, real-time location tracking, and Twilio-powered alerts to trusted contacts — all backed by Supabase.",
+      tags: ["Next.js", "TypeScript", "Supabase", "Tailwind CSS", "Twilio", "MapLibre"],
       bullets: [
-        "Gesture-based SOS trigger & real-time location tracking across Android & iOS",
-        "Firebase backend + Google Maps API for live tracking and geo-tagging",
-        "Emergency alerts to saved contacts for fast & effective crisis response"
+        "Gesture-based SOS trigger with real-time location tracking via MapLibre GL",
+        "Supabase (Postgres + auth) backend with row-level security and PLpgSQL functions",
+        "Twilio-powered SMS alerts dispatched to saved trusted contacts on emergency"
       ],
       link: "https://github.com/Shaan-alpha/Sahaara_APP",
       liveLink: "https://sahaara-app.vercel.app/",
