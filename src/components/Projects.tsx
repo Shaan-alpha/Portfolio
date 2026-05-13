@@ -14,6 +14,28 @@ export default function Projects() {
 
   const projects = [
     {
+      id: "crm-sales",
+      icon: "📈",
+      date: "April 2026",
+      title: "CRM + Sales — Data Warehouse",
+      desc: "An end-to-end data warehousing project using the Maven Analytics dataset. Built a robust ETL pipeline that cleans and transforms raw CRM data into a structured PostgreSQL warehouse.",
+      tags: ["Python", "Apache Airflow", "PostgreSQL", "Power BI", "ETL"],
+      bullets: [
+        "Architected an automated ETL pipeline with Airflow to ingest and process 10k+ sales records",
+        "Designed a star-schema warehouse in PostgreSQL for optimized analytical querying",
+        "Surfaced actionable business insights via a dynamic Power BI dashboard focusing on sales performance"
+      ],
+      link: "https://github.com/Shaan-alpha/CRM-Sales-Warehouse",
+      colors: {
+        bg: "bg-gradient-to-br from-[#081a1a] to-[#103535]",
+        accent: "var(--color-teal)",
+        glow: "var(--color-teal-glow)",
+        badgeBg: "bg-[rgba(90,200,250,0.1)]",
+        badgeBorder: "border-[rgba(90,200,250,0.25)]",
+        badgeText: "text-color-teal"
+      }
+    },
+    {
       id: "youtube-wrapped",
       icon: "🎬",
       date: "May 2025",
@@ -26,6 +48,7 @@ export default function Projects() {
         "Next.js dashboard with animated cards, genre splits, binge sessions & listening rhythm charts"
       ],
       link: "https://github.com/Shaan-alpha/youtube-wrapped",
+      liveLink: "https://youtube-wrapped-by-shaan.vercel.app",
       colors: {
         bg: "bg-gradient-to-br from-[#1a0005] to-[#330010]",
         accent: "var(--color-pink)",
@@ -39,9 +62,9 @@ export default function Projects() {
       id: "jarvis",
       icon: "🤖",
       date: "Oct 2025",
-      title: "JARVIS — AI Voice Bot",
-      desc: "A locally-trained voice assistant built entirely without external AI APIs. Performs intelligent actions via speech recognition and intent classification.",
-      tags: ["Python", "TensorFlow", "Keras", "Speech Recognition", "NLP"],
+      title: "JARVIS — Offline AI Assistant",
+      desc: "A modular, privacy-first AI voice bot built with local LLM inference and semantic memory. Operates entirely offline without external APIs.",
+      tags: ["Python", "Local LLMs", "Semantic Memory", "Wake-word Detection", "TTS"],
       bullets: [
         "Deployed a locally trained ML model for intent classification without external AI APIs",
         "Implemented speech recognition, intent classification & system automation in one integrated pipeline",
@@ -55,51 +78,6 @@ export default function Projects() {
         badgeBg: "bg-[rgba(10,132,255,0.1)]",
         badgeBorder: "border-[rgba(10,132,255,0.2)]",
         badgeText: "text-color-blue"
-      }
-    },
-    {
-      id: "review-reader",
-      icon: "📝",
-      date: "Aug 2025",
-      title: "Review Reader — Sentiment Analysis",
-      desc: "A high-accuracy NLP pipeline that classifies sentiments across 1,000+ reviews in milliseconds using classical ML with advanced text preprocessing.",
-      tags: ["Python", "Pandas", "Scikit-learn", "TF-IDF", "Jupyter"],
-      bullets: [
-        "Pipeline handling 1,000+ reviews at 85% accuracy using Scikit-learn & Pandas",
-        "Classifies sentiments in under 0.5 seconds per review via Jupyter Notebook",
-        "TF-IDF vectorization, tokenization & stop-word removal boosted precision by 20%"
-      ],
-      link: "https://github.com/Shaan-alpha",
-      colors: {
-        bg: "bg-gradient-to-br from-[#130820] to-[#200d35]",
-        accent: "var(--color-purple)",
-        glow: "var(--color-purple-glow)",
-        badgeBg: "bg-[rgba(191,90,242,0.1)]",
-        badgeBorder: "border-[rgba(191,90,242,0.2)]",
-        badgeText: "text-color-purple"
-      }
-    },
-    {
-      id: "sahara",
-      icon: "🛡️",
-      date: "Feb 2025",
-      title: "Sahara — Women Safety App",
-      desc: "A mobile-first safety web app with gesture-based SOS, real-time location tracking, and Twilio-powered alerts to trusted contacts — all backed by Supabase.",
-      tags: ["Next.js", "TypeScript", "Supabase", "Tailwind CSS", "Twilio", "MapLibre"],
-      bullets: [
-        "Gesture-based SOS trigger with real-time location tracking via MapLibre GL",
-        "Supabase (Postgres + auth) backend with row-level security and PLpgSQL functions",
-        "Twilio-powered SMS alerts dispatched to saved trusted contacts on emergency"
-      ],
-      link: "https://github.com/Shaan-alpha/Sahaara_APP",
-      liveLink: "https://sahaara-app.vercel.app/",
-      colors: {
-        bg: "bg-gradient-to-br from-[#1f060c] to-[#350a14]",
-        accent: "var(--color-pink)",
-        glow: "var(--color-pink-glow)",
-        badgeBg: "bg-[rgba(255,55,95,0.1)]",
-        badgeBorder: "border-[rgba(255,55,95,0.2)]",
-        badgeText: "text-color-pink"
       }
     },
     {
@@ -123,6 +101,51 @@ export default function Projects() {
         badgeBorder: "border-[rgba(90,200,250,0.25)]",
         badgeText: "text-color-teal"
       }
+    },
+    {
+      id: "sahara",
+      icon: "🛡️",
+      date: "Feb 2025",
+      title: "Sahara — Women Safety App",
+      desc: "A mobile-first safety web app with gesture-based SOS, real-time location tracking, and Twilio-powered alerts to trusted contacts — all backed by Supabase.",
+      tags: ["Next.js", "TypeScript", "Supabase", "Tailwind CSS", "Twilio", "MapLibre"],
+      bullets: [
+        "Gesture-based SOS trigger with real-time location tracking via MapLibre GL",
+        "Supabase (Postgres + auth) backend with row-level security and PLpgSQL functions",
+        "Twilio-powered SMS alerts dispatched to saved trusted contacts on emergency"
+      ],
+      link: "https://github.com/Shaan-alpha/Sahaara_APP",
+      liveLink: "https://sahaara-app.vercel.app",
+      colors: {
+        bg: "bg-gradient-to-br from-[#1f060c] to-[#350a14]",
+        accent: "var(--color-pink)",
+        glow: "var(--color-pink-glow)",
+        badgeBg: "bg-[rgba(255,55,95,0.1)]",
+        badgeBorder: "border-[rgba(255,55,95,0.2)]",
+        badgeText: "text-color-pink"
+      }
+    },
+    {
+      id: "review-reader",
+      icon: "📝",
+      date: "Aug 2025",
+      title: "Review Reader — Sentiment Analysis",
+      desc: "A high-accuracy NLP pipeline that classifies sentiments across 1,000+ reviews in milliseconds using classical ML with advanced text preprocessing.",
+      tags: ["Python", "Pandas", "Scikit-learn", "TF-IDF", "Jupyter"],
+      bullets: [
+        "Pipeline handling 1,000+ reviews at 85% accuracy using Scikit-learn & Pandas",
+        "Classifies sentiments in under 0.5 seconds per review via Jupyter Notebook",
+        "TF-IDF vectorization, tokenization & stop-word removal boosted precision by 20%"
+      ],
+      link: "https://github.com/Shaan-alpha",
+      colors: {
+        bg: "bg-gradient-to-br from-[#130820] to-[#200d35]",
+        accent: "var(--color-purple)",
+        glow: "var(--color-purple-glow)",
+        badgeBg: "bg-[rgba(191,90,242,0.1)]",
+        badgeBorder: "border-[rgba(191,90,242,0.2)]",
+        badgeText: "text-color-purple"
+      }
     }
   ];
 
@@ -140,7 +163,7 @@ export default function Projects() {
                 key={i} 
                 variants={itemVariants}
                 style={{ "--proj-accent": proj.colors.accent, "--proj-glow": proj.colors.glow } as React.CSSProperties}
-                className={`bg-glass border border-border rounded-[22px] overflow-hidden transition-[transform,background-color,border-color,color,box-shadow] duration-500 transform-gpu hover:-translate-y-3 hover:border-border2 shadow-card hover:shadow-card-hover flex flex-col ${i === 0 ? 'md:col-span-2' : ''}`}
+                className="bg-glass border border-border rounded-[22px] overflow-hidden transition-[transform,background-color,border-color,color,box-shadow] duration-500 transform-gpu hover:-translate-y-3 hover:border-border2 shadow-card hover:shadow-card-hover flex flex-col"
               >
                 <div className={`h-[120px] sm:h-[180px] flex items-center justify-center text-[48px] sm:text-[68px] relative overflow-hidden ${proj.colors.bg}`}>
                   {proj.icon}
