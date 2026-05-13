@@ -14,47 +14,47 @@ export default function Skills() {
 
   const skillsData = [
     {
-      title: "AI / Machine Learning",
-      icon: "🧠",
-      gradient: "from-color-blue/9 to-transparent",
-      items: [
-        { name: "TensorFlow / Keras", val: 85, grad: "from-color-blue to-color-teal" },
-        { name: "Scikit-learn", val: 88, grad: "from-color-blue to-color-teal" },
-        { name: "OpenCV", val: 78, grad: "from-color-blue to-color-teal" },
-        { name: "NLP / Tokenization", val: 80, grad: "from-color-blue to-color-teal" }
-      ]
-    },
-    {
-      title: "Data Science",
-      icon: "📊",
-      gradient: "from-color-purple/9 to-transparent",
-      items: [
-        { name: "Python", val: 92, grad: "from-color-purple to-color-pink" },
-        { name: "Pandas / NumPy", val: 89, grad: "from-color-purple to-color-pink" },
-        { name: "Matplotlib / Seaborn", val: 84, grad: "from-color-purple to-color-pink" },
-        { name: "Power BI", val: 72, grad: "from-color-purple to-color-pink" }
-      ]
-    },
-    {
-      title: "Web & App Dev",
-      icon: "🌐",
-      gradient: "from-color-green/9 to-transparent",
-      items: [
-        { name: "HTML / CSS", val: 87, grad: "from-color-green to-color-teal" },
-        { name: "Flask / REST APIs", val: 82, grad: "from-color-green to-color-teal" },
-        { name: "Flutter", val: 75, grad: "from-color-green to-color-teal" },
-        { name: "Firebase", val: 78, grad: "from-color-green to-color-teal" }
-      ]
-    },
-    {
       title: "Data Engineering",
       icon: "⚙️",
+      gradient: "from-color-blue/9 to-transparent",
+      items: [
+        { name: "Apache Airflow / Spark", val: 82, grad: "from-color-blue to-color-teal" },
+        { name: "dbt / SQL (PostgreSQL)", val: 88, grad: "from-color-blue to-color-teal" },
+        { name: "Databricks / Delta Lake", val: 78, grad: "from-color-blue to-color-teal" },
+        { name: "ETL / ELT Pipelines", val: 85, grad: "from-color-blue to-color-teal" }
+      ]
+    },
+    {
+      title: "Data Science & AI",
+      icon: "🧠",
+      gradient: "from-color-purple/9 to-transparent",
+      items: [
+        { name: "TensorFlow / Keras", val: 86, grad: "from-color-purple to-color-pink" },
+        { name: "Scikit-learn / Pandas", val: 92, grad: "from-color-purple to-color-pink" },
+        { name: "OpenCV / NLP", val: 84, grad: "from-color-purple to-color-pink" },
+        { name: "Local LLM Inference", val: 80, grad: "from-color-purple to-color-pink" }
+      ]
+    },
+    {
+      title: "Data Analysis & Analytics",
+      icon: "📊",
+      gradient: "from-color-green/9 to-transparent",
+      items: [
+        { name: "Power BI / Tableau", val: 82, grad: "from-color-green to-color-teal" },
+        { name: "SQL (Complex Queries)", val: 90, grad: "from-color-green to-color-teal" },
+        { name: "Matplotlib / Seaborn", val: 85, grad: "from-color-green to-color-teal" },
+        { name: "Actionable Insights", val: 80, grad: "from-color-green to-color-teal" }
+      ]
+    },
+    {
+      title: "Software Engineering",
+      icon: "💻",
       gradient: "from-color-orange/9 to-transparent",
       items: [
-        { name: "Apache Airflow", val: 75, grad: "from-color-orange to-color-yellow" },
-        { name: "Apache Spark", val: 70, grad: "from-color-orange to-color-yellow" },
-        { name: "dbt", val: 72, grad: "from-color-orange to-color-yellow" },
-        { name: "ETL / ELT Pipelines", val: 80, grad: "from-color-orange to-color-yellow" }
+        { name: "C / C++", val: 88, grad: "from-color-orange to-color-yellow" },
+        { name: "System Design", val: 75, grad: "from-color-orange to-color-yellow" },
+        { name: "OOP / DSA", val: 84, grad: "from-color-orange to-color-yellow" },
+        { name: "Linux / Bash / Docker", val: 80, grad: "from-color-orange to-color-yellow" }
       ]
     }
   ];
