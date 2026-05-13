@@ -19,6 +19,20 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
   const rafIdRef = useRef<number>(0);
 
   const [loaded, setLoaded] = useState(false);
+  const [basePath, setBasePath] = useState("");
+
+  useEffect(() => {
+    // Detect if the path includes /Portfolio (case-insensitive)
+    const path = window.location.pathname.toLowerCase();
+    if (path.startsWith("/portfolio")) {
+      setBasePath("/Portfolio");
+    }
+  }, []);
+
+  const getFramePathWithState = (index: number) => {
+    const paddedIndex = index.toString().padStart(3, "0");
+    return `${basePath}/frames-webp/frame-${paddedIndex}.webp`;
+  };
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -47,7 +61,6 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
     const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
 
-    // Use CSS dimensions (not buffer dimensions) since setTransform handles DPR scaling
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
 
@@ -76,28 +89,27 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
     }
   }, [drawImage]);
 
-  // Preload all frames — small WebP files load fast in parallel
+  // Preload all frames
   useEffect(() => {
     let cancelled = false;
 
     const preload = async () => {
-      // Load first frame immediately to show something
+      // Load first frame immediately
       const first = new Image();
-      first.src = getFramePath(1);
+      first.src = getFramePathWithState(1);
       try { await first.decode(); } catch {}
       if (cancelled) return;
       imagesRef.current[1] = first;
       setLoaded(true);
       renderFrame(1);
 
-      // Load remaining frames in larger parallel batches (files are small now)
       const BATCH_SIZE = 30;
       for (let b = 2; b <= FRAME_COUNT; b += BATCH_SIZE) {
         if (cancelled) return;
         const batch = [];
         for (let i = b; i < Math.min(b + BATCH_SIZE, FRAME_COUNT + 1); i++) {
           const img = new Image();
-          img.src = getFramePath(i);
+          img.src = getFramePathWithState(i);
           batch.push(img.decode().then(() => {
             if (!cancelled) imagesRef.current[i] = img;
           }).catch(() => {}));
@@ -109,7 +121,7 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
     preload();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [basePath]);
 
   useMotionValueEvent(smoothFrameIndex, "change", (latest) => {
     cancelAnimationFrame(rafIdRef.current);
@@ -141,21 +153,22 @@ export default function CanvasScrollSequence({ children }: { children?: React.Re
 
   return (
     <div ref={containerRef} className="relative w-full h-[600vh]">
-      <div className="sticky top-0 left-0 w-full h-screen overflow-hidden bg-background">
+      <div className="sticky top-0 left-0 w-full h-screen overflow-hidden">
+        <div className="absolute inset-0 bg-background z-0" />
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 w-full h-full canvas-filter-wrap"
+          className="absolute inset-0 w-full h-full canvas-filter-wrap z-10"
           style={{
             opacity: loaded ? 1 : 0,
-            transition: "opacity 0.3s ease",
+            transition: "opacity 0.5s ease",
             willChange: "transform",
             transform: "translateZ(0)"
           }}
         />
-        <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 pointer-events-none z-20">
           {children}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-background pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-background pointer-events-none z-30" />
       </div>
     </div>
   );

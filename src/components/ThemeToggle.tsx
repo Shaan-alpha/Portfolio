@@ -16,7 +16,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(isLight ? "dark" : "light")}
-      className="fixed top-6 right-6 z-[1100] group"
+      className="fixed top-22 right-6 sm:top-6 sm:right-6 z-[1100] group"
       aria-label="Toggle Theme"
       style={{ transform: "translateZ(0)" }}
     >
@@ -34,7 +34,7 @@ export default function ThemeToggle() {
 
       {/* Button body */}
       <motion.div
-        className="relative w-12 h-12 rounded-full flex items-center justify-center border overflow-hidden"
+        className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border overflow-hidden"
         animate={{
           backgroundColor: isLight
             ? "rgba(255, 240, 200, 0.95)"
