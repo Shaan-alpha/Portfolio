@@ -66,7 +66,7 @@ export default function Certifications() {
               </div>
             </div>
             <div className="relative z-10 text-center bg-gradient-to-br from-color-blue/10 to-color-purple/10 border border-border2 rounded-[22px] py-4 px-6 sm:py-6 sm:px-8 flex flex-col items-center">
-              <div className="font-display text-[32px] sm:text-[42px] font-black grad-blue">7.21</div>
+              <div className="font-display text-[32px] sm:text-[42px] font-black grad-blue">7.39</div>
               <div className="text-[12px] text-muted mt-0.5">CGPA</div>
             </div>
           </motion.div>
