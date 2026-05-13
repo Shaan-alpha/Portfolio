@@ -63,7 +63,7 @@ export default function About() {
           
           <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-3 gap-3 mt-5">
             <div className="bg-glass border border-border rounded-[14px] py-4 px-3.5 text-center transition-[transform,background-color,border-color,color,box-shadow] duration-400 hover:bg-glass2 hover:border-border2 hover:-translate-y-1 shadow-sm hover:shadow-card">
-              <div className="font-display text-[22px] lg:text-[26px] font-black grad-blue">5</div>
+              <div className="font-display text-[22px] lg:text-[26px] font-black grad-blue">6+</div>
               <div className="text-[11px] text-muted mt-0.5">Projects Shipped</div>
             </div>
             <div className="bg-glass border border-border rounded-[14px] py-4 px-3.5 text-center transition-[transform,background-color,border-color,color,box-shadow] duration-400 hover:bg-glass2 hover:border-border2 hover:-translate-y-1 shadow-sm hover:shadow-card">
@@ -82,13 +82,10 @@ export default function About() {
           <motion.div variants={itemVariants} className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.1em] uppercase text-muted mb-4.5 before:content-[''] before:block before:w-[22px] before:h-[1px] before:bg-current">About me</motion.div>
           <motion.h2 variants={itemVariants} className="display mb-5.5">Dedicated. <br/><span className="grad-blue">Innovative.</span></motion.h2>
           <motion.p variants={itemVariants} className="text-[15px] lg:text-[17px] leading-[1.75] text-muted2 mb-6">
-            I&apos;m a Computer Science undergraduate at JECRC, Jaipur, aspiring to become a Data Engineer.
-            My philosophy: <em className="text-foreground">clean data &gt; clever models, reliable pipelines &gt; cool demos</em>.
-            I love building systems that solve real problems across the full stack.
+            I&apos;m a Computer Science undergrad at JECRC, Jaipur, and honestly? I&apos;m not just aiming to be a Data Engineer. I&apos;m building myself into a <strong className="text-foreground font-semibold italic">Data Unicorn</strong> — that rare breed that sits at the intersection of <span className="text-color-blue font-medium">Data Engineering</span>, <span className="text-color-purple font-medium">Data Science</span>, and <span className="text-color-pink font-medium">Data Analysis</span>.
           </motion.p>
           <motion.p variants={itemVariants} className="text-[15px] lg:text-[17px] leading-[1.75] text-muted2 mb-6">
-            From ETL/ELT pipelines with Airflow & Spark, to facial recognition platforms, cross-platform safety apps,
-            and offline AI voice assistants — every project I ship has genuine real-world impact.
+            My philosophy is simple: <em className="text-foreground">clean data over clever models, and bulletproof pipelines over flashy demos</em>. Whether it&apos;s architecting a medallion lakehouse or digging into sentiment patterns, I&apos;m here to bridge the gap between raw bytes and business gold.
           </motion.p>
           <motion.div variants={itemVariants} className="flex flex-wrap gap-2 mt-5">
             {["Python", "SQL", "Apache Airflow", "Apache Spark", "dbt", "TensorFlow", "Scikit-learn", "OpenCV", "Flutter", "Flask", "Docker", "PostgreSQL", "Firebase", "Google Cloud", "C / C++"].map(skill => (

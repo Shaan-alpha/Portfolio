@@ -84,10 +84,10 @@ export default function Hero() {
 
         <motion.p 
           initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.5, ease: [0.22, 1, 0.36, 1] as any }}
-          className="text-[clamp(15px,2.2vw,21px)] font-light text-muted2 max-w-[600px] mx-auto mt-[28px] mb-[40px]"
+          className="text-[clamp(15px,2.2vw,21px)] font-light text-muted2 max-w-[650px] mx-auto mt-[28px] mb-[40px]"
         >
-          <strong className="text-foreground font-medium">CS undergrad → Data Engineer in the making</strong> building intelligent, data-driven systems —<br className="hidden sm:block"/>
-          from ML pipelines to facial recognition platforms, driven by curiosity and clean code.
+          <strong className="text-foreground font-medium">CS undergrad → Aspiring Data Unicorn</strong> <br className="hidden sm:block"/>
+          Building the future with <span className="text-color-blue">Data Engineering</span>, <span className="text-color-purple">ML</span>, and <span className="text-color-pink">Analytics</span>.
         </motion.p>
 
         <motion.div 
