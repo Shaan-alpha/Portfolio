@@ -1,71 +1,79 @@
-# 🚀 Premium Developer Portfolio
+# 🦄 Data Unicorn Portfolio
 
-A high-performance, scrollytelling developer portfolio built with **Next.js 14+**, **Framer Motion**, and **Tailwind CSS**. This project features a GPU-accelerated canvas animation sequence and a modern, glassmorphic UI optimized for 60fps performance.
+A high-performance, scrollytelling developer portfolio built with **Next.js 16**, **React 19**, and **Tailwind CSS 4**. This project showcases a unique blend of **Data Engineering**, **Data Science**, and **Software Engineering** through a buttery-smooth, GPU-accelerated interface.
 
-## 🌟 Key Features
+> "Clean data over clever models, and bulletproof pipelines over flashy demos."
 
-- **High-Performance Scrollytelling**: Custom HTML5 Canvas rendering engine with sub-frame interpolation for buttery-smooth animation.
-- **60FPS Optimization**: Zero layout thrashing, hardware-accelerated transforms, and optimized GPU rendering pipelines.
-- **Dynamic Theme Engine**: Responsive Light/Dark modes with a custom-built animated "lightbulb" toggle.
-- **Interactive 3D UI**: Skill cards with mouse-following glare effects and staggered spring animations.
-- **Responsive Layout**: Fluid design system supporting everything from mobile (375px) to ultra-wide displays.
-- **Integrated Backend**: Live contact form connected to a custom Node.js/Express backend on Render.
+## 🌟 Visual Experience
 
-## 🛠️ Technical Stack
+- **GPU-Accelerated Scrollytelling**: Custom HTML5 Canvas engine with sub-frame interpolation for 60FPS fluid background sequences.
+- **Data Unicorn Identity**: A narrative-driven UI that highlights cross-disciplinary expertise in data pipelines, machine learning, and full-stack development.
+- **Glassmorphic Design**: Modern, Apple-like aesthetics with blurred backgrounds, vibrant gradients, and micro-animations.
+- **Adaptive Theme Engine**: Custom-built animated "lightbulb" toggle with full accessibility and theme persistence.
 
-- **Frontend**: Next.js (App Router), TypeScript, Tailwind CSS
-- **Animations**: Framer Motion, Lenis (Smooth Scroll)
-- **Visuals**: HTML5 Canvas, GPU-Accelerated CSS Filters
-- **Deployment**: Vercel (Frontend), Render (Backend), Neon (Postgres)
+## 🛠️ Technical Powerhouse
+
+### **Core Stack**
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **Runtime**: [React 19](https://react.dev/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Animations**: [Framer Motion 12](https://www.framer.com/motion/)
+- **Scrolling**: [Lenis](https://lenis.darkroom.engineering/) (Smooth Scroll)
+
+### **Architecture**
+- **Medallion Lakehouse Philosophy**: Applied across data projects (Bronze → Silver → Gold).
+- **Responsive Geometry**: Fluid layouts optimized for everything from mobile (375px) to high-res desktops.
+- **GPU Pipelines**: Leverages CSS filters and hardware-accelerated transforms for zero layout thrashing.
 
 ## 💡 Featured Projects
 
-- **🎬 YouTube Wrapped — Data Pipeline**
-  - End-to-end Medallion lakehouse pipeline (Bronze → Silver → Gold) in Databricks.
-  - Transforms Google Takeout exports into a polished Next.js analytics dashboard.
-  - [Live Demo](https://youtube-wrapped-by-shaan.vercel.app) | [GitHub](https://github.com/Shaan-alpha/youtube-wrapped)
+### **📊 CRM Sales Warehouse — ETL Pipeline**
+- Architected a scalable data warehouse using **PostgreSQL**, **dbt**, and **Apache Airflow**.
+- Automated ingestion of 50,000+ sales records with real-time transformation and Power BI integration.
+- [GitHub](https://github.com/Shaan-alpha/CRM_Sales_Warehouse)
 
-- **🛡️ Sahara — Women's Safety App**
-  - Cross-platform Flutter app with gesture-based SOS and real-time location tracking.
-  - Features Firebase integration and Google Maps API for emergency alerts.
-  - [Live Demo](https://sahaara-app.vercel.app/) | [GitHub](https://github.com/Shaan-alpha/Sahaara_APP)
+### **🎬 YouTube Wrapped — Data Pipeline**
+- End-to-end Medallion lakehouse pipeline built on **Databricks** and **PySpark**.
+- Transforms raw Google Takeout JSONs into interactive listening rhythm and binge-session analytics.
+- [Live Demo](https://youtube-wrapped-by-shaan.vercel.app) | [GitHub](https://github.com/Shaan-alpha/youtube-wrapped)
 
-- **🤖 JARVIS — AI Voice Assistant**
-  - Offline-first AI assistant using TensorFlow, Keras, and custom NLP pipelines.
-  - [GitHub](https://github.com/Shaan-alpha/JARVIS)
+### **🛡️ Sahara — Women's Safety Ecosystem**
+- Cross-platform **Flutter** app featuring gesture-triggered SOS alerts and Firebase-powered real-time tracking.
+- [Live Demo](https://sahaara-app.vercel.app/) | [GitHub](https://github.com/Shaan-alpha/Sahaara_APP)
 
-- **🧬 FaceFilter AI**
-  - Facial recognition platform using OpenCV, DeepFace, and Flask.
+### **🤖 JARVIS — AI Assistant**
+- Offline-first voice assistant utilizing custom NLP pipelines and **TensorFlow/Keras** for intent classification.
+- [GitHub](https://github.com/Shaan-alpha/JARVIS)
 
-- **📊 Review Reader**
-  - NLP sentiment analysis pipeline using Scikit-learn, NLTK, and TF-IDF.
+### **🧬 FaceFilter AI**
+- Real-time facial biometric platform using **OpenCV**, **DeepFace**, and Flask for multi-point feature tracking.
 
-## 🎓 Certifications
+## 🎓 Academic & Certifications
+- **JECRC University**: CS Undergrad (CGPA: **7.39**)
+- **micro1 AI Certified**: Verified proficiency in Data Science & AI/ML Engineering.
+- **IEEE Honors**: 2nd Position in Regional Debate Competition.
 
-- **micro1 AI Certified**: Data Science, AI/ML Engineer & Data Engineer.
-- **IEEE**: 2nd Position in Regional Debate Competition.
+## 🚀 Installation & Development
 
-## 🚀 Getting Started
-
-1. **Clone the repo**
+1. **Clone & Enter**
    ```bash
-   git clone https://github.com/Shaan-alpha/Portfolio.git
+   git clone https://github.com/Shaan-alpha/Portfolio.git && cd Portfolio
    ```
 
-2. **Install dependencies**
+2. **Install Dependencies**
    ```bash
    npm install
    ```
 
-3. **Run development server**
+3. **Launch Dev Environment**
    ```bash
    npm run dev
    ```
 
-4. **Build for production**
+4. **Production Build**
    ```bash
    npm run build
    ```
 
 ---
-Crafted with ❤️ by **Shaan Satsangi**
+Crafted with 🦄 by **Shaan Satsangi**
