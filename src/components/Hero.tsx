@@ -71,15 +71,7 @@ export default function Hero() {
       </motion.div>
 
       <motion.div style={{ y }} className="relative z-10 px-[5vw] max-w-[1200px] mx-auto w-full pointer-events-auto">
-        <motion.div 
-          initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.5, ease: [0.22, 1, 0.36, 1] as any }}
-          className="inline-flex items-center gap-[9px] bg-color-green/5 border border-color-green/20 rounded-full py-[7px] pr-[18px] pl-[12px] text-[12px] font-medium text-color-green mb-[36px]"
-        >
-          <span className="w-[7px] h-[7px] rounded-full bg-color-green animate-[statusPulse_2.5s_infinite]"></span>
-          Available for opportunities
-        </motion.div>
-        
-        <motion.h1 
+        <motion.h1
           initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.5, ease: [0.22, 1, 0.36, 1] as any }}
           className="font-display text-[clamp(44px,10vw,140px)] font-black leading-[1] sm:leading-[0.9] tracking-[-0.05em]"
         >

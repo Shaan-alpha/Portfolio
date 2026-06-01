@@ -2,6 +2,7 @@
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ThemeToggle() {
@@ -13,9 +14,44 @@ export default function ThemeToggle() {
 
   const isLight = resolvedTheme === "light";
 
+  const toggleTheme = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const next = isLight ? "dark" : "light";
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => void) => { ready: Promise<void> };
+    };
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Expand the new theme from the click point as a growing circle.
+    if (!doc.startViewTransition || reduced) {
+      setTheme(next);
+      return;
+    }
+
+    const x = e.clientX;
+    const y = e.clientY;
+    const endRadius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+
+    const transition = doc.startViewTransition(() => {
+      flushSync(() => setTheme(next));
+    });
+
+    transition.ready.then(() => {
+      document.documentElement.animate(
+        {
+          clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`],
+        },
+        {
+          duration: 620,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          pseudoElement: "::view-transition-new(root)",
+        }
+      );
+    });
+  };
+
   return (
     <button
-      onClick={() => setTheme(isLight ? "dark" : "light")}
+      onClick={toggleTheme}
       className="fixed top-22 right-6 sm:top-6 sm:right-6 z-[1100] group"
       aria-label="Toggle Theme"
       style={{ transform: "translateZ(0)" }}

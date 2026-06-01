@@ -2,17 +2,17 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Light mode — clean white / light-grey glass */
-  --background: #f4f4f5;
-  --foreground: #18181b;
-  --bg1: #ffffff;
-  --bg2: #e4e4e7;
-  --glass: rgba(255, 255, 255, 0.72);
-  --glass2: rgba(255, 255, 255, 0.96);
-  --border: rgba(24, 24, 27, 0.12);
-  --border2: rgba(24, 24, 27, 0.22);
-  --muted: rgba(24, 24, 27, 0.55);
-  --muted2: rgba(24, 24, 27, 0.78);
+  /* Light mode — warm whitish-cream glass (not pure white) */
+  --background: #f6f3ea;
+  --foreground: #1c1a17;
+  --bg1: #fefdf9;
+  --bg2: #ece6da;
+  --glass: rgba(253, 251, 246, 0.74);
+  --glass2: rgba(253, 251, 246, 0.96);
+  --border: rgba(28, 26, 23, 0.12);
+  --border2: rgba(28, 26, 23, 0.22);
+  --muted: rgba(28, 26, 23, 0.55);
+  --muted2: rgba(28, 26, 23, 0.78);
 
   /* Indigo accents — vibrant for light surfaces */
   --color-blue: #5B46E0;
@@ -239,6 +239,20 @@ canvas.canvas-filter-wrap {
     var(--proj-glow),
     transparent 65%
   );
+}
+
+/* Theme-toggle circular reveal (View Transitions API).
+   Disable the default cross-fade; the new snapshot is clip-path animated in JS. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  z-index: 9999;
+}
+::view-transition-old(root) {
+  z-index: 1;
 }
 
 /* Respect users who prefer reduced motion — neutralize drift/pulse/long transitions */
