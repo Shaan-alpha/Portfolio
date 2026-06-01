@@ -7,14 +7,12 @@ export default function CustomCursor() {
   const [isMobile, setIsMobile] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
 
-  // Use values directly for immediate response (no lag)
+  // Dot follows instantly; the glow halo lags behind for an ambient spotlight.
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
-
-  // Only the outer ring has a spring, to follow the inner dot smoothly
-  const springConfig = { damping: 25, stiffness: 400, mass: 0.5 };
-  const ringX = useSpring(cursorX, springConfig);
-  const ringY = useSpring(cursorY, springConfig);
+  const glowConfig = { damping: 26, stiffness: 260, mass: 0.6 };
+  const glowX = useSpring(cursorX, glowConfig);
+  const glowY = useSpring(cursorY, glowConfig);
 
   useEffect(() => {
     if (window.matchMedia("(pointer: fine)").matches) {
@@ -22,23 +20,13 @@ export default function CustomCursor() {
     }
 
     const moveCursor = (e: MouseEvent) => {
-      // Adjust exactly by half the size to avoid using translateY/X in CSS which can conflict
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
     };
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (
-        target.tagName.toLowerCase() === "a" ||
-        target.tagName.toLowerCase() === "button" ||
-        target.closest("a") ||
-        target.closest("button")
-      ) {
-        setIsHovering(true);
-      } else {
-        setIsHovering(false);
-      }
+      setIsHovering(!!(target.closest("a") || target.closest("button")));
     };
 
     window.addEventListener("mousemove", moveCursor, { passive: true });
@@ -54,36 +42,36 @@ export default function CustomCursor() {
 
   return (
     <>
+      {/* Soft indigo spotlight glow (trails the cursor) */}
       <motion.div
-        className="fixed top-0 left-0 w-2 h-2 bg-color-blue rounded-full pointer-events-none z-[9999]"
+        className="fixed top-0 left-0 rounded-full pointer-events-none z-[9998]"
+        style={{
+          x: glowX,
+          y: glowY,
+          width: 230,
+          height: 230,
+          marginLeft: -115,
+          marginTop: -115,
+          background: "radial-gradient(circle, var(--color-blue-glow) 0%, transparent 58%)",
+          filter: "blur(10px)",
+          willChange: "transform",
+        }}
+        animate={{ scale: isHovering ? 1.55 : 1, opacity: isHovering ? 0.95 : 0.6 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+      />
+      {/* Crisp center dot (instant) */}
+      <motion.div
+        className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full pointer-events-none z-[9999] bg-color-blue"
         style={{
           x: cursorX,
           y: cursorY,
-          marginLeft: "-4px",
-          marginTop: "-4px",
-          willChange: "transform"
+          marginLeft: -3,
+          marginTop: -3,
+          willChange: "transform",
+          boxShadow: "0 0 8px 1px var(--color-blue-glow)",
         }}
-        animate={{
-          scale: isHovering ? 0 : 1,
-          opacity: isHovering ? 0 : 1
-        }}
-        transition={{ duration: 0.15 }}
-      />
-      <motion.div
-        className="fixed top-0 left-0 w-8 h-8 border-[1.5px] border-color-blue/50 rounded-full pointer-events-none z-[9998] flex items-center justify-center"
-        style={{
-          x: ringX,
-          y: ringY,
-          marginLeft: "-16px",
-          marginTop: "-16px",
-          willChange: "transform, width, height"
-        }}
-        animate={{
-          scale: isHovering ? 1.5 : 1,
-          borderColor: isHovering ? "rgba(180, 180, 185, 0.7)" : "rgba(150, 150, 155, 0.6)",
-          backgroundColor: isHovering ? "rgba(150, 150, 155, 0.08)" : "rgba(150, 150, 155, 0)"
-        }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
+        animate={{ scale: isHovering ? 2.4 : 1 }}
+        transition={{ duration: 0.2 }}
       />
     </>
   );
