@@ -196,14 +196,6 @@ canvas.canvas-filter-wrap {
   50% { box-shadow: 0 0 45px 10px rgba(255,200,50,0.4), 0 0 80px 25px rgba(255,180,30,0.15); }
 }
 
-/* Lock scrolling (incl. Lenis) while the preloader is up */
-html.is-loading,
-html.is-loading body {
-  overflow: hidden !important;
-  height: 100%;
-  touch-action: none;
-}
-
 /* Project card cursor-tracking spotlight (coords set on pointer move) */
 .proj-spotlight {
   background: radial-gradient(

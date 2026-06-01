@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useFrameLoader } from "./FrameLoaderProvider";
 
@@ -11,17 +10,8 @@ export default function Preloader() {
   const { progress, ready } = useFrameLoader();
   const reduceMotion = useReducedMotion();
 
-  // Lock scrolling (incl. Lenis) until the experience is ready.
-  useEffect(() => {
-    const root = document.documentElement;
-    if (!ready) {
-      root.classList.add("is-loading");
-      window.scrollTo(0, 0);
-    } else {
-      root.classList.remove("is-loading");
-    }
-    return () => root.classList.remove("is-loading");
-  }, [ready]);
+  // Scroll locking is handled by SmoothScroll (Lenis-native) so it never
+  // fights Lenis's dimension caching — see SmoothScroll.tsx.
 
   const dashoffset = RING_CIRCUMFERENCE * (1 - Math.min(100, progress) / 100);
 

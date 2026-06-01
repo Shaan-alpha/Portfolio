@@ -39,15 +39,6 @@ export function FrameLoaderProvider({ children }: { children: ReactNode }) {
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
-  const [basePath, setBasePath] = useState("");
-
-  // Detect the GitHub-Pages /Portfolio base path (mirrors prior canvas logic).
-  useEffect(() => {
-    const path = window.location.pathname.toLowerCase();
-    if (path.startsWith("/portfolio")) {
-      setBasePath("/Portfolio");
-    }
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,6 +46,12 @@ export function FrameLoaderProvider({ children }: { children: ReactNode }) {
     const criticalTarget = Math.min(CRITICAL_FRAMES, FRAME_COUNT);
     let criticalSettled = 0;
     let revealed = false;
+
+    // Resolve the GitHub-Pages /Portfolio base path synchronously (effects only
+    // run client-side), so frames load from the right path on the first try —
+    // no double-fetch / 404 burst from a state update racing the preload.
+    const path = window.location.pathname.toLowerCase();
+    const basePath = path.startsWith("/portfolio") ? "/Portfolio" : "";
 
     const framePath = (index: number) =>
       `${basePath}/frames-webp/frame-${index.toString().padStart(3, "0")}.webp`;
@@ -119,7 +116,7 @@ export function FrameLoaderProvider({ children }: { children: ReactNode }) {
       cancelled = true;
       window.clearTimeout(failsafe);
     };
-  }, [basePath]);
+  }, []);
 
   return (
     <FrameLoaderContext.Provider value={{ imagesRef, progress, ready }}>
