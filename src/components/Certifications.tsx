@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
+import { fluent } from "@/lib/techIcons";
 
 export default function Certifications() {
   const containerVariants = {
@@ -15,32 +16,32 @@ export default function Certifications() {
 
   const certs = [
     {
-      logo: "🪟", org: "Microsoft", name: "Fundamentals of Machine Learning", date: "December 26, 2023",
+      img: "window", org: "Microsoft", name: "Fundamentals of Machine Learning", date: "December 26, 2023",
       badge: { text: "Verified", color: "text-color-blue", bg: "bg-color-blue/10", border: "border-color-blue/20" }
     },
     {
-      logo: "🪟", org: "Microsoft", name: "Fundamental AI Concepts", date: "December 26, 2023",
+      img: "window", org: "Microsoft", name: "Fundamental AI Concepts", date: "December 26, 2023",
       badge: { text: "Verified", color: "text-color-blue", bg: "bg-color-blue/10", border: "border-color-blue/20" }
     },
     {
-      logo: "🌐", org: "CISCO Networking Academy", name: "Introduction to Cybersecurity", date: "Networking Academy Program",
+      img: "globe", org: "CISCO Networking Academy", name: "Introduction to Cybersecurity", date: "Networking Academy Program",
       badge: { text: "Completed", color: "text-color-green", bg: "bg-color-green/10", border: "border-color-green/20" }
     },
     {
-      logo: "🌐", org: "CISCO Networking Academy", name: "Cybersecurity Essentials", date: "Networking Academy Program",
+      img: "globe", org: "CISCO Networking Academy", name: "Cybersecurity Essentials", date: "Networking Academy Program",
       badge: { text: "Completed", color: "text-color-green", bg: "bg-color-green/10", border: "border-color-green/20" }
     },
     {
-      logo: "🏆", org: "IEEE", name: "2nd Position — Debate Competition", date: "IEEE Student Chapter",
+      img: "trophy", org: "IEEE", name: "2nd Position — Debate Competition", date: "IEEE Student Chapter",
       badge: { text: "🥈 Runner-up", color: "text-color-orange", bg: "bg-color-orange/10", border: "border-color-orange/20" }
     },
     {
-      logo: "✅", org: "micro1", name: "Data Science, AI/ML Engineer & Data Engineer", date: "May 3, 2026",
+      img: "check", org: "micro1", name: "Data Science, AI/ML Engineer & Data Engineer", date: "May 3, 2026",
       badge: { text: "AI Certified", color: "text-color-green", bg: "bg-color-green/10", border: "border-color-green/20" },
       style: "bg-gradient-to-br from-color-green/5 to-color-teal/5 border-color-green/15"
     },
     {
-      logo: "🎯", org: "Hobbies & Interests", name: "Movies · Music · Exploring History", date: "Always curious, always learning",
+      img: "bullseye", org: "Hobbies & Interests", name: "Movies · Music · Exploring History", date: "Always curious, always learning",
       badge: { text: "Personal", color: "text-color-purple", bg: "bg-color-purple/10", border: "border-color-purple/20" },
       style: "bg-gradient-to-br from-color-blue/5 to-color-purple/5 border-color-blue/15"
     }
@@ -81,7 +82,7 @@ export default function Certifications() {
                 variants={itemVariants}
                 className={`bg-glass border border-border rounded-[22px] p-6 transition-[transform,background-color,border-color,color,box-shadow] duration-400 flex flex-col gap-3 hover:bg-glass2 hover:border-border2 hover:-translate-y-1.5 shadow-card hover:shadow-card-hover ${cert.style || ""}`}
               >
-                <div className="text-[36px] leading-none mono-emoji">{cert.logo}</div>
+                <img src={fluent(cert.img)} alt={cert.org} draggable={false} className="w-11 h-11 drop-shadow-[0_6px_14px_rgba(0,0,0,0.4)]" />
                 <div className="text-[11px] font-mono text-muted tracking-[0.05em] uppercase">{cert.org}</div>
                 <div className="font-display text-[14px] sm:text-[16px] font-bold leading-[1.3]">{cert.name}</div>
                 <div className="text-[12px] text-muted">{cert.date}</div>

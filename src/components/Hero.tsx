@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import Sparkles from "./Sparkles";
+import { fluent } from "@/lib/techIcons";
 
 export default function Hero() {
   const { scrollY } = useScroll();
@@ -36,7 +37,7 @@ export default function Hero() {
           transition={{ delay: 1, duration: 0.8, ease: [0.22, 1, 0.36, 1] as any }}
           className="absolute top-[18%] left-[4%] bg-bg1/90 border border-border2 rounded-[22px] px-[18px] shadow-card py-[14px] text-[13px] font-medium flex flex-col gap-[3px] whitespace-nowrap will-change-transform"
         >
-          <div className="text-[22px] mb-1 mono-emoji">🧠</div>
+          <img src={fluent("brain")} alt="AI / ML" draggable={false} className="w-7 h-7 mb-1 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)]" />
           <div className="text-foreground font-semibold">AI / ML</div>
           <div className="text-muted text-[11px] font-mono">TensorFlow · Scikit-learn</div>
         </motion.div>
@@ -45,7 +46,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] as any }}
           className="absolute top-[22%] right-[5%] bg-bg1/90 border border-border2 rounded-[22px] px-[18px] shadow-card py-[14px] text-[13px] font-medium flex flex-col gap-[3px] whitespace-nowrap will-change-transform"
         >
-          <div className="text-[22px] mb-1 mono-emoji">🚀</div>
+          <img src={fluent("rocket")} alt="Full-Stack AI" draggable={false} className="w-7 h-7 mb-1 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)]" />
           <div className="text-foreground font-semibold">Full-Stack AI</div>
           <div className="text-muted text-[11px] font-mono">Next.js · FastAPI</div>
         </motion.div>
@@ -54,7 +55,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.8, ease: [0.22, 1, 0.36, 1] as any }}
           className="absolute bottom-[20%] left-[6%] bg-bg1/90 border border-border2 rounded-[22px] px-[18px] shadow-card py-[14px] text-[13px] font-medium flex flex-col gap-[3px] whitespace-nowrap will-change-transform"
         >
-          <div className="text-[22px] mb-1 mono-emoji">⚙️</div>
+          <img src={fluent("gear")} alt="Data Engineering" draggable={false} className="w-7 h-7 mb-1 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)]" />
           <div className="text-foreground font-semibold">Data Engineering</div>
           <div className="text-muted text-[11px] font-mono">Airflow · Spark · dbt</div>
         </motion.div>
@@ -63,7 +64,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.6, duration: 0.8, ease: [0.22, 1, 0.36, 1] as any }}
           className="absolute bottom-[25%] right-[4%] bg-bg1/90 border border-border2 rounded-[22px] px-[18px] shadow-card py-[14px] text-[13px] font-medium flex flex-col gap-[3px] whitespace-nowrap will-change-transform"
         >
-          <div className="text-[22px] mb-1 mono-emoji">🎓</div>
+          <img src={fluent("grad")} alt="BTech CSE" draggable={false} className="w-7 h-7 mb-1 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)]" />
           <div className="text-foreground font-semibold">BTech CSE</div>
           <div className="text-muted text-[11px] font-mono">JECRC · Jaipur</div>
         </motion.div>

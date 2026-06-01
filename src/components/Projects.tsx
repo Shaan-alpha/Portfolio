@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { fluent, lookupTech, TechLogo } from "@/lib/techIcons";
 
 export default function Projects() {
   const containerVariants = {
@@ -15,7 +16,7 @@ export default function Projects() {
   const projects = [
     {
       id: "skill-issue",
-      icon: "🧾",
+      img: "receipt",
       date: "May 2026",
       title: "Skill Issue — GitHub Intelligence",
       desc: "An AI-powered GitHub intelligence platform. Drop in a username and it turns repos, OSS contributions, and coding discipline into a deterministic engineering score and shareable receipts.",
@@ -38,7 +39,7 @@ export default function Projects() {
     },
     {
       id: "crm-sales",
-      icon: "📈",
+      img: "chart",
       date: "April 2026",
       title: "CRM + Sales — Data Warehouse",
       desc: "An end-to-end data warehousing project using the Maven Analytics dataset. Built a robust ETL pipeline that cleans and transforms raw CRM data into a structured PostgreSQL warehouse.",
@@ -60,7 +61,7 @@ export default function Projects() {
     },
     {
       id: "youtube-wrapped",
-      icon: "🎬",
+      img: "clapper",
       date: "May 2025",
       title: "YouTube Wrapped — Data Pipeline",
       desc: "A personal 'Spotify Wrapped' for YouTube. End-to-end data pipeline that transforms Google Takeout exports into a polished year-in-review analytics dashboard.",
@@ -83,7 +84,7 @@ export default function Projects() {
     },
     {
       id: "jarvis",
-      icon: "🤖",
+      img: "robot",
       date: "Oct 2025",
       title: "JARVIS — Offline AI Assistant",
       desc: "A modular, privacy-first AI voice bot built with local LLM inference and semantic memory. Operates entirely offline without external APIs.",
@@ -105,7 +106,7 @@ export default function Projects() {
     },
     {
       id: "facefilter",
-      icon: "👁️",
+      img: "eye",
       date: "2025",
       title: "FaceFilter AI — Facial Recognition",
       desc: "A locally-run face-recognition platform that detects, matches, and organizes photos by face — no cloud uploads, no API keys.",
@@ -127,7 +128,7 @@ export default function Projects() {
     },
     {
       id: "sahara",
-      icon: "🛡️",
+      img: "shield",
       date: "Feb 2025",
       title: "Sahara — Women Safety App",
       desc: "A mobile-first safety web app with gesture-based SOS, real-time location tracking, and Twilio-powered alerts to trusted contacts — all backed by Supabase.",
@@ -150,7 +151,7 @@ export default function Projects() {
     },
     {
       id: "review-reader",
-      icon: "📝",
+      img: "memo",
       date: "Aug 2025",
       title: "Review Reader — Sentiment Analysis",
       desc: "A high-accuracy NLP pipeline that classifies sentiments across 1,000+ reviews in milliseconds using classical ML with advanced text preprocessing.",
@@ -197,8 +198,8 @@ export default function Projects() {
                 <div className="proj-spotlight pointer-events-none absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 {/* Accent top-border, revealed on hover */}
                 <div className="pointer-events-none absolute top-0 left-0 right-0 h-[2px] z-20 bg-[var(--proj-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative z-10 h-[120px] sm:h-[180px] flex items-center justify-center text-[48px] sm:text-[68px] overflow-hidden bg-gradient-to-br from-bg2 to-bg1">
-                  <span className="mono-emoji">{proj.icon}</span>
+                <div className="relative z-10 h-[120px] sm:h-[180px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-bg2 to-bg1">
+                  <img src={fluent(proj.img)} alt={proj.title} draggable={false} className="w-[68px] h-[68px] sm:w-[92px] sm:h-[92px] drop-shadow-[0_12px_26px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6" />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/100"></div>
                 </div>
                 <div className="relative z-10 p-4 sm:p-6 flex-1 flex flex-col">
@@ -206,11 +207,15 @@ export default function Projects() {
                     ● {proj.date}
                   </div>
                   <div className="flex gap-1.5 flex-wrap mb-3.5">
-                    {proj.tags.map(t => (
-                      <span key={t} className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-full bg-white/5 border border-border text-muted">
-                        {t}
-                      </span>
-                    ))}
+                    {proj.tags.map(t => {
+                      const logo = lookupTech(t);
+                      return (
+                        <span key={t} className="inline-flex items-center gap-1.5 text-[10px] font-mono font-medium px-2.5 py-1 rounded-full bg-white/5 border border-border text-muted">
+                          {logo && <TechLogo file={logo.file} invert={logo.invert} alt={t} className="w-3 h-3" />}
+                          {t}
+                        </span>
+                      );
+                    })}
                   </div>
                   <div className="font-display text-[18px] sm:text-[22px] font-extrabold mb-2.5">{proj.title}</div>
                   <div className="text-[12.5px] sm:text-[13.5px] text-muted leading-[1.7] mb-5">{proj.desc}</div>

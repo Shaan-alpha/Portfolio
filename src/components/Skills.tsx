@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { fluent, TechLogo } from "@/lib/techIcons";
 
 export default function Skills() {
   const containerVariants = {
@@ -15,7 +16,7 @@ export default function Skills() {
   const skillsData = [
     {
       title: "Data Engineering",
-      icon: "⚙️",
+      img: "gear",
       gradient: "from-color-blue/9 to-transparent",
       items: [
         { name: "Apache Airflow / Spark", val: 82, grad: "from-color-blue to-color-teal" },
@@ -26,7 +27,7 @@ export default function Skills() {
     },
     {
       title: "Data Science & AI",
-      icon: "🧠",
+      img: "brain",
       gradient: "from-color-purple/9 to-transparent",
       items: [
         { name: "TensorFlow / Keras", val: 86, grad: "from-color-purple to-color-pink" },
@@ -37,7 +38,7 @@ export default function Skills() {
     },
     {
       title: "Data Analysis & Analytics",
-      icon: "📊",
+      img: "barchart",
       gradient: "from-color-green/9 to-transparent",
       items: [
         { name: "Power BI / Tableau", val: 82, grad: "from-color-green to-color-teal" },
@@ -48,7 +49,7 @@ export default function Skills() {
     },
     {
       title: "Software Engineering",
-      icon: "💻",
+      img: "laptop",
       gradient: "from-color-orange/9 to-transparent",
       items: [
         { name: "C / C++", val: 88, grad: "from-color-orange to-color-yellow" },
@@ -78,7 +79,7 @@ export default function Skills() {
                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 bg-gradient-to-br ${cat.gradient}`} />
                 
                 <div className="relative z-10">
-                  <div className="text-[30px] mb-3.5 transition-transform duration-300 group-hover:scale-110 inline-block mono-emoji">{cat.icon}</div>
+                  <img src={fluent(cat.img)} alt={cat.title} draggable={false} className="w-10 h-10 mb-3.5 transition-transform duration-300 group-hover:scale-110 inline-block drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]" />
                   <div className="font-display text-[18px] font-extrabold mb-4">{cat.title}</div>
                   <div className="flex flex-col gap-3">
                     {cat.items.map((item, j) => (
@@ -107,25 +108,26 @@ export default function Skills() {
           <motion.div variants={itemVariants} className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.1em] uppercase text-muted mt-[60px] mb-4.5 before:content-[''] before:block before:w-[22px] before:h-[1px] before:bg-current">Developer tools</motion.div>
           <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 mt-4">
             {[
-              { icon: "🐙", name: "Git / GitHub" }, { icon: "☁️", name: "Google Cloud" },
-              { icon: "🧪", name: "Jupyter" }, { icon: "🤝", name: "Google Colab" },
-              { icon: "💻", name: "VS Code" }, { icon: "📊", name: "Power BI" },
-              { icon: "🔥", name: "Firebase" }, { icon: "🗺️", name: "Google Maps API" },
-              { icon: "🐳", name: "Docker" }, { icon: "🌊", name: "Apache Airflow" },
-              { icon: "⚡", name: "Apache Spark" }, { icon: "🔧", name: "dbt" },
-              { icon: "🐘", name: "PostgreSQL" }, { icon: "🧮", name: "SQLite" },
-              { icon: "🐍", name: "Flask" }, { icon: "🐧", name: "Linux / Bash" },
-              { icon: "🚀", name: "FastAPI" }, { icon: "⏭️", name: "Next.js" },
-              { icon: "🟢", name: "Neon Postgres" }, { icon: "🔴", name: "Upstash Redis" },
-              { icon: "🤖", name: "Groq LLM" }, { icon: "▲", name: "Vercel" }
+              { file: "python", name: "Python" }, { file: "fastapi", name: "FastAPI" },
+              { file: "nextjs", name: "Next.js", invert: true }, { file: "react", name: "React" },
+              { file: "typescript", name: "TypeScript" }, { file: "postgresql", name: "PostgreSQL" },
+              { file: "redis", name: "Redis" }, { file: "docker", name: "Docker" },
+              { file: "tensorflow", name: "TensorFlow" }, { file: "scikitlearn", name: "Scikit-learn" },
+              { file: "opencv", name: "OpenCV" }, { file: "pandas", name: "Pandas", invert: true },
+              { file: "apachespark", name: "Apache Spark" }, { file: "apacheairflow", name: "Airflow" },
+              { file: "jupyter", name: "Jupyter" }, { file: "git", name: "Git" },
+              { file: "github", name: "GitHub", invert: true }, { file: "vscode", name: "VS Code" },
+              { file: "flask", name: "Flask", invert: true }, { file: "firebase", name: "Firebase" },
+              { file: "googlecloud", name: "Google Cloud" }, { file: "sqlite", name: "SQLite" },
+              { file: "linux", name: "Linux" }, { file: "vercel", name: "Vercel", invert: true }
             ].map((tool, i) => (
               <motion.div
                 key={i}
                 variants={itemVariants}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="bg-glass border border-border rounded-[14px] p-3 text-center text-[12px] font-mono text-muted2 hover:bg-glass2 hover:border-border2 hover:text-foreground hover:shadow-card group"
+                className="bg-glass border border-border rounded-[14px] p-3 flex flex-col items-center gap-1.5 text-center text-[12px] font-mono text-muted2 hover:bg-glass2 hover:border-border2 hover:text-foreground hover:shadow-card group"
               >
-                <div className="text-[24px] mb-1.5 transition-transform duration-200 group-hover:scale-125 mono-emoji">{tool.icon}</div>
+                <TechLogo file={tool.file} invert={tool.invert} alt={tool.name} className="w-6 h-6 transition-transform duration-200 group-hover:scale-125" />
                 {tool.name}
               </motion.div>
             ))}
