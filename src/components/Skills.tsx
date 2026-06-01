@@ -114,7 +114,10 @@ export default function Skills() {
               { icon: "🐳", name: "Docker" }, { icon: "🌊", name: "Apache Airflow" },
               { icon: "⚡", name: "Apache Spark" }, { icon: "🔧", name: "dbt" },
               { icon: "🐘", name: "PostgreSQL" }, { icon: "🧮", name: "SQLite" },
-              { icon: "🐍", name: "Flask" }, { icon: "🐧", name: "Linux / Bash" }
+              { icon: "🐍", name: "Flask" }, { icon: "🐧", name: "Linux / Bash" },
+              { icon: "🚀", name: "FastAPI" }, { icon: "⏭️", name: "Next.js" },
+              { icon: "🟢", name: "Neon Postgres" }, { icon: "🔴", name: "Upstash Redis" },
+              { icon: "🤖", name: "Groq LLM" }, { icon: "▲", name: "Vercel" }
             ].map((tool, i) => (
               <motion.div
                 key={i}

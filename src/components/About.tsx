@@ -63,7 +63,7 @@ export default function About() {
           
           <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-3 gap-3 mt-5">
             <div className="bg-glass border border-border rounded-[14px] py-4 px-3.5 text-center transition-[transform,background-color,border-color,color,box-shadow] duration-400 hover:bg-glass2 hover:border-border2 hover:-translate-y-1 shadow-sm hover:shadow-card">
-              <div className="font-display text-[22px] lg:text-[26px] font-black grad-blue">6+</div>
+              <div className="font-display text-[22px] lg:text-[26px] font-black grad-blue">7+</div>
               <div className="text-[11px] text-muted mt-0.5">Projects Shipped</div>
             </div>
             <div className="bg-glass border border-border rounded-[14px] py-4 px-3.5 text-center transition-[transform,background-color,border-color,color,box-shadow] duration-400 hover:bg-glass2 hover:border-border2 hover:-translate-y-1 shadow-sm hover:shadow-card">
@@ -88,7 +88,7 @@ export default function About() {
             My philosophy is simple: <em className="text-foreground">clean data over clever models, and bulletproof pipelines over flashy demos</em>. Whether it&apos;s architecting a medallion lakehouse or digging into sentiment patterns, I&apos;m here to bridge the gap between raw bytes and business gold.
           </motion.p>
           <motion.div variants={itemVariants} className="flex flex-wrap gap-2 mt-5">
-            {["Python", "SQL", "Apache Airflow", "Apache Spark", "dbt", "TensorFlow", "Scikit-learn", "OpenCV", "Flutter", "Flask", "Docker", "PostgreSQL", "Firebase", "Google Cloud", "C / C++"].map(skill => (
+            {["Python", "SQL", "Apache Airflow", "Apache Spark", "dbt", "TensorFlow", "Scikit-learn", "OpenCV", "Next.js", "FastAPI", "Flask", "Docker", "PostgreSQL", "Redis", "Firebase", "Google Cloud", "C / C++"].map(skill => (
               <span key={skill} className="text-[12px] font-medium py-1 px-3.5 rounded-full bg-glass border border-border text-muted2 font-mono transition-[transform,background-color,border-color,color,box-shadow] duration-300 hover:bg-glass2 hover:border-border2 hover:text-foreground">
                 {skill}
               </span>

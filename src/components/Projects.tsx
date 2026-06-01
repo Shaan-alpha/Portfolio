@@ -14,6 +14,29 @@ export default function Projects() {
 
   const projects = [
     {
+      id: "skill-issue",
+      icon: "🧾",
+      date: "May 2026",
+      title: "Skill Issue — GitHub Intelligence",
+      desc: "An AI-powered GitHub intelligence platform. Drop in a username and it turns repos, OSS contributions, and coding discipline into a deterministic engineering score and shareable receipts.",
+      tags: ["Next.js", "FastAPI", "Python", "Neon Postgres", "Upstash Redis", "Groq LLM"],
+      bullets: [
+        "Deterministic 100-point engineering score across repo quality, maturity, OSS, consistency & recruiter signal — AI only narrates",
+        "FastAPI + Next.js with Neon Postgres persistence, GitHub OAuth, and an Upstash Redis warm cache (repeat analysis p95 ≤ 200 ms)",
+        "Groq llama-3.3-70b Roast + Mentor narration and shareable 1200×630 'GitHub Receipts' OG scorecards"
+      ],
+      link: "https://github.com/Shaan-alpha/Skill-Issue",
+      liveLink: "https://skill-issue-tau.vercel.app",
+      colors: {
+        bg: "bg-gradient-to-br from-[#041a10] to-[#08361f]",
+        accent: "var(--color-green)",
+        glow: "var(--color-green-glow)",
+        badgeBg: "bg-[rgba(50,215,75,0.1)]",
+        badgeBorder: "border-[rgba(50,215,75,0.25)]",
+        badgeText: "text-color-green"
+      }
+    },
+    {
       id: "crm-sales",
       icon: "📈",
       date: "April 2026",
@@ -159,17 +182,26 @@ export default function Projects() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5.5 mt-[60px]">
             {projects.map((proj, i) => (
-              <motion.div 
-                key={i} 
+              <motion.div
+                key={i}
                 variants={itemVariants}
+                onPointerMove={(e) => {
+                  const r = e.currentTarget.getBoundingClientRect();
+                  e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
+                  e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
+                }}
                 style={{ "--proj-accent": proj.colors.accent, "--proj-glow": proj.colors.glow } as React.CSSProperties}
-                className="bg-glass border border-border rounded-[22px] overflow-hidden transition-[transform,background-color,border-color,color,box-shadow] duration-500 transform-gpu hover:-translate-y-3 hover:border-border2 shadow-card hover:shadow-card-hover flex flex-col"
+                className="group bg-glass border border-border rounded-[22px] overflow-hidden transition-[transform,background-color,border-color,color,box-shadow] duration-500 transform-gpu hover:-translate-y-3 hover:border-border2 shadow-card hover:shadow-card-hover flex flex-col"
               >
-                <div className={`h-[120px] sm:h-[180px] flex items-center justify-center text-[48px] sm:text-[68px] relative overflow-hidden ${proj.colors.bg}`}>
+                {/* Cursor-tracking spotlight (accent-tinted) */}
+                <div className="proj-spotlight pointer-events-none absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                {/* Accent top-border, revealed on hover */}
+                <div className="pointer-events-none absolute top-0 left-0 right-0 h-[2px] z-20 bg-[var(--proj-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className={`relative z-10 h-[120px] sm:h-[180px] flex items-center justify-center text-[48px] sm:text-[68px] overflow-hidden ${proj.colors.bg}`}>
                   {proj.icon}
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/100"></div>
                 </div>
-                <div className="p-4 sm:p-6 flex-1 flex flex-col">
+                <div className="relative z-10 p-4 sm:p-6 flex-1 flex flex-col">
                   <div className={`inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.06em] uppercase px-2.5 py-1 rounded-full mb-3 self-start ${proj.colors.badgeBg} border ${proj.colors.badgeBorder} ${proj.colors.badgeText}`}>
                     ● {proj.date}
                   </div>

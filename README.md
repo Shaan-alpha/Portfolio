@@ -6,9 +6,10 @@ A high-performance, scrollytelling developer portfolio built with **Next.js 16**
 
 ## 🌟 Visual Experience
 
+- **Interactive Preloader**: An animated monogram + progress ring masks the 240-frame hero load and reveals the site the moment the critical frames are ready — theme-aware and reduced-motion safe.
 - **GPU-Accelerated Scrollytelling**: Custom HTML5 Canvas engine with sub-frame interpolation for 60FPS fluid background sequences.
 - **Data Unicorn Identity**: A narrative-driven UI that highlights cross-disciplinary expertise in data pipelines, machine learning, and full-stack development.
-- **Glassmorphic Design**: Modern, Apple-like aesthetics with blurred backgrounds, vibrant gradients, and micro-animations.
+- **Glassmorphic Design**: Modern, Apple-like aesthetics with blurred backgrounds, vibrant gradients, drifting ambient blobs, animated section dividers, and a scroll-progress indicator.
 - **Adaptive Theme Engine**: Custom-built animated "lightbulb" toggle with full accessibility and theme persistence.
 
 ## 🛠️ Technical Powerhouse
@@ -20,6 +21,11 @@ A high-performance, scrollytelling developer portfolio built with **Next.js 16**
 - **Animations**: [Framer Motion 12](https://www.framer.com/motion/)
 - **Scrolling**: [Lenis](https://lenis.darkroom.engineering/) (Smooth Scroll)
 
+### **Backend & AI (across projects)**
+- **APIs**: [FastAPI](https://fastapi.tiangolo.com/) · Flask (the portfolio's contact form posts to a small Flask service on Render)
+- **Data**: [Neon Postgres](https://neon.tech/) · [Upstash Redis](https://upstash.com/) · Supabase · SQLite
+- **AI/ML**: [Groq](https://groq.com/) LLM inference · TensorFlow · Scikit-learn · OpenCV DNN
+
 ### **Architecture**
 - **Medallion Lakehouse Philosophy**: Applied across data projects (Bronze → Silver → Gold).
 - **Responsive Geometry**: Fluid layouts optimized for everything from mobile (375px) to high-res desktops.
@@ -27,26 +33,38 @@ A high-performance, scrollytelling developer portfolio built with **Next.js 16**
 
 ## 💡 Featured Projects
 
+### **🧾 Skill Issue — GitHub Intelligence Platform**
+- AI-powered platform that analyzes any GitHub profile into a deterministic **100-point engineering score**, a 7-tier identity ladder, stackable badges, and shareable "GitHub Receipts."
+- **FastAPI + Next.js** with **Neon Postgres** persistence, GitHub OAuth, and an **Upstash Redis** warm cache (repeat analysis p95 ≤ 200 ms); the narrative layer (Roast + Mentor) runs on **Groq** `llama-3.3-70b`.
+- [Live Demo](https://skill-issue-tau.vercel.app) | [GitHub](https://github.com/Shaan-alpha/Skill-Issue)
+
 ### **📊 CRM Sales Warehouse — ETL Pipeline**
-- Architected a scalable data warehouse using **PostgreSQL**, **dbt**, and **Apache Airflow**.
-- Automated ingestion of 50,000+ sales records with real-time transformation and Power BI integration.
-- [GitHub](https://github.com/Shaan-alpha/CRM_Sales_Warehouse)
+- Architected an automated ETL pipeline with **Apache Airflow** that ingests and transforms 10k+ CRM records into a star-schema **PostgreSQL** warehouse.
+- Surfaced sales-performance insights via a dynamic **Power BI** dashboard.
+- [GitHub](https://github.com/Shaan-alpha/CRM-Sales-Warehouse)
 
 ### **🎬 YouTube Wrapped — Data Pipeline**
-- End-to-end Medallion lakehouse pipeline built on **Databricks** and **PySpark**.
-- Transforms raw Google Takeout JSONs into interactive listening rhythm and binge-session analytics.
+- End-to-end Medallion lakehouse pipeline (Bronze → Silver → Gold) built on **Databricks** + **Delta Lake**.
+- **FastAPI** backend serving analytics from **Neon Postgres** into an animated **Next.js** dashboard.
 - [Live Demo](https://youtube-wrapped-by-shaan.vercel.app) | [GitHub](https://github.com/Shaan-alpha/youtube-wrapped)
 
-### **🛡️ Sahara — Women's Safety Ecosystem**
-- Cross-platform **Flutter** app featuring gesture-triggered SOS alerts and Firebase-powered real-time tracking.
-- [Live Demo](https://sahaara-app.vercel.app/) | [GitHub](https://github.com/Shaan-alpha/Sahaara_APP)
+### **🤖 JARVIS — Offline AI Assistant**
+- Privacy-first voice assistant with local LLM inference, semantic memory, and wake-word detection — fully offline, no external APIs.
+- Built on **Python + TensorFlow + NLP** for real-time intent classification and system automation.
+- [GitHub](https://github.com/Shaan-alpha/jarvis-py)
 
-### **🤖 JARVIS — AI Assistant**
-- Offline-first voice assistant utilizing custom NLP pipelines and **TensorFlow/Keras** for intent classification.
-- [GitHub](https://github.com/Shaan-alpha/JARVIS)
+### **👁️ FaceFilter AI — Facial Recognition**
+- Locally-run face recognition using **OpenCV DNN** (YuNet detection + SFace 128-D embeddings, ONNX) with cosine-similarity matching — no cloud uploads.
+- Real-time progress via Server-Sent Events; resumable runs backed by a three-table **SQLite** schema.
+- [GitHub](https://github.com/Shaan-alpha/face-sort-studio)
 
-### **🧬 FaceFilter AI**
-- Real-time facial biometric platform using **OpenCV**, **DeepFace**, and Flask for multi-point feature tracking.
+### **🛡️ Sahara — Women's Safety App**
+- Mobile-first **Next.js / TypeScript** safety app with gesture-based SOS, real-time **MapLibre** location tracking, and **Twilio**-powered SMS alerts.
+- **Supabase** (Postgres + auth) backend with row-level security.
+- [Live Demo](https://sahaara-app.vercel.app) | [GitHub](https://github.com/Shaan-alpha/Sahaara_APP)
+
+### **📝 Review Reader — Sentiment Analysis**
+- High-accuracy NLP pipeline classifying 1,000+ reviews in milliseconds via **Scikit-learn** + **TF-IDF**, with tokenization and stop-word removal.
 
 ## 🎓 Academic & Certifications
 - **JECRC University**: CS Undergrad (CGPA: **7.39**)

@@ -41,9 +41,9 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] as any }}
           className="absolute top-[22%] right-[5%] bg-bg1/90 border border-border2 rounded-[22px] px-[18px] shadow-card py-[14px] text-[13px] font-medium flex flex-col gap-[3px] whitespace-nowrap will-change-transform"
         >
-          <div className="text-[22px] mb-1">📱</div>
-          <div className="text-foreground font-semibold">Cross-Platform</div>
-          <div className="text-muted text-[11px] font-mono">Flutter · Firebase</div>
+          <div className="text-[22px] mb-1">🚀</div>
+          <div className="text-foreground font-semibold">Full-Stack AI</div>
+          <div className="text-muted text-[11px] font-mono">Next.js · FastAPI</div>
         </motion.div>
 
         <motion.div 

@@ -139,7 +139,7 @@ body {
 }
 
 .ambient-blob {
-  position: fixed;
+  position: absolute;
   border-radius: 50%;
   filter: blur(90px);
   pointer-events: none;
@@ -194,4 +194,33 @@ canvas.canvas-filter-wrap {
 @keyframes bulbPulse {
   0%, 100% { box-shadow: 0 0 30px 6px rgba(255,200,50,0.3), 0 0 60px 15px rgba(255,180,30,0.1); }
   50% { box-shadow: 0 0 45px 10px rgba(255,200,50,0.4), 0 0 80px 25px rgba(255,180,30,0.15); }
+}
+
+/* Lock scrolling (incl. Lenis) while the preloader is up */
+html.is-loading,
+html.is-loading body {
+  overflow: hidden !important;
+  height: 100%;
+  touch-action: none;
+}
+
+/* Project card cursor-tracking spotlight (coords set on pointer move) */
+.proj-spotlight {
+  background: radial-gradient(
+    380px circle at var(--mx, 50%) var(--my, 50%),
+    var(--proj-glow),
+    transparent 65%
+  );
+}
+
+/* Respect users who prefer reduced motion — neutralize drift/pulse/long transitions */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

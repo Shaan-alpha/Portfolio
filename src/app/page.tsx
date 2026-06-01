@@ -9,6 +9,8 @@ import Experience from "@/components/Experience";
 import Certifications from "@/components/Certifications";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import AmbientBackground from "@/components/AmbientBackground";
+import SectionDivider from "@/components/SectionDivider";
 
 export default function Home() {
   return (
@@ -30,12 +32,17 @@ export default function Home() {
       */}
       <Navbar />
       
-      <div className="relative bg-background">
+      <div className="relative overflow-hidden">
+        <AmbientBackground />
         <About />
+        <SectionDivider />
         <Skills />
+        <SectionDivider />
         <Projects />
+        <SectionDivider />
         <Experience />
         <Certifications />
+        <SectionDivider />
         <Contact />
         <Footer />
       </div>

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Outfit, DM_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { FrameLoaderProvider } from "@/components/FrameLoaderProvider";
+import Preloader from "@/components/Preloader";
+import ScrollProgress from "@/components/ScrollProgress";
 import CustomCursor from "@/components/CustomCursor";
 import SmoothScroll from "@/components/SmoothScroll";
 
@@ -35,9 +38,13 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-outfit">
         <ThemeProvider>
-          <CustomCursor />
-          <SmoothScroll />
-          {children}
+          <FrameLoaderProvider>
+            <Preloader />
+            <ScrollProgress />
+            <CustomCursor />
+            <SmoothScroll />
+            {children}
+          </FrameLoaderProvider>
         </ThemeProvider>
       </body>
     </html>
