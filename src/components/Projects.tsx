@@ -222,11 +222,11 @@ export default function Projects() {
                     ))}
                   </ul>
                   <div className="flex gap-2.5 mt-auto flex-wrap">
-                    <a href={proj.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12px] font-medium px-4.5 py-2 rounded-full text-background bg-foreground transition-[transform,background-color,border-color,color,box-shadow] duration-350 hover:shadow-[0_0_32px_var(--proj-glow)] hover:scale-105">
+                    <a href={proj.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12px] font-medium px-4.5 py-2 rounded-full text-white bg-[var(--proj-accent)] transition-[transform,background-color,border-color,color,box-shadow] duration-350 shadow-[0_4px_18px_var(--proj-glow)] hover:shadow-[0_0_36px_var(--proj-glow)] hover:scale-105">
                       View on GitHub ↗
                     </a>
                     {(proj as any).liveLink && (
-                      <a href={(proj as any).liveLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12px] font-medium px-4.5 py-2 rounded-full border border-border2 text-foreground transition-[transform,background-color,border-color,color,box-shadow] duration-350 hover:bg-foreground hover:text-background hover:scale-105">
+                      <a href={(proj as any).liveLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12px] font-medium px-4.5 py-2 rounded-full border border-[var(--proj-accent)] text-[var(--proj-accent)] transition-[transform,background-color,border-color,color,box-shadow] duration-350 hover:bg-[var(--proj-accent)] hover:text-white hover:scale-105">
                         Live Demo ↗
                       </a>
                     )}

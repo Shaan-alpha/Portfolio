@@ -14,19 +14,19 @@
   --muted: rgba(24, 24, 27, 0.55);
   --muted2: rgba(24, 24, 27, 0.78);
 
-  /* Monochrome accents — dark greys for contrast on light surfaces */
-  --color-blue: #27272a;
-  --color-blue-glow: rgba(24, 24, 27, 0.14);
-  --color-purple: #52525b;
-  --color-purple-glow: rgba(24, 24, 27, 0.12);
-  --color-pink: #18181b;
-  --color-pink-glow: rgba(24, 24, 27, 0.12);
-  --color-teal: #3f3f46;
-  --color-teal-glow: rgba(24, 24, 27, 0.10);
-  --color-green: #3f3f46;
-  --color-green-glow: rgba(24, 24, 27, 0.10);
-  --color-orange: #52525b;
-  --color-yellow: #3f3f46;
+  /* Indigo accents — vibrant for light surfaces */
+  --color-blue: #5B46E0;
+  --color-blue-glow: rgba(91, 70, 224, 0.32);
+  --color-purple: #7C3AED;
+  --color-purple-glow: rgba(124, 58, 237, 0.28);
+  --color-pink: #8B5CF6;
+  --color-pink-glow: rgba(139, 92, 246, 0.26);
+  --color-teal: #6366F1;
+  --color-teal-glow: rgba(99, 102, 241, 0.26);
+  --color-green: #5B46E0;
+  --color-green-glow: rgba(91, 70, 224, 0.26);
+  --color-orange: #7C3AED;
+  --color-yellow: #6366F1;
 
   --r: 14px;
   --r2: 22px;
@@ -36,7 +36,7 @@
 
   /* 3D glass shadows — light mode (with top-highlight bevel) */
   --card-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  --card-shadow-hover: 0 28px 56px -14px rgba(0, 0, 0, 0.2), 0 10px 28px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 1);
+  --card-shadow-hover: 0 28px 56px -14px rgba(0, 0, 0, 0.2), 0 10px 28px rgba(0, 0, 0, 0.1), 0 0 30px -8px var(--color-blue-glow), inset 0 1px 0 rgba(255, 255, 255, 1);
   --nav-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
@@ -53,23 +53,23 @@
   --muted: rgba(244, 244, 245, 0.45);
   --muted2: rgba(244, 244, 245, 0.68);
 
-  /* Monochrome accents — light silvers for contrast on dark surfaces */
-  --color-blue: #e4e4e7;
-  --color-blue-glow: rgba(255, 255, 255, 0.16);
-  --color-purple: #a1a1aa;
-  --color-purple-glow: rgba(255, 255, 255, 0.12);
-  --color-pink: #fafafa;
-  --color-pink-glow: rgba(255, 255, 255, 0.14);
-  --color-teal: #d4d4d8;
-  --color-teal-glow: rgba(255, 255, 255, 0.12);
-  --color-green: #d4d4d8;
-  --color-green-glow: rgba(255, 255, 255, 0.12);
-  --color-orange: #a1a1aa;
-  --color-yellow: #d4d4d8;
+  /* Indigo accents — vibrant + glowing on dark surfaces */
+  --color-blue: #8B7CF6;
+  --color-blue-glow: rgba(139, 124, 246, 0.50);
+  --color-purple: #A78BFA;
+  --color-purple-glow: rgba(167, 139, 250, 0.42);
+  --color-pink: #C4B5FD;
+  --color-pink-glow: rgba(196, 181, 253, 0.36);
+  --color-teal: #818CF8;
+  --color-teal-glow: rgba(129, 140, 248, 0.44);
+  --color-green: #8B7CF6;
+  --color-green-glow: rgba(139, 124, 246, 0.44);
+  --color-orange: #A78BFA;
+  --color-yellow: #818CF8;
 
   /* 3D glass shadows — dark mode (with top-highlight bevel) */
   --card-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.07);
-  --card-shadow-hover: 0 28px 56px -14px rgba(0, 0, 0, 0.8), 0 10px 28px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --card-shadow-hover: 0 28px 56px -14px rgba(0, 0, 0, 0.8), 0 10px 28px rgba(0, 0, 0, 0.5), 0 0 38px -6px var(--color-blue-glow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   --nav-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
@@ -135,14 +135,38 @@ body {
   letter-spacing: -.04em;
 }
 
-/* Polished-metal shimmer for headings (light→grey→light sweep) */
+/* Vibrant indigo gradient for accent heading words, with a slow shimmer sweep */
 .grad-blue,
 .grad-purple,
 .grad-green {
-  background: linear-gradient(120deg, var(--foreground) 0%, var(--color-purple) 50%, var(--foreground) 100%);
+  background: linear-gradient(110deg, var(--color-teal) 0%, var(--color-blue) 42%, var(--color-purple) 74%, var(--color-pink) 100%);
+  background-size: 220% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: gradShimmer 7s linear infinite;
+}
+@keyframes gradShimmer {
+  to { background-position: 220% center; }
+}
+
+/* Soft accent glow halo for emphasis (hero name, etc.) */
+.text-glow {
+  filter: drop-shadow(0 0 16px var(--color-blue-glow)) drop-shadow(0 0 34px var(--color-purple-glow));
+}
+
+/* Twinkling glitter dots (used by the Sparkles layer) */
+.sparkle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--color-blue);
+  box-shadow: 0 0 8px 2px var(--color-blue-glow);
+  opacity: 0;
+  animation: twinkle 3s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.3); }
+  50% { opacity: 1; transform: scale(1); }
 }
 
 /* Desaturate emoji icons so they read monochrome with the palette */

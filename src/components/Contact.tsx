@@ -98,7 +98,7 @@ export default function Contact() {
 
               {errorMsg && <div className="text-color-pink text-sm mb-4">{errorMsg}</div>}
 
-              <button disabled={loading || success} type="submit" className={`w-full flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-[15px] font-medium bg-foreground text-background transition-[transform,background-color,border-color,color,box-shadow] duration-350 ${success ? "shadow-[0_4px_16px_rgba(0,0,0,0.3)]" : "shadow-[0_4px_16px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_10px_32px_rgba(0,0,0,0.45)]"} disabled:opacity-70 disabled:cursor-not-allowed`}>
+              <button disabled={loading || success} type="submit" className={`w-full flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-[15px] font-medium bg-[var(--color-blue)] text-white transition-[transform,background-color,border-color,color,box-shadow] duration-350 ${success ? "shadow-[0_6px_28px_var(--color-blue-glow)]" : "shadow-[0_6px_28px_var(--color-blue-glow),0_4px_14px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_10px_44px_var(--color-blue-glow)]"} disabled:opacity-70 disabled:cursor-not-allowed`}>
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : success ? <CheckCircle2 className="w-5 h-5" /> : <Send className="w-4 h-4" />}
                 {loading ? "Sending..." : success ? "Message Sent!" : "Send Message"}
               </button>

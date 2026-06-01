@@ -6,17 +6,17 @@ import { motion, useReducedMotion } from "framer-motion";
 // Scoped (absolute) to the content wrapper so they never touch the hero canvas.
 const BLOBS = [
   {
-    style: { top: "4%", left: "-6%", width: 460, height: 460, background: "var(--color-blue)", opacity: 0.1 },
+    style: { top: "4%", left: "-6%", width: 460, height: 460, background: "var(--color-blue)", opacity: 0.18 },
     drift: { x: [0, 40, 0], y: [0, 28, 0] },
     duration: 17,
   },
   {
-    style: { top: "38%", right: "-8%", left: "auto", width: 520, height: 520, background: "var(--color-purple)", opacity: 0.09 },
+    style: { top: "38%", right: "-8%", left: "auto", width: 520, height: 520, background: "var(--color-purple)", opacity: 0.16 },
     drift: { x: [0, -36, 0], y: [0, 36, 0] },
     duration: 21,
   },
   {
-    style: { top: "74%", left: "12%", width: 420, height: 420, background: "var(--color-pink)", opacity: 0.08 },
+    style: { top: "74%", left: "12%", width: 420, height: 420, background: "var(--color-pink)", opacity: 0.14 },
     drift: { x: [0, 30, 0], y: [0, -30, 0] },
     duration: 19,
   },

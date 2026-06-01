@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
+import Sparkles from "./Sparkles";
 
 export default function Hero() {
   const { scrollY } = useScroll();
@@ -24,6 +25,9 @@ export default function Hero() {
           WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, black 0%, transparent 80%)'
         }}
       />
+
+      {/* Glitter / sparkle layer */}
+      <Sparkles />
 
       <motion.div style={{ y: floatsY }} className="absolute inset-0 pointer-events-none overflow-hidden hidden sm:block">
         <motion.div 
@@ -79,7 +83,7 @@ export default function Hero() {
           className="font-display text-[clamp(44px,10vw,140px)] font-black leading-[1] sm:leading-[0.9] tracking-[-0.05em]"
         >
           <span className="block text-foreground">Shaan</span>
-          <span className="block bg-gradient-to-r from-color-blue via-color-purple to-color-pink bg-clip-text text-transparent">Satsangi.</span>
+          <span className="block grad-blue text-glow">Satsangi.</span>
         </motion.h1>
 
         <motion.p 
@@ -94,7 +98,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85, duration: 0.5, ease: [0.22, 1, 0.36, 1] as any }}
           className="flex gap-2.5 sm:gap-[14px] justify-center flex-wrap"
         >
-          <a href="#projects" className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-7 sm:py-3.5 rounded-full text-[13px] sm:text-sm font-medium bg-foreground text-background shadow-[0_4px_16px_rgba(0,0,0,0.3)] transition-[transform,background-color,border-color,color,box-shadow] duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-[0_10px_32px_rgba(0,0,0,0.45)]">
+          <a href="#projects" className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-7 sm:py-3.5 rounded-full text-[13px] sm:text-sm font-medium bg-[var(--color-blue)] text-white shadow-[0_6px_28px_var(--color-blue-glow),0_4px_14px_rgba(0,0,0,0.3)] transition-[transform,background-color,border-color,color,box-shadow] duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-[0_10px_44px_var(--color-blue-glow),0_8px_22px_rgba(0,0,0,0.35)]">
             <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M3 12h18M13 5l7 7-7 7"/></svg>
             View Projects
           </a>
