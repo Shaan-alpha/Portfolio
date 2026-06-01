@@ -52,7 +52,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="fixed top-22 right-6 sm:top-6 sm:right-6 z-[1100] group"
+      className="fixed bottom-6 right-5 sm:bottom-auto sm:top-6 sm:right-6 z-[1100] group"
       aria-label="Toggle Theme"
       style={{ transform: "translateZ(0)" }}
     >

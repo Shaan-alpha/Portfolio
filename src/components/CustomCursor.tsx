@@ -10,7 +10,7 @@ export default function CustomCursor() {
   // Dot follows instantly; the glow halo lags behind for an ambient spotlight.
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
-  const glowConfig = { damping: 26, stiffness: 260, mass: 0.6 };
+  const glowConfig = { damping: 30, stiffness: 350, mass: 0.42 };
   const glowX = useSpring(cursorX, glowConfig);
   const glowY = useSpring(cursorY, glowConfig);
 
@@ -48,15 +48,15 @@ export default function CustomCursor() {
         style={{
           x: glowX,
           y: glowY,
-          width: 230,
-          height: 230,
-          marginLeft: -115,
-          marginTop: -115,
-          background: "radial-gradient(circle, var(--color-blue-glow) 0%, transparent 58%)",
-          filter: "blur(10px)",
+          width: 150,
+          height: 150,
+          marginLeft: -75,
+          marginTop: -75,
+          background: "radial-gradient(circle, var(--color-blue-glow) 0%, transparent 60%)",
+          filter: "blur(8px)",
           willChange: "transform",
         }}
-        animate={{ scale: isHovering ? 1.55 : 1, opacity: isHovering ? 0.95 : 0.6 }}
+        animate={{ scale: isHovering ? 1.4 : 1, opacity: isHovering ? 0.7 : 0.42 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       />
       {/* Crisp center dot (instant) */}
