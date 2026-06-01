@@ -25,7 +25,7 @@ export default function ThemeToggle() {
         className="absolute inset-0 rounded-full"
         animate={{
           boxShadow: isLight
-            ? "0 0 40px 8px rgba(255,200,50,0.35), 0 0 80px 20px rgba(255,180,30,0.15)"
+            ? "0 0 30px 6px rgba(120,120,128,0.28), 0 0 60px 16px rgba(120,120,128,0.12)"
             : "0 0 0px 0px rgba(0,0,0,0)",
           scale: isLight ? 1.1 : 1,
         }}
@@ -37,10 +37,10 @@ export default function ThemeToggle() {
         className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border overflow-hidden"
         animate={{
           backgroundColor: isLight
-            ? "rgba(255, 240, 200, 0.95)"
+            ? "rgba(255, 255, 255, 0.9)"
             : "rgba(255, 255, 255, 0.05)",
           borderColor: isLight
-            ? "rgba(255, 200, 50, 0.5)"
+            ? "rgba(24, 24, 27, 0.18)"
             : "rgba(255, 255, 255, 0.1)",
         }}
         whileHover={{ scale: 1.15 }}
@@ -59,15 +59,15 @@ export default function ThemeToggle() {
               {/* Lightbulb ON — glowing */}
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 {/* Rays */}
-                <line x1="12" y1="1" x2="12" y2="3" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" />
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" />
-                <line x1="1" y1="12" x2="3" y2="12" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" />
-                <line x1="21" y1="12" x2="23" y2="12" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" />
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" />
+                <line x1="12" y1="1" x2="12" y2="3" stroke="#27272a" strokeWidth="2" strokeLinecap="round" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="#27272a" strokeWidth="2" strokeLinecap="round" />
+                <line x1="1" y1="12" x2="3" y2="12" stroke="#27272a" strokeWidth="2" strokeLinecap="round" />
+                <line x1="21" y1="12" x2="23" y2="12" stroke="#27272a" strokeWidth="2" strokeLinecap="round" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="#27272a" strokeWidth="2" strokeLinecap="round" />
                 {/* Bulb body */}
-                <path d="M9 21h6M10 17h4M15 8a3 3 0 0 0-6 0c0 2 2 3 2 5h2c0-2 2-3 2-5z" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M9 21h6M10 17h4M15 8a3 3 0 0 0-6 0c0 2 2 3 2 5h2c0-2 2-3 2-5z" stroke="#27272a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 {/* Inner glow */}
-                <circle cx="12" cy="9" r="2" fill="rgba(245,158,11,0.4)" />
+                <circle cx="12" cy="9" r="2" fill="rgba(39,39,42,0.3)" />
               </svg>
             </motion.div>
           ) : (

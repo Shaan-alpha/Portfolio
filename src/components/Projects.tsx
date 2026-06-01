@@ -197,12 +197,12 @@ export default function Projects() {
                 <div className="proj-spotlight pointer-events-none absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 {/* Accent top-border, revealed on hover */}
                 <div className="pointer-events-none absolute top-0 left-0 right-0 h-[2px] z-20 bg-[var(--proj-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className={`relative z-10 h-[120px] sm:h-[180px] flex items-center justify-center text-[48px] sm:text-[68px] overflow-hidden ${proj.colors.bg}`}>
-                  {proj.icon}
+                <div className="relative z-10 h-[120px] sm:h-[180px] flex items-center justify-center text-[48px] sm:text-[68px] overflow-hidden bg-gradient-to-br from-bg2 to-bg1">
+                  <span className="mono-emoji">{proj.icon}</span>
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/100"></div>
                 </div>
                 <div className="relative z-10 p-4 sm:p-6 flex-1 flex flex-col">
-                  <div className={`inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.06em] uppercase px-2.5 py-1 rounded-full mb-3 self-start ${proj.colors.badgeBg} border ${proj.colors.badgeBorder} ${proj.colors.badgeText}`}>
+                  <div className={`inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.06em] uppercase px-2.5 py-1 rounded-full mb-3 self-start bg-foreground/[0.06] border border-foreground/15 ${proj.colors.badgeText}`}>
                     ● {proj.date}
                   </div>
                   <div className="flex gap-1.5 flex-wrap mb-3.5">
@@ -222,11 +222,11 @@ export default function Projects() {
                     ))}
                   </ul>
                   <div className="flex gap-2.5 mt-auto flex-wrap">
-                    <a href={proj.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12px] font-medium px-4.5 py-2 rounded-full text-white bg-[var(--proj-accent)] transition-[transform,background-color,border-color,color,box-shadow] duration-350 hover:shadow-[0_0_32px_var(--proj-glow)] hover:scale-105">
+                    <a href={proj.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12px] font-medium px-4.5 py-2 rounded-full text-background bg-foreground transition-[transform,background-color,border-color,color,box-shadow] duration-350 hover:shadow-[0_0_32px_var(--proj-glow)] hover:scale-105">
                       View on GitHub ↗
                     </a>
                     {(proj as any).liveLink && (
-                      <a href={(proj as any).liveLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12px] font-medium px-4.5 py-2 rounded-full border border-[var(--proj-accent)] text-[var(--proj-accent)] transition-[transform,background-color,border-color,color,box-shadow] duration-350 hover:bg-[var(--proj-accent)] hover:text-white hover:scale-105">
+                      <a href={(proj as any).liveLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[12px] font-medium px-4.5 py-2 rounded-full border border-border2 text-foreground transition-[transform,background-color,border-color,color,box-shadow] duration-350 hover:bg-foreground hover:text-background hover:scale-105">
                         Live Demo ↗
                       </a>
                     )}

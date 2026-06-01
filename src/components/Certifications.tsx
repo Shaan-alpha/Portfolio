@@ -55,7 +55,7 @@ export default function Certifications() {
           <motion.h2 variants={itemVariants} className="display mb-5.5"><span className="grad-purple">Education</span></motion.h2>
 
           <motion.div variants={itemVariants} className="bg-glass border border-border rounded-[22px] p-5 sm:p-9 mt-10 sm:mt-[60px] mb-16 sm:mb-[120px] grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-center transition-[transform,background-color,border-color,color,box-shadow] duration-400 hover:border-border2 hover:-translate-y-1 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,rgba(10,132,255,0.06),transparent_60%)] pointer-events-none"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,rgba(150,150,155,0.06),transparent_60%)] pointer-events-none"></div>
             <div className="relative z-10">
               <div className="font-display text-[20px] sm:text-[26px] font-extrabold mb-1.5">Jaipur Engineering College<br/>and Research Center</div>
               <div className="text-[13px] sm:text-[15px] text-muted2 mb-3.5">Bachelor of Technology in Computer Science & Engineering</div>
@@ -81,7 +81,7 @@ export default function Certifications() {
                 variants={itemVariants}
                 className={`bg-glass border border-border rounded-[22px] p-6 transition-[transform,background-color,border-color,color,box-shadow] duration-400 flex flex-col gap-3 hover:bg-glass2 hover:border-border2 hover:-translate-y-1.5 shadow-card hover:shadow-card-hover ${cert.style || ""}`}
               >
-                <div className="text-[36px] leading-none">{cert.logo}</div>
+                <div className="text-[36px] leading-none mono-emoji">{cert.logo}</div>
                 <div className="text-[11px] font-mono text-muted tracking-[0.05em] uppercase">{cert.org}</div>
                 <div className="font-display text-[14px] sm:text-[16px] font-bold leading-[1.3]">{cert.name}</div>
                 <div className="text-[12px] text-muted">{cert.date}</div>

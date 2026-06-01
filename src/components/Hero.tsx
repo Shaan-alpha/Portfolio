@@ -32,7 +32,7 @@ export default function Hero() {
           transition={{ delay: 1, duration: 0.8, ease: [0.22, 1, 0.36, 1] as any }}
           className="absolute top-[18%] left-[4%] bg-bg1/90 border border-border2 rounded-[22px] px-[18px] shadow-card py-[14px] text-[13px] font-medium flex flex-col gap-[3px] whitespace-nowrap will-change-transform"
         >
-          <div className="text-[22px] mb-1">🧠</div>
+          <div className="text-[22px] mb-1 mono-emoji">🧠</div>
           <div className="text-foreground font-semibold">AI / ML</div>
           <div className="text-muted text-[11px] font-mono">TensorFlow · Scikit-learn</div>
         </motion.div>
@@ -41,7 +41,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] as any }}
           className="absolute top-[22%] right-[5%] bg-bg1/90 border border-border2 rounded-[22px] px-[18px] shadow-card py-[14px] text-[13px] font-medium flex flex-col gap-[3px] whitespace-nowrap will-change-transform"
         >
-          <div className="text-[22px] mb-1">🚀</div>
+          <div className="text-[22px] mb-1 mono-emoji">🚀</div>
           <div className="text-foreground font-semibold">Full-Stack AI</div>
           <div className="text-muted text-[11px] font-mono">Next.js · FastAPI</div>
         </motion.div>
@@ -50,7 +50,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4, duration: 0.8, ease: [0.22, 1, 0.36, 1] as any }}
           className="absolute bottom-[20%] left-[6%] bg-bg1/90 border border-border2 rounded-[22px] px-[18px] shadow-card py-[14px] text-[13px] font-medium flex flex-col gap-[3px] whitespace-nowrap will-change-transform"
         >
-          <div className="text-[22px] mb-1">⚙️</div>
+          <div className="text-[22px] mb-1 mono-emoji">⚙️</div>
           <div className="text-foreground font-semibold">Data Engineering</div>
           <div className="text-muted text-[11px] font-mono">Airflow · Spark · dbt</div>
         </motion.div>
@@ -59,7 +59,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.6, duration: 0.8, ease: [0.22, 1, 0.36, 1] as any }}
           className="absolute bottom-[25%] right-[4%] bg-bg1/90 border border-border2 rounded-[22px] px-[18px] shadow-card py-[14px] text-[13px] font-medium flex flex-col gap-[3px] whitespace-nowrap will-change-transform"
         >
-          <div className="text-[22px] mb-1">🎓</div>
+          <div className="text-[22px] mb-1 mono-emoji">🎓</div>
           <div className="text-foreground font-semibold">BTech CSE</div>
           <div className="text-muted text-[11px] font-mono">JECRC · Jaipur</div>
         </motion.div>
@@ -94,7 +94,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85, duration: 0.5, ease: [0.22, 1, 0.36, 1] as any }}
           className="flex gap-2.5 sm:gap-[14px] justify-center flex-wrap"
         >
-          <a href="#projects" className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-7 sm:py-3.5 rounded-full text-[13px] sm:text-sm font-medium bg-color-blue text-white shadow-[0_0_48px_rgba(10,132,255,0.22),0_4px_16px_rgba(0,0,0,0.3)] transition-[transform,background-color,border-color,color,box-shadow] duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-[0_0_70px_rgba(10,132,255,0.5),0_8px_24px_rgba(0,0,0,0.35)]">
+          <a href="#projects" className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-7 sm:py-3.5 rounded-full text-[13px] sm:text-sm font-medium bg-foreground text-background shadow-[0_4px_16px_rgba(0,0,0,0.3)] transition-[transform,background-color,border-color,color,box-shadow] duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-[0_10px_32px_rgba(0,0,0,0.45)]">
             <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M3 12h18M13 5l7 7-7 7"/></svg>
             View Projects
           </a>

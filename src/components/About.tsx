@@ -28,9 +28,9 @@ export default function About() {
         <div className="relative max-w-[400px] lg:max-w-none mx-auto lg:mx-0">
           <motion.div variants={itemVariants}>
             <div className="bg-gradient-to-br from-color-blue/8 to-color-purple/6 border border-border2 rounded-[24px] sm:rounded-[36px] p-5 sm:p-8 lg:p-11 text-center relative overflow-hidden shadow-card">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(10,132,255,0.12),transparent_60%)] pointer-events-none"></div>
-              
-              <div className="w-[110px] h-[110px] rounded-full mx-auto mb-5 bg-gradient-to-br from-color-blue to-color-purple flex items-center justify-center text-[52px] shadow-[0_0_48px_rgba(10,132,255,0.22)] animate-[avatarFloat_5s_ease-in-out_infinite]">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(150,150,155,0.1),transparent_60%)] pointer-events-none"></div>
+
+              <div className="w-[110px] h-[110px] rounded-full mx-auto mb-5 bg-gradient-to-br from-bg2 to-bg1 border border-border2 flex items-center justify-center text-[52px] shadow-[0_12px_40px_rgba(0,0,0,0.4)] animate-[avatarFloat_5s_ease-in-out_infinite] mono-emoji">
                 👨‍💻
               </div>
               <div className="font-display text-[22px] sm:text-[26px] font-extrabold mb-1">Shaan Satsangi</div>

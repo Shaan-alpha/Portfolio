@@ -2,30 +2,31 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  /* Light mode — clean white / light-grey glass */
+  --background: #f4f4f5;
+  --foreground: #18181b;
   --bg1: #ffffff;
-  --bg2: #e2e8f0;
-  --glass: rgba(255, 255, 255, 0.9);
-  --glass2: rgba(255, 255, 255, 1);
-  --border: rgba(15, 23, 42, 0.14);
-  --border2: rgba(15, 23, 42, 0.25);
-  --muted: rgba(15, 23, 42, 0.55);
-  --muted2: rgba(15, 23, 42, 0.75);
+  --bg2: #e4e4e7;
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass2: rgba(255, 255, 255, 0.96);
+  --border: rgba(24, 24, 27, 0.12);
+  --border2: rgba(24, 24, 27, 0.22);
+  --muted: rgba(24, 24, 27, 0.55);
+  --muted2: rgba(24, 24, 27, 0.78);
 
-  /* Apple System Colors */
-  --color-blue: #0A84FF;
-  --color-blue-glow: rgba(10, 132, 255, 0.22);
-  --color-purple: #BF5AF2;
-  --color-purple-glow: rgba(191, 90, 242, 0.18);
-  --color-pink: #FF375F;
-  --color-pink-glow: rgba(255, 55, 95, 0.18);
-  --color-teal: #5AC8FA;
-  --color-teal-glow: rgba(90, 200, 250, 0.16);
-  --color-green: #32D74B;
-  --color-green-glow: rgba(50, 215, 75, 0.16);
-  --color-orange: #FF9F0A;
-  --color-yellow: #FFD60A;
+  /* Monochrome accents — dark greys for contrast on light surfaces */
+  --color-blue: #27272a;
+  --color-blue-glow: rgba(24, 24, 27, 0.14);
+  --color-purple: #52525b;
+  --color-purple-glow: rgba(24, 24, 27, 0.12);
+  --color-pink: #18181b;
+  --color-pink-glow: rgba(24, 24, 27, 0.12);
+  --color-teal: #3f3f46;
+  --color-teal-glow: rgba(24, 24, 27, 0.10);
+  --color-green: #3f3f46;
+  --color-green-glow: rgba(24, 24, 27, 0.10);
+  --color-orange: #52525b;
+  --color-yellow: #3f3f46;
 
   --r: 14px;
   --r2: 22px;
@@ -33,28 +34,43 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease2: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* Stronger 3D Shadows for Light Mode */
-  --card-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.14), 0 4px 12px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(15, 23, 42, 0.04);
-  --card-shadow-hover: 0 24px 48px -12px rgba(15, 23, 42, 0.2), 0 8px 24px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(15, 23, 42, 0.06);
-  --nav-shadow: 0 8px 32px -8px rgba(15, 23, 42, 0.2), 0 0 0 1px rgba(15, 23, 42, 0.06);
+  /* 3D glass shadows — light mode (with top-highlight bevel) */
+  --card-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --card-shadow-hover: 0 28px 56px -14px rgba(0, 0, 0, 0.2), 0 10px 28px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 1);
+  --nav-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 .dark {
-  --background: #05060f;
-  --foreground: #eeeef5;
-  --bg1: #080a18;
-  --bg2: #0c0e20;
-  --glass: rgba(255, 255, 255, 0.035);
-  --glass2: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.07);
-  --border2: rgba(255, 255, 255, 0.12);
-  --muted: rgba(238, 238, 245, 0.42);
-  --muted2: rgba(238, 238, 245, 0.65);
-  
-  /* 3D Shadows for Dark Mode */
-  --card-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
-  --card-shadow-hover: 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
-  --nav-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.5);
+  /* Dark mode — near-black neutral / smoked glass */
+  --background: #0a0a0b;
+  --foreground: #f4f4f5;
+  --bg1: #111113;
+  --bg2: #18181b;
+  --glass: rgba(255, 255, 255, 0.045);
+  --glass2: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.08);
+  --border2: rgba(255, 255, 255, 0.15);
+  --muted: rgba(244, 244, 245, 0.45);
+  --muted2: rgba(244, 244, 245, 0.68);
+
+  /* Monochrome accents — light silvers for contrast on dark surfaces */
+  --color-blue: #e4e4e7;
+  --color-blue-glow: rgba(255, 255, 255, 0.16);
+  --color-purple: #a1a1aa;
+  --color-purple-glow: rgba(255, 255, 255, 0.12);
+  --color-pink: #fafafa;
+  --color-pink-glow: rgba(255, 255, 255, 0.14);
+  --color-teal: #d4d4d8;
+  --color-teal-glow: rgba(255, 255, 255, 0.12);
+  --color-green: #d4d4d8;
+  --color-green-glow: rgba(255, 255, 255, 0.12);
+  --color-orange: #a1a1aa;
+  --color-yellow: #d4d4d8;
+
+  /* 3D glass shadows — dark mode (with top-highlight bevel) */
+  --card-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --card-shadow-hover: 0 28px 56px -14px rgba(0, 0, 0, 0.8), 0 10px 28px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --nav-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 @theme inline {
@@ -96,8 +112,8 @@ body {
 }
 
 ::selection {
-  background: rgba(10, 132, 255, 0.4);
-  color: #fff;
+  background: rgba(160, 160, 168, 0.4);
+  color: var(--foreground);
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -119,23 +135,19 @@ body {
   letter-spacing: -.04em;
 }
 
-.grad-blue {
-  background: linear-gradient(135deg, var(--color-blue), var(--color-teal));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.grad-purple {
-  background: linear-gradient(135deg, var(--color-purple), var(--color-pink));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+/* Polished-metal shimmer for headings (light→grey→light sweep) */
+.grad-blue,
+.grad-purple,
 .grad-green {
-  background: linear-gradient(135deg, var(--color-green), var(--color-teal));
+  background: linear-gradient(120deg, var(--foreground) 0%, var(--color-purple) 50%, var(--foreground) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Desaturate emoji icons so they read monochrome with the palette */
+.mono-emoji {
+  filter: grayscale(1) contrast(1.04);
 }
 
 .ambient-blob {
@@ -192,8 +204,8 @@ canvas.canvas-filter-wrap {
 
 /* Bulb glow pulse */
 @keyframes bulbPulse {
-  0%, 100% { box-shadow: 0 0 30px 6px rgba(255,200,50,0.3), 0 0 60px 15px rgba(255,180,30,0.1); }
-  50% { box-shadow: 0 0 45px 10px rgba(255,200,50,0.4), 0 0 80px 25px rgba(255,180,30,0.15); }
+  0%, 100% { box-shadow: 0 0 30px 6px rgba(255,255,255,0.18), 0 0 60px 15px rgba(255,255,255,0.06); }
+  50% { box-shadow: 0 0 45px 10px rgba(255,255,255,0.26), 0 0 80px 25px rgba(255,255,255,0.1); }
 }
 
 /* Project card cursor-tracking spotlight (coords set on pointer move) */

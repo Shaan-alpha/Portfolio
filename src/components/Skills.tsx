@@ -78,7 +78,7 @@ export default function Skills() {
                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 bg-gradient-to-br ${cat.gradient}`} />
                 
                 <div className="relative z-10">
-                  <div className="text-[30px] mb-3.5 transition-transform duration-300 group-hover:scale-110 inline-block">{cat.icon}</div>
+                  <div className="text-[30px] mb-3.5 transition-transform duration-300 group-hover:scale-110 inline-block mono-emoji">{cat.icon}</div>
                   <div className="font-display text-[18px] font-extrabold mb-4">{cat.title}</div>
                   <div className="flex flex-col gap-3">
                     {cat.items.map((item, j) => (
@@ -125,7 +125,7 @@ export default function Skills() {
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
                 className="bg-glass border border-border rounded-[14px] p-3 text-center text-[12px] font-mono text-muted2 hover:bg-glass2 hover:border-border2 hover:text-foreground hover:shadow-card group"
               >
-                <div className="text-[24px] mb-1.5 transition-transform duration-200 group-hover:scale-125">{tool.icon}</div>
+                <div className="text-[24px] mb-1.5 transition-transform duration-200 group-hover:scale-125 mono-emoji">{tool.icon}</div>
                 {tool.name}
               </motion.div>
             ))}

@@ -75,30 +75,30 @@ export default function Contact() {
               onSubmit={handleSubmit}
               className="bg-glass border border-border rounded-[32px] p-6 sm:p-11 relative overflow-hidden text-left isolation-isolate shadow-card"
             >
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(10,132,255,0.07),transparent_60%)] pointer-events-none -z-10"></div>
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(150,150,155,0.07),transparent_60%)] pointer-events-none -z-10"></div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[11px] font-semibold tracking-[0.07em] uppercase text-muted">Your Name</label>
-                  <input required name="name" type="text" placeholder="John Smith" className="bg-white/5 border border-border rounded-[14px] px-4.5 py-3.5 text-foreground text-[15px] font-outfit outline-none transition-[transform,background-color,border-color,color,box-shadow] duration-350 focus:border-color-blue focus:bg-color-blue/5 focus:shadow-[0_0_0_3.5px_rgba(10,132,255,0.14)]" />
+                  <input required name="name" type="text" placeholder="John Smith" className="bg-white/5 border border-border rounded-[14px] px-4.5 py-3.5 text-foreground text-[15px] font-outfit outline-none transition-[transform,background-color,border-color,color,box-shadow] duration-350 focus:border-foreground/40 focus:bg-foreground/[0.04] focus:shadow-[0_0_0_3.5px_rgba(127,127,127,0.18)]" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[11px] font-semibold tracking-[0.07em] uppercase text-muted">Email Address</label>
-                  <input required name="email" type="email" placeholder="john@example.com" className="bg-white/5 border border-border rounded-[14px] px-4.5 py-3.5 text-foreground text-[15px] font-outfit outline-none transition-[transform,background-color,border-color,color,box-shadow] duration-350 focus:border-color-blue focus:bg-color-blue/5 focus:shadow-[0_0_0_3.5px_rgba(10,132,255,0.14)]" />
+                  <input required name="email" type="email" placeholder="john@example.com" className="bg-white/5 border border-border rounded-[14px] px-4.5 py-3.5 text-foreground text-[15px] font-outfit outline-none transition-[transform,background-color,border-color,color,box-shadow] duration-350 focus:border-foreground/40 focus:bg-foreground/[0.04] focus:shadow-[0_0_0_3.5px_rgba(127,127,127,0.18)]" />
                 </div>
               </div>
               <div className="flex flex-col gap-1.5 mb-4">
                 <label className="text-[11px] font-semibold tracking-[0.07em] uppercase text-muted">Subject</label>
-                <input name="subject" type="text" placeholder="Project idea, internship, collaboration…" className="bg-white/5 border border-border rounded-[14px] px-4.5 py-3.5 text-foreground text-[15px] font-outfit outline-none transition-[transform,background-color,border-color,color,box-shadow] duration-350 focus:border-color-blue focus:bg-color-blue/5 focus:shadow-[0_0_0_3.5px_rgba(10,132,255,0.14)]" />
+                <input name="subject" type="text" placeholder="Project idea, internship, collaboration…" className="bg-white/5 border border-border rounded-[14px] px-4.5 py-3.5 text-foreground text-[15px] font-outfit outline-none transition-[transform,background-color,border-color,color,box-shadow] duration-350 focus:border-foreground/40 focus:bg-foreground/[0.04] focus:shadow-[0_0_0_3.5px_rgba(127,127,127,0.18)]" />
               </div>
               <div className="flex flex-col gap-1.5 mb-4">
                 <label className="text-[11px] font-semibold tracking-[0.07em] uppercase text-muted">Message</label>
-                <textarea required name="message" placeholder="Tell me what's on your mind…" className="h-[120px] resize-none bg-white/5 border border-border rounded-[14px] px-4.5 py-3.5 text-foreground text-[15px] font-outfit outline-none transition-[transform,background-color,border-color,color,box-shadow] duration-350 focus:border-color-blue focus:bg-color-blue/5 focus:shadow-[0_0_0_3.5px_rgba(10,132,255,0.14)]"></textarea>
+                <textarea required name="message" placeholder="Tell me what's on your mind…" className="h-[120px] resize-none bg-white/5 border border-border rounded-[14px] px-4.5 py-3.5 text-foreground text-[15px] font-outfit outline-none transition-[transform,background-color,border-color,color,box-shadow] duration-350 focus:border-foreground/40 focus:bg-foreground/[0.04] focus:shadow-[0_0_0_3.5px_rgba(127,127,127,0.18)]"></textarea>
               </div>
 
               {errorMsg && <div className="text-color-pink text-sm mb-4">{errorMsg}</div>}
 
-              <button disabled={loading || success} type="submit" className={`w-full flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-[15px] font-medium text-white transition-[transform,background-color,border-color,color,box-shadow] duration-350 ${success ? "bg-color-green shadow-[0_0_48px_rgba(50,215,75,0.22)]" : "bg-color-blue shadow-[0_0_48px_rgba(10,132,255,0.22),0_4px_16px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_0_70px_rgba(10,132,255,0.5),0_8px_24px_rgba(0,0,0,0.35)]"} disabled:opacity-70 disabled:cursor-not-allowed`}>
+              <button disabled={loading || success} type="submit" className={`w-full flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-[15px] font-medium bg-foreground text-background transition-[transform,background-color,border-color,color,box-shadow] duration-350 ${success ? "shadow-[0_4px_16px_rgba(0,0,0,0.3)]" : "shadow-[0_4px_16px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_10px_32px_rgba(0,0,0,0.45)]"} disabled:opacity-70 disabled:cursor-not-allowed`}>
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : success ? <CheckCircle2 className="w-5 h-5" /> : <Send className="w-4 h-4" />}
                 {loading ? "Sending..." : success ? "Message Sent!" : "Send Message"}
               </button>
@@ -128,7 +128,7 @@ export default function Contact() {
             initial={{ opacity: 0, y: 20, x: "-50%" }}
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: 20, x: "-50%" }}
-            className="fixed bottom-9 left-1/2 z-[9000] bg-[#0c0e20]/95 border border-border2 rounded-full px-6 py-3 text-[14px] text-white whitespace-nowrap"
+            className="fixed bottom-9 left-1/2 z-[9000] bg-bg2/95 backdrop-blur border border-border2 rounded-full px-6 py-3 text-[14px] text-foreground whitespace-nowrap"
           >
             ✅ Message sent! I&apos;ll reply soon.
           </motion.div>

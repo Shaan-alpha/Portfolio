@@ -33,7 +33,7 @@ export default function Preloader() {
               className="absolute w-[180px] h-[180px] rounded-full"
               style={{
                 background:
-                  "radial-gradient(circle, rgba(10,132,255,0.30), rgba(191,90,242,0.18) 45%, transparent 70%)",
+                  "radial-gradient(circle, rgba(150,150,158,0.28), rgba(150,150,158,0.1) 45%, transparent 70%)",
                 filter: "blur(26px)",
               }}
               animate={reduceMotion ? undefined : { opacity: [0.55, 1, 0.55], scale: [0.92, 1.06, 0.92] }}
