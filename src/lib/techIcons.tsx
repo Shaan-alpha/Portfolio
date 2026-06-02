@@ -50,6 +50,7 @@ export function TechLogo({ file, invert, alt, className }: Logo & { alt: string;
       src={`${BP}/devicon/${file}.svg`}
       alt={alt}
       loading="lazy"
+      decoding="async"
       draggable={false}
       className={`${className ?? ""} ${invert ? "dark:invert" : ""}`}
     />

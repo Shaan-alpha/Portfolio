@@ -82,7 +82,7 @@ export default function Certifications() {
                 variants={itemVariants}
                 className={`bg-glass border border-border rounded-[22px] p-6 transition-[transform,background-color,border-color,color,box-shadow] duration-400 flex flex-col gap-3 hover:bg-glass2 hover:border-border2 hover:-translate-y-1.5 shadow-card hover:shadow-card-hover ${cert.style || ""}`}
               >
-                <img src={fluent(cert.img)} alt={cert.org} draggable={false} className="w-11 h-11 drop-shadow-[0_6px_14px_rgba(0,0,0,0.4)]" />
+                <img src={fluent(cert.img)} alt={cert.org} draggable={false} loading="lazy" decoding="async" className="w-11 h-11 drop-shadow-[0_6px_14px_rgba(0,0,0,0.4)]" />
                 <div className="text-[11px] font-mono text-muted tracking-[0.05em] uppercase">{cert.org}</div>
                 <div className="font-display text-[14px] sm:text-[16px] font-bold leading-[1.3]">{cert.name}</div>
                 <div className="text-[12px] text-muted">{cert.date}</div>

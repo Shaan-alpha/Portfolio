@@ -32,7 +32,7 @@ export default function About() {
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(150,150,155,0.1),transparent_60%)] pointer-events-none"></div>
 
               <div className="w-[110px] h-[110px] rounded-full mx-auto mb-5 bg-gradient-to-br from-bg2 to-bg1 border border-border2 flex items-center justify-center shadow-[0_12px_40px_rgba(0,0,0,0.4)] animate-[avatarFloat_5s_ease-in-out_infinite]">
-                <img src={fluent("technologist")} alt="Shaan Satsangi" draggable={false} className="w-16 h-16 drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]" />
+                <img src={fluent("technologist")} alt="Shaan Satsangi" draggable={false} loading="lazy" decoding="async" className="w-16 h-16 drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]" />
               </div>
               <div className="font-display text-[22px] sm:text-[26px] font-extrabold mb-1">Shaan Satsangi</div>
               <div className="text-muted text-[13px] font-mono">CS undergrad · Data Engineer & AI/ML developer</div>

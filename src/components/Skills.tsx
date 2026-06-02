@@ -79,7 +79,7 @@ export default function Skills() {
                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 bg-gradient-to-br ${cat.gradient}`} />
                 
                 <div className="relative z-10">
-                  <img src={fluent(cat.img)} alt={cat.title} draggable={false} className="w-10 h-10 mb-3.5 transition-transform duration-300 group-hover:scale-110 inline-block drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]" />
+                  <img src={fluent(cat.img)} alt={cat.title} draggable={false} loading="lazy" decoding="async" className="w-10 h-10 mb-3.5 transition-transform duration-300 group-hover:scale-110 inline-block drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]" />
                   <div className="font-display text-[18px] font-extrabold mb-4">{cat.title}</div>
                   <div className="flex flex-col gap-3">
                     {cat.items.map((item, j) => (

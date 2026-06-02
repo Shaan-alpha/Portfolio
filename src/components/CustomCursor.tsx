@@ -7,12 +7,12 @@ export default function CustomCursor() {
   const [isMobile, setIsMobile] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
 
-  // Dot follows instantly; the glow halo lags behind for an ambient spotlight.
+  // Dot follows instantly; the ring trails with a slight spring lag.
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
-  const glowConfig = { damping: 30, stiffness: 350, mass: 0.42 };
-  const glowX = useSpring(cursorX, glowConfig);
-  const glowY = useSpring(cursorY, glowConfig);
+  const ringConfig = { damping: 28, stiffness: 380, mass: 0.4 };
+  const ringX = useSpring(cursorX, ringConfig);
+  const ringY = useSpring(cursorY, ringConfig);
 
   useEffect(() => {
     if (window.matchMedia("(pointer: fine)").matches) {
@@ -42,36 +42,19 @@ export default function CustomCursor() {
 
   return (
     <>
-      {/* Soft indigo spotlight glow (trails the cursor) */}
+      {/* Outline ring */}
       <motion.div
-        className="fixed top-0 left-0 rounded-full pointer-events-none z-[9998]"
-        style={{
-          x: glowX,
-          y: glowY,
-          width: 150,
-          height: 150,
-          marginLeft: -75,
-          marginTop: -75,
-          background: "radial-gradient(circle, var(--color-blue-glow) 0%, transparent 60%)",
-          filter: "blur(8px)",
-          willChange: "transform",
-        }}
-        animate={{ scale: isHovering ? 1.4 : 1, opacity: isHovering ? 0.7 : 0.42 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-color-blue/60 pointer-events-none z-[9998]"
+        style={{ x: ringX, y: ringY, marginLeft: -16, marginTop: -16, willChange: "transform" }}
+        animate={{ scale: isHovering ? 1.6 : 1, opacity: isHovering ? 1 : 0.65 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
       />
-      {/* Crisp center dot (instant) */}
+      {/* Center dot */}
       <motion.div
-        className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full pointer-events-none z-[9999] bg-color-blue"
-        style={{
-          x: cursorX,
-          y: cursorY,
-          marginLeft: -3,
-          marginTop: -3,
-          willChange: "transform",
-          boxShadow: "0 0 8px 1px var(--color-blue-glow)",
-        }}
-        animate={{ scale: isHovering ? 2.4 : 1 }}
-        transition={{ duration: 0.2 }}
+        className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full bg-color-blue pointer-events-none z-[9999]"
+        style={{ x: cursorX, y: cursorY, marginLeft: -3, marginTop: -3, willChange: "transform" }}
+        animate={{ scale: isHovering ? 0 : 1 }}
+        transition={{ duration: 0.15 }}
       />
     </>
   );

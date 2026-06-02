@@ -29,11 +29,8 @@ export default function Projects() {
       link: "https://github.com/Shaan-alpha/Skill-Issue",
       liveLink: "https://skill-issue-tau.vercel.app",
       colors: {
-        bg: "bg-gradient-to-br from-[#041a10] to-[#08361f]",
         accent: "var(--color-green)",
         glow: "var(--color-green-glow)",
-        badgeBg: "bg-[rgba(50,215,75,0.1)]",
-        badgeBorder: "border-[rgba(50,215,75,0.25)]",
         badgeText: "text-color-green"
       }
     },
@@ -51,11 +48,8 @@ export default function Projects() {
       ],
       link: "https://github.com/Shaan-alpha/CRM-Sales-Warehouse",
       colors: {
-        bg: "bg-gradient-to-br from-[#081a1a] to-[#103535]",
         accent: "var(--color-teal)",
         glow: "var(--color-teal-glow)",
-        badgeBg: "bg-[rgba(90,200,250,0.1)]",
-        badgeBorder: "border-[rgba(90,200,250,0.25)]",
         badgeText: "text-color-teal"
       }
     },
@@ -74,11 +68,8 @@ export default function Projects() {
       link: "https://github.com/Shaan-alpha/youtube-wrapped",
       liveLink: "https://youtube-wrapped-by-shaan.vercel.app",
       colors: {
-        bg: "bg-gradient-to-br from-[#1a0005] to-[#330010]",
         accent: "var(--color-pink)",
         glow: "var(--color-pink-glow)",
-        badgeBg: "bg-[rgba(255,55,95,0.1)]",
-        badgeBorder: "border-[rgba(255,55,95,0.2)]",
         badgeText: "text-color-pink"
       }
     },
@@ -96,11 +87,8 @@ export default function Projects() {
       ],
       link: "https://github.com/Shaan-alpha/jarvis-py",
       colors: {
-        bg: "bg-gradient-to-br from-[#050d1f] to-[#0a1a3a]",
         accent: "var(--color-blue)",
         glow: "var(--color-blue-glow)",
-        badgeBg: "bg-[rgba(10,132,255,0.1)]",
-        badgeBorder: "border-[rgba(10,132,255,0.2)]",
         badgeText: "text-color-blue"
       }
     },
@@ -118,11 +106,8 @@ export default function Projects() {
       ],
       link: "https://github.com/Shaan-alpha/face-sort-studio",
       colors: {
-        bg: "bg-gradient-to-br from-[#041515] to-[#082525]",
         accent: "var(--color-teal)",
         glow: "var(--color-teal-glow)",
-        badgeBg: "bg-[rgba(90,200,250,0.1)]",
-        badgeBorder: "border-[rgba(90,200,250,0.25)]",
         badgeText: "text-color-teal"
       }
     },
@@ -141,11 +126,8 @@ export default function Projects() {
       link: "https://github.com/Shaan-alpha/Sahaara_APP",
       liveLink: "https://sahaara-app.vercel.app",
       colors: {
-        bg: "bg-gradient-to-br from-[#1f060c] to-[#350a14]",
         accent: "var(--color-pink)",
         glow: "var(--color-pink-glow)",
-        badgeBg: "bg-[rgba(255,55,95,0.1)]",
-        badgeBorder: "border-[rgba(255,55,95,0.2)]",
         badgeText: "text-color-pink"
       }
     },
@@ -163,11 +145,8 @@ export default function Projects() {
       ],
       link: "https://github.com/Shaan-alpha",
       colors: {
-        bg: "bg-gradient-to-br from-[#130820] to-[#200d35]",
         accent: "var(--color-purple)",
         glow: "var(--color-purple-glow)",
-        badgeBg: "bg-[rgba(191,90,242,0.1)]",
-        badgeBorder: "border-[rgba(191,90,242,0.2)]",
         badgeText: "text-color-purple"
       }
     }
@@ -199,7 +178,7 @@ export default function Projects() {
                 {/* Accent top-border, revealed on hover */}
                 <div className="pointer-events-none absolute top-0 left-0 right-0 h-[2px] z-20 bg-[var(--proj-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative z-10 h-[120px] sm:h-[180px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-bg2 to-bg1">
-                  <img src={fluent(proj.img)} alt={proj.title} draggable={false} className="w-[68px] h-[68px] sm:w-[92px] sm:h-[92px] drop-shadow-[0_12px_26px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6" />
+                  <img src={fluent(proj.img)} alt={proj.title} draggable={false} loading="lazy" decoding="async" className="w-[68px] h-[68px] sm:w-[92px] sm:h-[92px] drop-shadow-[0_12px_26px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6" />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/100"></div>
                 </div>
                 <div className="relative z-10 p-4 sm:p-6 flex-1 flex flex-col">

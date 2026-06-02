@@ -169,11 +169,6 @@ body {
   50% { opacity: 1; transform: scale(1); }
 }
 
-/* Desaturate emoji icons so they read monochrome with the palette */
-.mono-emoji {
-  filter: grayscale(1) contrast(1.04);
-}
-
 .ambient-blob {
   position: absolute;
   border-radius: 50%;
@@ -192,16 +187,6 @@ body {
 @keyframes avatarFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
-}
-
-@keyframes orbDrift {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(12px, -15px); }
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
 }
 
 /* Hide native cursor */
@@ -224,12 +209,6 @@ canvas.canvas-filter-wrap {
 }
 .dark canvas.canvas-filter-wrap {
   filter: none;
-}
-
-/* Bulb glow pulse */
-@keyframes bulbPulse {
-  0%, 100% { box-shadow: 0 0 30px 6px rgba(255,255,255,0.18), 0 0 60px 15px rgba(255,255,255,0.06); }
-  50% { box-shadow: 0 0 45px 10px rgba(255,255,255,0.26), 0 0 80px 25px rgba(255,255,255,0.1); }
 }
 
 /* Project card cursor-tracking spotlight (coords set on pointer move) */
