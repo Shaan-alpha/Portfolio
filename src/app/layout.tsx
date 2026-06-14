@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, DM_Mono } from "next/font/google";
+import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { FrameLoaderProvider } from "@/components/FrameLoaderProvider";
@@ -14,10 +14,10 @@ const outfit = Outfit({
   weight: ["300", "400", "500", "600"],
 });
 
-const dm_mono = DM_Mono({
+const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-dm-mono",
-  weight: ["400", "500"],
+  variable: "--font-jetbrains",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -33,10 +33,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${dm_mono.variable} h-full antialiased no-scrollbar`}
+      className={`${outfit.variable} ${jetbrains.variable} h-full antialiased no-scrollbar`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-outfit">
+      <body className="min-h-full flex flex-col font-sans">
         <ThemeProvider>
           <FrameLoaderProvider>
             <Preloader />
