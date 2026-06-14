@@ -29,6 +29,21 @@ export default function Projects() {
 
   const projects: Project[] = [
     {
+      id: "cog-and-cosmos",
+      date: "Jun 2026",
+      status: "live",
+      title: "Cog & Cosmos — Idle Game",
+      desc: "A pixel-art interconnected incremental/idle game. Eight worlds feed one brass Fortune Engine — and unlike most idlers, every stage stays alive and feeds the others.",
+      tags: ["Svelte 5", "TypeScript", "PixiJS", "Vite", "PWA"],
+      bullets: [
+        "Eight interconnected stages (Village → Multiverse) where labor, grain, ore, power, mana, chronons & shards compound across the chain",
+        "5 prestige/meta layers (Ascension, Transcendence, Reality Reset, Challenges), a global skill tree, achievements & relic collections, on break_eternity.js big-number math",
+        "Installable offline-first PWA: PixiJS pixel scenes, IndexedDB autosave, optional Supabase cloud sync, synthesized Web-Audio SFX",
+      ],
+      link: "https://github.com/Shaan-alpha/Cog-and-Cosmos",
+      liveLink: "https://shaan-alpha.itch.io/cog-and-cosmos",
+    },
+    {
       id: "ai-reel-factory",
       date: "Jun 2026",
       status: "shipped",
