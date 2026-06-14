@@ -38,6 +38,10 @@ const TECH: Record<string, Logo> = {
   vercel: { file: "vercel", invert: true },
   sqlite: { file: "sqlite" },
   pandas: { file: "pandas", invert: true },
+  supabase: { file: "supabase" },
+  gemini: { file: "gemini", invert: true },
+  "google gemini": { file: "gemini", invert: true },
+  "github actions": { file: "github", invert: true },
 };
 
 export function lookupTech(name: string): Logo | null {
