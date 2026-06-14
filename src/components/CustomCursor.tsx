@@ -44,14 +44,14 @@ export default function CustomCursor() {
     <>
       {/* Outline ring */}
       <motion.div
-        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-color-blue/60 pointer-events-none z-[9998]"
+        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-accent/60 pointer-events-none z-[9998]"
         style={{ x: ringX, y: ringY, marginLeft: -16, marginTop: -16, willChange: "transform" }}
         animate={{ scale: isHovering ? 1.6 : 1, opacity: isHovering ? 1 : 0.65 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
       />
       {/* Center dot */}
       <motion.div
-        className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full bg-color-blue pointer-events-none z-[9999]"
+        className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full bg-accent pointer-events-none z-[9999]"
         style={{ x: cursorX, y: cursorY, marginLeft: -3, marginTop: -3, willChange: "transform" }}
         animate={{ scale: isHovering ? 0 : 1 }}
         transition={{ duration: 0.15 }}
