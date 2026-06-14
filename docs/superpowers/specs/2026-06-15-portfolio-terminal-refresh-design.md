@@ -117,7 +117,8 @@ Replaces `CanvasScrollSequence` + `FrameLoaderProvider` + the 240 webp frames.
 ### 3. Content / GitHub sync (`src/components/Projects.tsx`, `About.tsx`, `Skills.tsx`)
 
 - **Add AI Reel Factory** as a project card:
-  - Status tag `[ building ]` (its `STATUS.md` is pre-MVP — do not claim "shipped/live").
+  - Status tag `[ shipped ]` — the system is complete and running (publishes to YouTube
+    `@butitmatters`). Optionally surface the channel as the "live" link.
   - Description: autonomous, near-$0/month content pipeline that researches, scripts, narrates,
     renders captioned vertical video, and publishes 4–5 YouTube Shorts/day with one Telegram tap.
   - Tags: Python · Gemini · Supabase · FFmpeg · faster-whisper · edge-tts · YouTube API · GitHub Actions.
@@ -125,7 +126,7 @@ Replaces `CanvasScrollSequence` + `FrameLoaderProvider` + the 240 webp frames.
 - **Per-project status tag system**: `[ live ]` / `[ shipped ]` / `[ building ]`, alongside the
   existing date. Replaces the bare date pill with an honest, "data-readout" status.
 - **Fix Review Reader** link (point to a real repo or drop the GitHub button / label it a notebook).
-- **About stats:** correct counts honestly (e.g. "8 Projects," accurate shipped-vs-building split).
+- **About stats:** correct counts honestly (e.g. "8 Projects Shipped" — AI Reel Factory is complete).
 - **Skills:** replace invented percentages with monospace tier tags (`core` / `strong` /
   `working`) — removes a cliché and the false precision. Tech-logo grid stays.
 - New tech logos to source as needed (gemini, supabase, ffmpeg) into `public/devicon/` or an
