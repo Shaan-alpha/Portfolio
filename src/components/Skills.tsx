@@ -1,138 +1,121 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { fluent, TechLogo } from "@/lib/techIcons";
+import { TechLogo } from "@/lib/techIcons";
+
+type Tier = "core" | "strong" | "working";
 
 export default function Skills() {
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
   };
   const itemVariants = {
-    hidden: { opacity: 0, y: 36, scale: 0.99 },
-    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.95, ease: [0.22, 1, 0.36, 1] as any } }
+    hidden: { opacity: 0, y: 24 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } },
   };
 
-  const skillsData = [
+  const skillsData: { title: string; label: string; items: { name: string; tier: Tier }[] }[] = [
     {
       title: "Data Engineering",
-      img: "gear",
-      gradient: "from-color-blue/9 to-transparent",
+      label: "> data_engineering",
       items: [
-        { name: "Apache Airflow / Spark", val: 82, grad: "from-color-blue to-color-teal" },
-        { name: "dbt / SQL (PostgreSQL)", val: 88, grad: "from-color-blue to-color-teal" },
-        { name: "Databricks / Delta Lake", val: 78, grad: "from-color-blue to-color-teal" },
-        { name: "ETL / ELT Pipelines", val: 85, grad: "from-color-blue to-color-teal" }
-      ]
+        { name: "Apache Airflow / Spark", tier: "strong" },
+        { name: "dbt / SQL (PostgreSQL)", tier: "core" },
+        { name: "Databricks / Delta Lake", tier: "working" },
+        { name: "ETL / ELT Pipelines", tier: "strong" },
+      ],
     },
     {
       title: "Data Science & AI",
-      img: "brain",
-      gradient: "from-color-purple/9 to-transparent",
+      label: "> data_science_ai",
       items: [
-        { name: "TensorFlow / Keras", val: 86, grad: "from-color-purple to-color-pink" },
-        { name: "Scikit-learn / Pandas", val: 92, grad: "from-color-purple to-color-pink" },
-        { name: "OpenCV / NLP", val: 84, grad: "from-color-purple to-color-pink" },
-        { name: "Local LLM Inference", val: 80, grad: "from-color-purple to-color-pink" }
-      ]
+        { name: "TensorFlow / Keras", tier: "strong" },
+        { name: "Scikit-learn / Pandas", tier: "core" },
+        { name: "OpenCV / NLP", tier: "strong" },
+        { name: "Local LLM Inference", tier: "working" },
+      ],
     },
     {
       title: "Data Analysis & Analytics",
-      img: "barchart",
-      gradient: "from-color-green/9 to-transparent",
+      label: "> analytics",
       items: [
-        { name: "Power BI / Tableau", val: 82, grad: "from-color-green to-color-teal" },
-        { name: "SQL (Complex Queries)", val: 90, grad: "from-color-green to-color-teal" },
-        { name: "Matplotlib / Seaborn", val: 85, grad: "from-color-green to-color-teal" },
-        { name: "Actionable Insights", val: 80, grad: "from-color-green to-color-teal" }
-      ]
+        { name: "Power BI / Tableau", tier: "strong" },
+        { name: "SQL (Complex Queries)", tier: "core" },
+        { name: "Matplotlib / Seaborn", tier: "strong" },
+        { name: "Actionable Insights", tier: "strong" },
+      ],
     },
     {
       title: "Software Engineering",
-      img: "laptop",
-      gradient: "from-color-orange/9 to-transparent",
+      label: "> software_eng",
       items: [
-        { name: "C / C++", val: 88, grad: "from-color-orange to-color-yellow" },
-        { name: "System Design", val: 75, grad: "from-color-orange to-color-yellow" },
-        { name: "OOP / DSA", val: 84, grad: "from-color-orange to-color-yellow" },
-        { name: "Linux / Bash / Docker", val: 80, grad: "from-color-orange to-color-yellow" }
-      ]
-    }
+        { name: "C / C++", tier: "strong" },
+        { name: "System Design", tier: "working" },
+        { name: "OOP / DSA", tier: "strong" },
+        { name: "Linux / Bash / Docker", tier: "strong" },
+      ],
+    },
+  ];
+
+  const tools = [
+    { file: "python", name: "Python" }, { file: "fastapi", name: "FastAPI" },
+    { file: "nextjs", name: "Next.js", invert: true }, { file: "react", name: "React" },
+    { file: "typescript", name: "TypeScript" }, { file: "postgresql", name: "PostgreSQL" },
+    { file: "redis", name: "Redis" }, { file: "docker", name: "Docker" },
+    { file: "tensorflow", name: "TensorFlow" }, { file: "scikitlearn", name: "Scikit-learn" },
+    { file: "opencv", name: "OpenCV" }, { file: "pandas", name: "Pandas", invert: true },
+    { file: "apachespark", name: "Apache Spark" }, { file: "apacheairflow", name: "Airflow" },
+    { file: "jupyter", name: "Jupyter" }, { file: "git", name: "Git" },
+    { file: "github", name: "GitHub", invert: true }, { file: "vscode", name: "VS Code" },
+    { file: "flask", name: "Flask", invert: true }, { file: "supabase", name: "Supabase" },
+    { file: "googlecloud", name: "Google Cloud" }, { file: "sqlite", name: "SQLite" },
+    { file: "linux", name: "Linux" }, { file: "vercel", name: "Vercel", invert: true },
   ];
 
   return (
     <section id="skills" className="py-16 sm:py-[120px] bg-bg1 relative z-10">
       <div className="max-w-[1200px] mx-auto px-[5vw]">
         <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}>
-          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.1em] uppercase text-muted mb-4.5 before:content-[''] before:block before:w-[22px] before:h-[1px] before:bg-current">What I work with</motion.div>
-          <motion.h2 variants={itemVariants} className="display mb-5.5">Technical <span className="grad-purple">Skills</span></motion.h2>
+          <motion.div variants={itemVariants} className="eyebrow mb-4.5">skills</motion.div>
+          <motion.h2 variants={itemVariants} className="display mb-5.5">
+            Technical <span className="accent">stack</span>
+          </motion.h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-[60px]">
-            {skillsData.map((cat, i) => (
+            {skillsData.map((cat) => (
               <motion.div
-                key={i}
+                key={cat.title}
                 variants={itemVariants}
-                whileHover={{ y: -6, transition: { duration: 0.25 } }}
-                className="bg-glass border border-border rounded-[22px] p-5 lg:p-7 relative overflow-hidden group hover:border-border2 shadow-card hover:shadow-card-hover"
+                className="bg-surface border border-border rounded-[var(--r2)] p-5 lg:p-7 transition-colors duration-200 hover:border-accent/50"
               >
-                {/* Hover gradient */}
-                <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 bg-gradient-to-br ${cat.gradient}`} />
-                
-                <div className="relative z-10">
-                  <img src={fluent(cat.img)} alt={cat.title} draggable={false} loading="lazy" decoding="async" className="w-10 h-10 mb-3.5 transition-transform duration-300 group-hover:scale-110 inline-block drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]" />
-                  <div className="font-display text-[18px] font-extrabold mb-4">{cat.title}</div>
-                  <div className="flex flex-col gap-3">
-                    {cat.items.map((item, j) => (
-                      <div key={j} className="group/skill">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-[13px] text-muted2 whitespace-nowrap transition-colors duration-200 group-hover/skill:text-foreground">{item.name}</span>
-                          <span className="text-[11px] font-mono text-muted whitespace-nowrap">{item.val}%</span>
-                        </div>
-                        <div className="h-[4px] dark:bg-white/10 bg-black/5 rounded-full overflow-hidden">
-                          <motion.div 
-                            initial={{ width: 0 }} 
-                            whileInView={{ width: `${item.val}%` }} 
-                            viewport={{ once: true }} 
-                            transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] as any, delay: 0.1 * j }}
-                            className={`h-full rounded-full bg-gradient-to-r ${item.grad}`}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                <div className="mono text-[12px] accent mb-1">{cat.label}</div>
+                <div className="font-display text-[17px] font-bold mb-4">{cat.title}</div>
+                <div className="flex flex-col">
+                  {cat.items.map((item) => (
+                    <div key={item.name} className="flex justify-between items-center py-2 border-b border-border last:border-0">
+                      <span className="text-[13px] text-muted2">{item.name}</span>
+                      <span className="mono text-[10px] accent">{item.tier}</span>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             ))}
           </div>
 
-          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.1em] uppercase text-muted mt-[60px] mb-4.5 before:content-[''] before:block before:w-[22px] before:h-[1px] before:bg-current">Developer tools</motion.div>
+          <motion.div variants={itemVariants} className="eyebrow mt-[60px] mb-4.5">tools</motion.div>
           <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 mt-4">
-            {[
-              { file: "python", name: "Python" }, { file: "fastapi", name: "FastAPI" },
-              { file: "nextjs", name: "Next.js", invert: true }, { file: "react", name: "React" },
-              { file: "typescript", name: "TypeScript" }, { file: "postgresql", name: "PostgreSQL" },
-              { file: "redis", name: "Redis" }, { file: "docker", name: "Docker" },
-              { file: "tensorflow", name: "TensorFlow" }, { file: "scikitlearn", name: "Scikit-learn" },
-              { file: "opencv", name: "OpenCV" }, { file: "pandas", name: "Pandas", invert: true },
-              { file: "apachespark", name: "Apache Spark" }, { file: "apacheairflow", name: "Airflow" },
-              { file: "jupyter", name: "Jupyter" }, { file: "git", name: "Git" },
-              { file: "github", name: "GitHub", invert: true }, { file: "vscode", name: "VS Code" },
-              { file: "flask", name: "Flask", invert: true }, { file: "firebase", name: "Firebase" },
-              { file: "googlecloud", name: "Google Cloud" }, { file: "sqlite", name: "SQLite" },
-              { file: "linux", name: "Linux" }, { file: "vercel", name: "Vercel", invert: true }
-            ].map((tool, i) => (
+            {tools.map((tool) => (
               <motion.div
-                key={i}
+                key={tool.name}
                 variants={itemVariants}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="bg-glass border border-border rounded-[14px] p-3 flex flex-col items-center gap-1.5 text-center text-[12px] font-mono text-muted2 hover:bg-glass2 hover:border-border2 hover:text-foreground hover:shadow-card group"
+                className="bg-surface border border-border rounded-[var(--r)] p-3 flex flex-col items-center gap-1.5 text-center mono text-[11px] text-muted2 transition-colors duration-200 hover:border-accent/50 hover:text-foreground group"
               >
-                <TechLogo file={tool.file} invert={tool.invert} alt={tool.name} className="w-6 h-6 transition-transform duration-200 group-hover:scale-125" />
+                <TechLogo file={tool.file} invert={tool.invert} alt={tool.name} className="w-6 h-6 transition-transform duration-200 group-hover:scale-110" />
                 {tool.name}
               </motion.div>
             ))}
           </motion.div>
-
         </motion.div>
       </div>
     </section>

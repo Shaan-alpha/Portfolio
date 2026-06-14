@@ -3,8 +3,6 @@
 // sequence does). basePath is hard-coded in next.config.ts, so this is constant.
 export const BP = "/Portfolio";
 
-export const fluent = (name: string) => `${BP}/fluent3d/${name}.png`;
-
 type Logo = { file: string; invert?: boolean };
 
 // Devicon brand logos. `invert` = mostly-black logo that needs flipping in dark mode.
