@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { Outfit, DM_Mono } from "next/font/google";
+import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { FrameLoaderProvider } from "@/components/FrameLoaderProvider";
 import Preloader from "@/components/Preloader";
 import ScrollProgress from "@/components/ScrollProgress";
 import CustomCursor from "@/components/CustomCursor";
@@ -14,15 +13,48 @@ const outfit = Outfit({
   weight: ["300", "400", "500", "600"],
 });
 
-const dm_mono = DM_Mono({
+const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-dm-mono",
-  weight: ["400", "500"],
+  variable: "--font-jetbrains",
+  weight: ["400", "500", "600", "700"],
 });
 
+const SITE = "https://shaan-alpha.github.io/Portfolio";
+
 export const metadata: Metadata = {
-  title: "Shaan Satsangi · Portfolio",
-  description: "A premium developer portfolio showcasing work in Data Engineering, AI/ML, and Full Stack Development.",
+  metadataBase: new URL(SITE),
+  title: "Shaan Satsangi · Data Engineer",
+  description:
+    "Data engineer building bulletproof pipelines and shipping AI/ML + analytics projects. Airflow, Spark, dbt, FastAPI, and more.",
+  keywords: ["Shaan Satsangi", "data engineer", "ML", "analytics", "Airflow", "dbt", "FastAPI", "portfolio"],
+  authors: [{ name: "Shaan Satsangi", url: SITE }],
+  creator: "Shaan Satsangi",
+  alternates: { canonical: SITE },
+  openGraph: {
+    type: "website",
+    url: SITE,
+    siteName: "Shaan Satsangi",
+    title: "Shaan Satsangi · Data Engineer",
+    description: "Bulletproof pipelines over flashy demos. Data engineering, ML, and analytics.",
+    images: [{ url: "/Portfolio/og.png", width: 1200, height: 630, alt: "Shaan Satsangi — Data Engineer" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Shaan Satsangi · Data Engineer",
+    description: "Bulletproof pipelines over flashy demos. Data engineering, ML, and analytics.",
+    images: ["/Portfolio/og.png"],
+  },
+};
+
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Shaan Satsangi",
+  url: SITE,
+  jobTitle: "Data Engineer",
+  email: "mailto:shaansatsangi@gmail.com",
+  address: { "@type": "PostalAddress", addressLocality: "Jaipur", addressRegion: "Rajasthan", addressCountry: "IN" },
+  sameAs: ["https://github.com/Shaan-alpha", "https://linkedin.com/in/shaansatsangi"],
 };
 
 export default function RootLayout({
@@ -33,18 +65,20 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${dm_mono.variable} h-full antialiased no-scrollbar`}
+      className={`${outfit.variable} ${jetbrains.variable} h-full antialiased no-scrollbar`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-outfit">
+      <body className="min-h-full flex flex-col font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
         <ThemeProvider>
-          <FrameLoaderProvider>
-            <Preloader />
-            <ScrollProgress />
-            <CustomCursor />
-            <SmoothScroll />
-            {children}
-          </FrameLoaderProvider>
+          <Preloader />
+          <ScrollProgress />
+          <CustomCursor />
+          <SmoothScroll />
+          {children}
         </ThemeProvider>
       </body>
     </html>

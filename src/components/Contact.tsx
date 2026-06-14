@@ -63,58 +63,59 @@ export default function Contact() {
     <section id="contact" className="py-16 sm:py-[120px] bg-bg1 text-center relative z-10">
       <div className="max-w-[1200px] mx-auto px-[5vw]">
         <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}>
-          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.1em] uppercase text-muted mb-4.5 before:content-[''] before:block before:w-[22px] before:h-[1px] before:bg-current">Let&apos;s connect</motion.div>
-          <motion.h2 variants={itemVariants} className="display mb-5.5">Get in <span className="grad-blue">Touch</span></motion.h2>
-          <motion.p variants={itemVariants} className="text-[15px] lg:text-[17px] leading-[1.75] text-muted2 max-w-[480px] mx-auto">
+          <motion.div variants={itemVariants} className="eyebrow mb-4.5 inline-block">contact</motion.div>
+          <motion.h2 variants={itemVariants} className="display mb-5.5">Get in <span className="accent">touch</span></motion.h2>
+          <motion.p variants={itemVariants} className="mono text-[13px] lg:text-[14px] leading-[1.75] text-muted2 max-w-[480px] mx-auto">
             Have a project, an opportunity, or just want to say hello? I&apos;d love to hear from you.
           </motion.p>
 
           <div className="max-w-[680px] mx-auto mt-[60px]">
-            <motion.form 
+            <motion.form
               variants={itemVariants}
               onSubmit={handleSubmit}
-              className="bg-glass border border-border rounded-[32px] p-6 sm:p-11 relative overflow-hidden text-left isolation-isolate shadow-card"
+              className="bg-surface border border-border rounded-[var(--r2)] p-6 sm:p-10 text-left"
             >
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(150,150,155,0.07),transparent_60%)] pointer-events-none -z-10"></div>
-              
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[11px] font-semibold tracking-[0.07em] uppercase text-muted">Your Name</label>
-                  <input required name="name" type="text" placeholder="John Smith" className="bg-white/5 border border-border rounded-[14px] px-4.5 py-3.5 text-foreground text-[15px] font-outfit outline-none transition-[transform,background-color,border-color,color,box-shadow] duration-350 focus:border-foreground/40 focus:bg-foreground/[0.04] focus:shadow-[0_0_0_3.5px_rgba(127,127,127,0.18)]" />
+                  <label htmlFor="name" className="mono text-[11px] tracking-[0.04em] text-muted">name</label>
+                  <input required id="name" name="name" type="text" placeholder="John Smith" className="bg-bg1 border border-border rounded-[var(--r)] px-4 py-3 text-foreground text-[14px] outline-none transition-colors duration-200 focus:border-accent" />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[11px] font-semibold tracking-[0.07em] uppercase text-muted">Email Address</label>
-                  <input required name="email" type="email" placeholder="john@example.com" className="bg-white/5 border border-border rounded-[14px] px-4.5 py-3.5 text-foreground text-[15px] font-outfit outline-none transition-[transform,background-color,border-color,color,box-shadow] duration-350 focus:border-foreground/40 focus:bg-foreground/[0.04] focus:shadow-[0_0_0_3.5px_rgba(127,127,127,0.18)]" />
+                  <label htmlFor="email" className="mono text-[11px] tracking-[0.04em] text-muted">email</label>
+                  <input required id="email" name="email" type="email" placeholder="john@example.com" className="bg-bg1 border border-border rounded-[var(--r)] px-4 py-3 text-foreground text-[14px] outline-none transition-colors duration-200 focus:border-accent" />
                 </div>
               </div>
               <div className="flex flex-col gap-1.5 mb-4">
-                <label className="text-[11px] font-semibold tracking-[0.07em] uppercase text-muted">Subject</label>
-                <input name="subject" type="text" placeholder="Project idea, internship, collaboration…" className="bg-white/5 border border-border rounded-[14px] px-4.5 py-3.5 text-foreground text-[15px] font-outfit outline-none transition-[transform,background-color,border-color,color,box-shadow] duration-350 focus:border-foreground/40 focus:bg-foreground/[0.04] focus:shadow-[0_0_0_3.5px_rgba(127,127,127,0.18)]" />
+                <label htmlFor="subject" className="mono text-[11px] tracking-[0.04em] text-muted">subject</label>
+                <input id="subject" name="subject" type="text" placeholder="Project idea, internship, collaboration…" className="bg-bg1 border border-border rounded-[var(--r)] px-4 py-3 text-foreground text-[14px] outline-none transition-colors duration-200 focus:border-accent" />
               </div>
               <div className="flex flex-col gap-1.5 mb-4">
-                <label className="text-[11px] font-semibold tracking-[0.07em] uppercase text-muted">Message</label>
-                <textarea required name="message" placeholder="Tell me what's on your mind…" className="h-[120px] resize-none bg-white/5 border border-border rounded-[14px] px-4.5 py-3.5 text-foreground text-[15px] font-outfit outline-none transition-[transform,background-color,border-color,color,box-shadow] duration-350 focus:border-foreground/40 focus:bg-foreground/[0.04] focus:shadow-[0_0_0_3.5px_rgba(127,127,127,0.18)]"></textarea>
+                <label htmlFor="message" className="mono text-[11px] tracking-[0.04em] text-muted">message</label>
+                <textarea required id="message" name="message" placeholder="Tell me what's on your mind…" className="h-[120px] resize-none bg-bg1 border border-border rounded-[var(--r)] px-4 py-3 text-foreground text-[14px] outline-none transition-colors duration-200 focus:border-accent"></textarea>
               </div>
 
-              {errorMsg && <div className="text-color-pink text-sm mb-4">{errorMsg}</div>}
+              {/* Honeypot — bots fill this; humans never see it */}
+              <input type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden className="absolute left-[-9999px] w-px h-px opacity-0" />
 
-              <button disabled={loading || success} type="submit" className={`w-full flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-[15px] font-medium bg-[var(--color-blue)] text-white transition-[transform,background-color,border-color,color,box-shadow] duration-350 ${success ? "shadow-[0_6px_28px_var(--color-blue-glow)]" : "shadow-[0_6px_28px_var(--color-blue-glow),0_4px_14px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_10px_44px_var(--color-blue-glow)]"} disabled:opacity-70 disabled:cursor-not-allowed`}>
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : success ? <CheckCircle2 className="w-5 h-5" /> : <Send className="w-4 h-4" />}
-                {loading ? "Sending..." : success ? "Message Sent!" : "Send Message"}
+              {errorMsg && <div className="mono text-red-400 text-[13px] mb-4">{errorMsg}</div>}
+
+              <button disabled={loading || success} type="submit" className={`w-full flex items-center justify-center gap-2 px-7 py-3 rounded-[var(--r)] mono text-[14px] bg-accent text-background transition-[transform,opacity] duration-200 ${success ? "" : "hover:-translate-y-0.5"} disabled:opacity-70 disabled:cursor-not-allowed`}>
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : success ? <CheckCircle2 className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+                {loading ? "sending…" : success ? "message sent ✓" : "send message"}
               </button>
             </motion.form>
 
             <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-3 mt-7">
-              <a href="mailto:shaansatsangi@gmail.com" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-glass text-[13px] font-medium text-muted2 transition-[transform,background-color,border-color,color,box-shadow] duration-350 hover:text-foreground hover:border-border2 hover:bg-glass2 hover:-translate-y-1">
-                <Mail className="w-[15px] h-[15px]" /> Email
+              <a href="mailto:shaansatsangi@gmail.com" className="inline-flex items-center gap-2 px-4 py-2 rounded-[var(--r)] border border-border bg-surface mono text-[12px] text-muted2 transition-colors duration-200 hover:text-foreground hover:border-accent/50">
+                <Mail className="w-[15px] h-[15px]" /> email
               </a>
-              <a href="https://linkedin.com/in/shaansatsangi" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-glass text-[13px] font-medium text-muted2 transition-[transform,background-color,border-color,color,box-shadow] duration-350 hover:text-foreground hover:border-border2 hover:bg-glass2 hover:-translate-y-1">
-                <LinkedinIcon className="w-[15px] h-[15px]" /> LinkedIn
+              <a href="https://linkedin.com/in/shaansatsangi" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-[var(--r)] border border-border bg-surface mono text-[12px] text-muted2 transition-colors duration-200 hover:text-foreground hover:border-accent/50">
+                <LinkedinIcon className="w-[15px] h-[15px]" /> linkedin
               </a>
-              <a href="https://github.com/Shaan-alpha" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-glass text-[13px] font-medium text-muted2 transition-[transform,background-color,border-color,color,box-shadow] duration-350 hover:text-foreground hover:border-border2 hover:bg-glass2 hover:-translate-y-1">
-                <GithubIcon className="w-[15px] h-[15px]" /> GitHub
+              <a href="https://github.com/Shaan-alpha" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-[var(--r)] border border-border bg-surface mono text-[12px] text-muted2 transition-colors duration-200 hover:text-foreground hover:border-accent/50">
+                <GithubIcon className="w-[15px] h-[15px]" /> github
               </a>
-              <a href="tel:+919521587085" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border bg-glass text-[13px] font-medium text-muted2 transition-[transform,background-color,border-color,color,box-shadow] duration-350 hover:text-foreground hover:border-border2 hover:bg-glass2 hover:-translate-y-1">
+              <a href="tel:+919521587085" className="inline-flex items-center gap-2 px-4 py-2 rounded-[var(--r)] border border-border bg-surface mono text-[12px] text-muted2 transition-colors duration-200 hover:text-foreground hover:border-accent/50">
                 <Phone className="w-[15px] h-[15px]" /> +91 95215 87085
               </a>
             </motion.div>
@@ -128,9 +129,9 @@ export default function Contact() {
             initial={{ opacity: 0, y: 20, x: "-50%" }}
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: 20, x: "-50%" }}
-            className="fixed bottom-9 left-1/2 z-[9000] bg-bg2/95 backdrop-blur border border-border2 rounded-full px-6 py-3 text-[14px] text-foreground whitespace-nowrap"
+            className="fixed bottom-9 left-1/2 z-[9000] bg-surface border border-accent rounded-[var(--r)] px-6 py-3 mono text-[13px] text-foreground whitespace-nowrap"
           >
-            ✅ Message sent! I&apos;ll reply soon.
+            <span className="accent">✓</span> message sent — I&apos;ll reply soon.
           </motion.div>
         )}
       </AnimatePresence>
