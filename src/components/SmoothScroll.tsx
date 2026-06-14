@@ -2,11 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import Lenis from "lenis";
-import { useFrameLoader } from "./FrameLoaderProvider";
 
 export default function SmoothScroll() {
   const lenisRef = useRef<Lenis | null>(null);
-  const { ready } = useFrameLoader();
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -47,19 +45,6 @@ export default function SmoothScroll() {
       lenisRef.current = null;
     };
   }, []);
-
-  // Lock scroll while the preloader is up, then recompute + resume cleanly.
-  useEffect(() => {
-    const lenis = lenisRef.current;
-    if (!lenis) return;
-    if (ready) {
-      lenis.resize();
-      lenis.start();
-    } else {
-      lenis.scrollTo(0, { immediate: true });
-      lenis.stop();
-    }
-  }, [ready]);
 
   return null;
 }
