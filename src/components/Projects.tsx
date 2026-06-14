@@ -130,19 +130,6 @@ export default function Projects() {
       link: "https://github.com/Shaan-alpha/Sahaara_APP",
       liveLink: "https://sahaara-app.vercel.app",
     },
-    {
-      id: "review-reader",
-      date: "Aug 2025",
-      status: "shipped",
-      title: "Review Reader — Sentiment Analysis",
-      desc: "A high-accuracy NLP pipeline (Jupyter notebook) that classifies sentiments across 1,000+ reviews in milliseconds using classical ML with advanced text preprocessing.",
-      tags: ["Python", "Pandas", "Scikit-learn", "TF-IDF", "Jupyter"],
-      bullets: [
-        "Pipeline handling 1,000+ reviews at 85% accuracy using Scikit-learn & Pandas",
-        "Classifies sentiments in under 0.5 seconds per review via Jupyter Notebook",
-        "TF-IDF vectorization, tokenization & stop-word removal boosted precision by 20%",
-      ],
-    },
   ];
 
   const statusClass = (s: Status) =>
