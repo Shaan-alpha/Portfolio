@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import Sparkles from "./Sparkles";
 import { fluent } from "@/lib/techIcons";
 
 export default function Hero() {
@@ -26,9 +25,6 @@ export default function Hero() {
           WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, black 0%, transparent 80%)'
         }}
       />
-
-      {/* Glitter / sparkle layer */}
-      <Sparkles />
 
       <motion.div style={{ y: floatsY }} className="absolute inset-0 pointer-events-none overflow-hidden hidden sm:block">
         <motion.div 
