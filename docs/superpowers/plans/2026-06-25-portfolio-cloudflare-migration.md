@@ -223,9 +223,9 @@ Expected: `HTTP/2 200`.
 
 - [x] **Step 1 [ME]:** Merge the verified branch to `main`; push. *(done — `0ade9d0`)*
 - [x] **Step 2 [BOTH]:** Verify the deploy on the `*.workers.dev` preview — 200, all security headers, assets 200, 404 handling. *(done — `portfolio.shaansatsangi.workers.dev` healthy)*
-- [ ] **Step 3 [YOU]:** Cloudflare `portfolio` project → **Settings → Domains & Routes** → **Add → Custom Domain** → `shaansatsangi.com`. Cloudflare auto-creates the proxied DNS record and issues TLS. Repeat: **Add → Custom Domain** → `www.shaansatsangi.com`.
-- [ ] **Step 4 [YOU]:** Wait until both custom domains show **Active** with a valid certificate.
-- [ ] **Step 5 [YOU]:** Add the canonical redirect: Cloudflare dashboard → **Rules** → **Redirect Rules** → **Create rule**:
+- [x] **Step 3 [YOU]:** Cloudflare `portfolio` project → **Settings → Domains & Routes** → **Add → Custom Domain** → `shaansatsangi.com`. Cloudflare auto-creates the proxied DNS record and issues TLS. Repeat: **Add → Custom Domain** → `www.shaansatsangi.com`. *(done — apex serves 200 over HTTPS)*
+- [x] **Step 4 [YOU]:** Wait until both custom domains show **Active** with a valid certificate. *(done — valid TLS)*
+- [x] **Step 5 [YOU]:** Add the canonical redirect: Cloudflare dashboard → **Rules** → **Redirect Rules** → **Create rule**: *(done — www 301→apex verified)*
   - **If** — Hostname **equals** `www.shaansatsangi.com`
   - **Then** — Static redirect → URL `https://shaansatsangi.com${http.request.uri.path}` , **Status 301**, **Preserve query string** ✔
   - Deploy.
@@ -245,11 +245,11 @@ Expected: apex serves 200 over HTTPS; www 301s to apex.
 
 The contact form still posts to the Render Flask app (`Contact.tsx` unchanged). CORS is env-driven — no code change.
 
-- [ ] **Step 1:** Render dashboard → the `portfolio-backend` service → **Environment**.
-- [ ] **Step 2:** Set (or edit) the variable:
+- [x] **Step 1:** Render dashboard → the `portfolio-backend` service → **Environment**.
+- [x] **Step 2:** Set (or edit) the variable:
   - **Key:** `ALLOWED_ORIGINS`
   - **Value:** `https://shaansatsangi.com,https://www.shaansatsangi.com,http://localhost:3000`
-- [ ] **Step 3:** Save → trigger a manual deploy (or let auto-deploy run).
+- [x] **Step 3:** Save → trigger a manual deploy (or let auto-deploy run). *(done — CORS preflight returns `access-control-allow-origin: https://shaansatsangi.com`)*
 
 **Verify:** on `https://shaansatsangi.com`, submit the contact form with real values. Expect the success message and an email to `OWNER_EMAIL`. Also:
 ```bash
@@ -268,7 +268,7 @@ Expected: `{"status":"ok", ...}` and the live form returns `{"status":"success",
 - [ ] **Step 2 [YOU]:** Google gives a **TXT** record. In Cloudflare → **DNS** → **Records** → add the TXT exactly as given → verify in GSC.
 - [ ] **Step 3 [YOU]:** GSC → **Sitemaps** → submit `https://shaansatsangi.com/sitemap.xml`.
 - [ ] **Step 4 [YOU]:** GSC → **URL Inspection** → enter `https://shaansatsangi.com/` → **Request indexing**.
-- [ ] **Step 5 [ME]:** Verify canonical + cards are correct:
+- [x] **Step 5 [ME]:** Verify canonical + cards are correct: *(done — canonical, og:url, og:image all = https://shaansatsangi.com)*
 ```bash
 curl.exe -s https://shaansatsangi.com | grep -i "canonical\|og:url\|og:image"
 ```
