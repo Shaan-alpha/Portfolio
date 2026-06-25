@@ -406,33 +406,29 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
 };
 ```
 
-- [ ] **Step 3 [ME]:** Point the form at the same-origin route — `src/components/Contact.tsx` line 29:
+- [x] **Step 3 [ME]:** Point the form at the same-origin route — `src/components/Contact.tsx` line 29:
 ```ts
       const res = await fetch("/api/contact", {
 ```
+*(done — Step C; verified no `onrender.com` in any live JS chunk, `/api/contact` is the wired endpoint)*
 
-- [ ] **Step 4 [ME]:** Tighten CSP `connect-src` in `public/_headers` (drop the Render origin, **keep Cloudflare Analytics**):
+- [x] **Step 4 [ME]:** Tighten CSP `connect-src` in `public/_headers` (drop the Render origin, **keep Cloudflare Analytics**): *(done — live `connect-src 'self' https://cloudflareinsights.com;`)*
 ```
 connect-src 'self' https://cloudflareinsights.com;
 ```
 (Edit that token within the existing `Content-Security-Policy` line — remove only `https://portfolio-backend-wrwo.onrender.com`; `https://cloudflareinsights.com` must stay for the Web Analytics beacon.)
 
-- [ ] **Step 5 [YOU]:** Cloudflare → **Workers & Pages → `portfolio` → Settings → Variables and Secrets**, add (reuse the values already in Render), then **Deploy**:
+- [x] **Step 5 [YOU]:** Cloudflare → **Workers & Pages → `portfolio` → Settings → Variables and Secrets**, add (reuse the values already in Render), then **Deploy**: *(done — `RESEND_API_KEY`, `OWNER_EMAIL`, `SEND_VISITOR_ACK=true` set; `RESEND_FROM_EMAIL` left unset → falls back to `Portfolio <onboarding@resend.dev>`)*
   - `RESEND_API_KEY` = *(your existing key)* — add as an **encrypted Secret**
   - `OWNER_EMAIL` = *(your email)*
   - `RESEND_FROM_EMAIL` = *(optional; else the Resend default is used)*
   - `SEND_VISITOR_ACK` = `true` *(optional)*
 
-- [ ] **Step 6 [ME]:** Commit & push; open a PR or merge to `main`.
-```bash
-git add functions/api/contact.ts src/components/Contact.tsx public/_headers
-git commit -m "feat: same-origin contact API via Cloudflare Pages Function; drop Render dependency"
-git push origin contact-pages-function
-```
+- [x] **Step 6 [ME]:** Commit & push (done directly on `main` in two safe pushes: Step A `worker/` + `wrangler.jsonc`; Step C `Contact.tsx` + `_headers`).
 
 - [ ] **Step 7 [YOU]:** After the deploy, add a **Rate Limiting Rule** (Security → WAF → Rate limiting rules): match path `/api/contact`, method POST, e.g. **5 requests / 1 min per IP** → Block. (Free plan: one rule.)
 
-- [ ] **Step 8 [BOTH]:** Verify on the live domain:
+- [x] **Step 8 [BOTH]:** Verify on the live domain: *(done — success path returns `{"status":"success",...}` + email delivered; honeypot `company` → `{"status":"success"}` no email; empty → 400)*
 ```bash
 # success path
 curl.exe -s -X POST https://shaansatsangi.com/api/contact -H "Content-Type: application/json" -d "{\"name\":\"Test\",\"email\":\"t@example.com\",\"message\":\"hello\"}"
