@@ -12,7 +12,7 @@
 | Hosting | **GitHub Pages** (not Vercel) via GitHub Actions → `shaan-alpha.github.io/Portfolio` |
 | Subpath | `basePath: "/Portfolio"` baked into `next.config.ts`; workflow passes `NEXT_PUBLIC_BASE_PATH=/Portfolio` |
 | Hardcoded URLs | `https://shaan-alpha.github.io/Portfolio` in `layout.tsx` (`SITE`/`metadataBase`/JSON-LD), `sitemap.ts`, `robots.ts` |
-| Backend | Flask on **Render** → `portfolio-backend-wrwo.onrender.com/contact` (separate repo `portfolio-backend`); existing defenses: scoped CORS, per-IP rate limiting, honeypot, length caps |
+| Backend | Flask on **Render** → `portfolio-backend-wrwo.onrender.com/contact` (separate repo `portfolio-backend`, on disk at `Desktop/portfolio-backend`). Defenses: per-IP rate limit (5/hr, 2/min), honeypot (`company` field), length caps, **non-wildcard CORS via `ALLOWED_ORIGINS` env var**. Delivery: **Resend** email API (`RESEND_API_KEY`, `OWNER_EMAIL`, optional `RESEND_FROM_EMAIL`/`SEND_VISITOR_ACK`). Also writes to SQLite `database.db` (gitignored — and ephemeral on Render, wiped on redeploy). |
 | Frontend→backend | `Contact.tsx` POSTs to the Render URL |
 | Domain | `shaansatsangi.com` on Namecheap, on Namecheap Web Hosting DNS, nothing pointed yet |
 | SEO assets present | `sitemap.ts`, `robots.ts`, metadata + JSON-LD, generated `og.png` |
@@ -89,7 +89,7 @@
 | 3 | Namecheap → set Cloudflare nameservers | CF marks zone "Active"; existing GitHub Pages site still works | Re-enter Namecheap nameservers |
 | 4 | Create CF Pages project from GitHub repo (build `npm run build`, output `out`) | Preview deploy works on `*.pages.dev` | Delete Pages project |
 | 5 | Attach custom domain (apex + `www`) to Pages project | `https://shaansatsangi.com` live with valid TLS | Remove custom domain |
-| 6 | Update Render Flask CORS to allow `https://shaansatsangi.com` (+`www`); redeploy | Contact form submits successfully on live domain | Revert CORS env/redeploy |
+| 6 | Render dashboard: add `https://shaansatsangi.com` + `https://www.shaansatsangi.com` to the `ALLOWED_ORIGINS` env var (**no code change**); redeploy | Contact form submits successfully on live domain | Revert env var + redeploy |
 | 7 | Disable GitHub Pages workflow; (optional) redirect stub on old URL | Push triggers only CF Pages; old URL redirects | Re-enable workflow |
 | 8 | SEO: Google Search Console (new domain), submit sitemap, request reindex; validate OG/Twitter cards + canonicals | GSC verified; sitemap accepted; cards render | n/a (additive) |
 | 9 | Security hardening: CF SSL=Full(strict), Always Use HTTPS, HSTS, Bot Fight Mode, rate-limit rule on contact path, enforce CSP, optional Turnstile | Headers present (securityheaders.com); rate-limit triggers under test | Toggle individual settings off |
@@ -109,10 +109,16 @@
 3. Old GitHub Pages URL is kept alive briefly with a redirect (preserve shared links) rather than hard-deleted.
 4. Backend swap (step 10) is in-scope but executed last, after the site is stable.
 
-## 9. Open items (resolve during execution)
+## 9. Open items
 
-- **Step 10 requires reading the `portfolio-backend` repo** to port its delivery mechanism (email / Telegram / storage) and anti-abuse logic into the Pages Function, and to decide email transport (e.g. Resend free tier, Cloudflare Email Routing) since MailChannels free Workers sending is no longer available.
-- Confirm Cloudflare **free-plan limits** at execution time (custom WAF rules count, single rate-limiting rule) and adjust the hardening step to fit.
+**Resolved (backend repo inspected 2026-06-25):**
+- CORS is env-driven (`ALLOWED_ORIGINS`) → **step 6 needs no code**, just a Render dashboard env edit.
+- Delivery is **Resend**; step 10 reuses the *existing* `RESEND_API_KEY` + `OWNER_EMAIL` (provided as Cloudflare Pages env vars — not new keys).
+- `database.db` is gitignored and untracked → no submission-data leak in the public repo. ✅
+
+**Remaining decisions (resolve during execution):**
+- **Step 10 storage:** keep persisting submissions → **Cloudflare D1** (free, persistent) vs **email-only** (simplest; current Render SQLite is ephemeral/wiped on redeploy anyway, so email-only loses nothing real). Default: email-only unless a durable record is wanted.
+- Confirm Cloudflare **free-plan limits** at execution (managed WAF ruleset, single rate-limit rule, ≤5 custom rules) and fit the hardening step within them.
 - Verify `techIcons.tsx` icon resolution after basePath removal.
 
 ## 10. Out of scope
