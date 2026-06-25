@@ -264,10 +264,10 @@ Expected: `{"status":"ok", ...}` and the live form returns `{"status":"success",
 
 ### Task 8: SEO activation  **[BOTH]**
 
-- [ ] **Step 1 [YOU]:** https://search.google.com/search-console → **Add property** → **Domain** → `shaansatsangi.com`.
-- [ ] **Step 2 [YOU]:** Google gives a **TXT** record. In Cloudflare → **DNS** → **Records** → add the TXT exactly as given → verify in GSC.
-- [ ] **Step 3 [YOU]:** GSC → **Sitemaps** → submit `https://shaansatsangi.com/sitemap.xml`.
-- [ ] **Step 4 [YOU]:** GSC → **URL Inspection** → enter `https://shaansatsangi.com/` → **Request indexing**.
+- [x] **Step 1 [YOU]:** https://search.google.com/search-console → **Add property** → **Domain** → `shaansatsangi.com`. *(done — property verified)*
+- [x] **Step 2 [YOU]:** Google gives a **TXT** record. In Cloudflare → **DNS** → **Records** → add the TXT exactly as given → verify in GSC. *(done)*
+- [x] **Step 3 [YOU]:** GSC → **Sitemaps** → submit `https://shaansatsangi.com/sitemap.xml`. *(done — status Success)*
+- [x] **Step 4 [YOU]:** GSC → **URL Inspection** → enter `https://shaansatsangi.com/` → **Request indexing**. *(URL discovered via sitemap; "Discovered – currently not indexed" is normal for a fresh domain — Request Indexing queued)*
 - [x] **Step 5 [ME]:** Verify canonical + cards are correct: *(done — canonical, og:url, og:image all = https://shaansatsangi.com)*
 ```bash
 curl.exe -s https://shaansatsangi.com | grep -i "canonical\|og:url\|og:image"
