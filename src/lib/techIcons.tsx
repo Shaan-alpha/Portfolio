@@ -1,7 +1,7 @@
-// Static export is served under basePath /Portfolio, and plain <img> srcs are
-// NOT auto-prefixed, so prefix asset paths manually (same reason the frame
-// sequence does). basePath is hard-coded in next.config.ts, so this is constant.
-export const BP = "/Portfolio";
+// Served from a root domain on Cloudflare Pages — asset paths are root-absolute.
+// Plain <img> srcs are not auto-prefixed by Next, so keep this prefix constant
+// (empty at root). If a basePath is ever reintroduced, set it here.
+export const BP = "";
 
 type Logo = { file: string; invert?: boolean };
 
