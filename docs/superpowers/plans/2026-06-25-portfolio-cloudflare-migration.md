@@ -289,7 +289,7 @@ All Cloudflare dashboard toggles for `shaansatsangi.com`, then promote the CSP t
 - [ ] **Step 3 [YOU]:** Same page → enable **HSTS** (max-age 6 months, include subdomains, preload) — confirm the warning prompt.
 - [ ] **Step 4 [YOU]:** **Security** → **Bots** → enable **Bot Fight Mode**.
 - [ ] **Step 5 [YOU]:** **Security** → **WAF** → **Managed rules** → deploy the **Cloudflare Free Managed Ruleset**.
-- [ ] **Step 6 [ME → YOU]:** Promote CSP to enforcing once clean. Browse the live site with DevTools open; if the console shows **no CSP violations** from Report-Only, edit `public/_headers`: rename the header `Content-Security-Policy-Report-Only` → `Content-Security-Policy` (same value), commit, push (auto-redeploys).
+- [x] **Step 6 [ME → YOU]:** Promote CSP to enforcing once clean. *(done — `1` violation found in Report-Only: Cloudflare Web Analytics beacon `static.cloudflareinsights.com`, auto-injected at the edge. Allowlisted per Cloudflare docs — added `https://static.cloudflareinsights.com` to `script-src` and `https://cloudflareinsights.com` to `connect-src` — then promoted to enforcing. Live header confirmed enforcing.)*
 ```bash
 git add public/_headers && git commit -m "feat: enforce CSP after report-only verification" && git push origin main
 ```
@@ -407,11 +407,11 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
       const res = await fetch("/api/contact", {
 ```
 
-- [ ] **Step 4 [ME]:** Tighten CSP `connect-src` in `public/_headers` (drop the Render origin):
+- [ ] **Step 4 [ME]:** Tighten CSP `connect-src` in `public/_headers` (drop the Render origin, **keep Cloudflare Analytics**):
 ```
-connect-src 'self';
+connect-src 'self' https://cloudflareinsights.com;
 ```
-(Edit that token within the existing `Content-Security-Policy` line.)
+(Edit that token within the existing `Content-Security-Policy` line — remove only `https://portfolio-backend-wrwo.onrender.com`; `https://cloudflareinsights.com` must stay for the Web Analytics beacon.)
 
 - [ ] **Step 5 [YOU]:** Cloudflare Pages → project → **Settings → Environment variables → Production**, add (reuse the values already in Render):
   - `RESEND_API_KEY` = *(your existing key)*
