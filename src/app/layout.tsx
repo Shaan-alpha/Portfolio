@@ -19,7 +19,7 @@ const jetbrains = JetBrains_Mono({
   weight: ["400", "500", "600", "700"],
 });
 
-const SITE = "https://shaan-alpha.github.io/Portfolio";
+const SITE = "https://shaansatsangi.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
@@ -36,13 +36,13 @@ export const metadata: Metadata = {
     siteName: "Shaan Satsangi",
     title: "Shaan Satsangi · Data Engineer",
     description: "Bulletproof pipelines over flashy demos. Data engineering, ML, and analytics.",
-    images: [{ url: "/Portfolio/og.png", width: 1200, height: 630, alt: "Shaan Satsangi — Data Engineer" }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Shaan Satsangi — Data Engineer" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Shaan Satsangi · Data Engineer",
     description: "Bulletproof pipelines over flashy demos. Data engineering, ML, and analytics.",
-    images: ["/Portfolio/og.png"],
+    images: ["/og.png"],
   },
 };
 
