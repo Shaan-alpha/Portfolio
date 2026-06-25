@@ -1,6 +1,6 @@
-// Served from a root domain on Cloudflare Pages — asset paths are root-absolute.
-// Plain <img> srcs are not auto-prefixed by Next, so keep this prefix constant
-// (empty at root). If a basePath is ever reintroduced, set it here.
+// Served from a root domain on Cloudflare Workers (static assets) — asset paths
+// are root-absolute. Plain <img> srcs are not auto-prefixed by Next, so keep this
+// prefix constant (empty at root). If a basePath is ever reintroduced, set it here.
 export const BP = "";
 
 type Logo = { file: string; invert?: boolean };
@@ -34,6 +34,7 @@ const TECH: Record<string, Logo> = {
   "google cloud": { file: "googlecloud" },
   jupyter: { file: "jupyter" },
   vercel: { file: "vercel", invert: true },
+  cloudflare: { file: "cloudflare" },
   sqlite: { file: "sqlite" },
   pandas: { file: "pandas", invert: true },
   supabase: { file: "supabase" },

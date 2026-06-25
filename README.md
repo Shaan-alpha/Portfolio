@@ -18,8 +18,8 @@ A terminal/data-themed developer portfolio built with **Next.js 16**, **React 19
 - **Styling:** Tailwind CSS 4
 - **Animation:** Framer Motion 12 · Lenis
 - **Fonts:** JetBrains Mono (display) · Outfit (body), via `next/font`
-- **Deploy:** GitHub Pages (`basePath: /Portfolio`) via GitHub Actions
-- **Contact backend:** a small Flask service (separate repo `portfolio-backend`) with scoped CORS, per-IP rate limiting, a honeypot, and length caps.
+- **Hosting:** Cloudflare Workers static assets at [`shaansatsangi.com`](https://shaansatsangi.com) — Cloudflare DNS · WAF · CDN, security headers, an enforced CSP, HSTS, and an SSL Labs **A+** edge config.
+- **Contact API:** a same-origin Cloudflare Worker route (`/api/contact`, see [`worker/index.ts`](worker/index.ts)) that emails via **Resend** — honeypot, required-field + length validation, and WAF rate limiting. No CORS, no cold start. *(Previously a Flask service on Render; now retired.)*
 
 ## Featured projects
 
@@ -37,7 +37,7 @@ A terminal/data-themed developer portfolio built with **Next.js 16**, **React 19
 ```bash
 git clone https://github.com/Shaan-alpha/Portfolio.git && cd Portfolio
 npm install
-npm run dev          # http://localhost:3000/Portfolio
+npm run dev          # http://localhost:3000
 npm run build        # static export to ./out
 ```
 
