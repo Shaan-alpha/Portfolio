@@ -284,11 +284,11 @@ Expected: canonical and `og:url` = `https://shaansatsangi.com`; `og:image` resol
 
 All Cloudflare dashboard toggles for `shaansatsangi.com`, then promote the CSP to enforcing.
 
-- [ ] **Step 1 [YOU]:** **SSL/TLS** → **Overview** → set mode to **Full (strict)**.
-- [ ] **Step 2 [YOU]:** **SSL/TLS** → **Edge Certificates** → enable **Always Use HTTPS** and **Automatic HTTPS Rewrites**.
-- [ ] **Step 3 [YOU]:** Same page → enable **HSTS** (max-age 6 months, include subdomains, preload) — confirm the warning prompt.
-- [ ] **Step 4 [YOU]:** **Security** → **Bots** → enable **Bot Fight Mode**.
-- [ ] **Step 5 [YOU]:** **Security** → **WAF** → **Managed rules** → deploy the **Cloudflare Free Managed Ruleset**.
+- [ ] **Step 1 [YOU]:** **SSL/TLS** → **Overview** → set mode to **Full (strict)**. *(awaiting confirmation — not externally verifiable)*
+- [x] **Step 2 [YOU]:** **SSL/TLS** → **Edge Certificates** → enable **Always Use HTTPS** and **Automatic HTTPS Rewrites**. *(done — `http://` 301s to `https://` for apex + www)*
+- [x] **Step 3 [YOU]:** Same page → enable **HSTS** (max-age 6 months, include subdomains, preload) — confirm the warning prompt. *(done — `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` live)*
+- [ ] **Step 4 [YOU]:** **Security** → **Bots** → enable **Bot Fight Mode**. *(awaiting confirmation — not externally verifiable)*
+- [ ] **Step 5 [YOU]:** **Security** → **WAF** → **Managed rules** → deploy the **Cloudflare Free Managed Ruleset**. *(awaiting confirmation — not externally verifiable)*
 - [x] **Step 6 [ME → YOU]:** Promote CSP to enforcing once clean. *(done — `1` violation found in Report-Only: Cloudflare Web Analytics beacon `static.cloudflareinsights.com`, auto-injected at the edge. Allowlisted per Cloudflare docs — added `https://static.cloudflareinsights.com` to `script-src` and `https://cloudflareinsights.com` to `connect-src` — then promoted to enforcing. Live header confirmed enforcing.)*
 ```bash
 git add public/_headers && git commit -m "feat: enforce CSP after report-only verification" && git push origin main
@@ -426,7 +426,7 @@ connect-src 'self' https://cloudflareinsights.com;
 
 - [x] **Step 6 [ME]:** Commit & push (done directly on `main` in two safe pushes: Step A `worker/` + `wrangler.jsonc`; Step C `Contact.tsx` + `_headers`).
 
-- [ ] **Step 7 [YOU]:** After the deploy, add a **Rate Limiting Rule** (Security → WAF → Rate limiting rules): match path `/api/contact`, method POST, e.g. **5 requests / 1 min per IP** → Block. (Free plan: one rule.)
+- [x] **Step 7 [YOU]:** After the deploy, add a **Rate Limiting Rule** (Security → WAF → Rate limiting rules): match path `/api/contact`, method POST, e.g. **5 requests / 1 min per IP** → Block. (Free plan: one rule.) *(done — Free plan period fixed at 10s, so set to **>5 req / 10s per IP → Block 10 min**; verified live: 8th rapid POST returned 429)*
 
 - [x] **Step 8 [BOTH]:** Verify on the live domain: *(done — success path returns `{"status":"success",...}` + email delivered; honeypot `company` → `{"status":"success"}` no email; empty → 400)*
 ```bash
