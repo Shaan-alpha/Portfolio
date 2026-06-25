@@ -305,24 +305,28 @@ Expected: HSTS, CSP (enforcing), `X-Frame-Options: DENY`, `X-Content-Type-Option
 
 ---
 
-### Task 10: (Optional, last) Same-origin contact API as a Pages Function; retire Render  **[BOTH]**
+### Task 10: Same-origin contact API as a Worker route; retire Render  **[BOTH]**
 
-Re-platform the contact handler to a Cloudflare Pages Function at `/api/contact` — same-origin (no CORS), no Render cold start, behind Cloudflare WAF. Email-only (Resend); no SQLite. Do this only after Tasks 1–9 are stable. Work on a fresh branch off `main`.
+> **Execution note (Pages Function → Worker route):** Hosting is a **Workers static-assets** deployment (see Task 6 note), not Pages — so the planned `functions/api/contact.ts` Pages Function does not apply. Instead the same-origin endpoint is a **Worker `fetch` handler** at `worker/index.ts` that intercepts `POST /api/contact` and delegates everything else to the `ASSETS` binding. `wrangler.jsonc` gains `main: ./worker/index.ts` and `assets.binding: ASSETS`. Same outcome — same-origin (no CORS), no Render cold start, behind the Cloudflare WAF — confirmed by Cloudflare docs for Workers + static assets.
+
+Re-platform the contact handler to a Cloudflare Worker route at `/api/contact`. Email-only (Resend); no SQLite. Done in two safe pushes so the live form never breaks: (A) deploy the Worker route while the form still posts to Render, verify `/api/contact`; (B) flip the form to `/api/contact` and tighten CSP.
 
 **Files:**
-- Create: `functions/api/contact.ts`
+- Create: `worker/index.ts` *(was `functions/api/contact.ts`)*
+- Modify: `wrangler.jsonc` (`main` + `assets.binding`)
+- Modify: `tsconfig.json` (exclude `worker` from Next type-checking)
 - Modify: `src/components/Contact.tsx:29`
-- Modify: `public/_headers` (tighten `connect-src` to `'self'`)
+- Modify: `public/_headers` (tighten `connect-src`, keep Cloudflare Analytics)
 
 - [ ] **Step 1 [ME]:** Branch.
 ```bash
 git checkout main && git pull && git checkout -b contact-pages-function
 ```
 
-- [ ] **Step 2 [ME]:** Create `functions/api/contact.ts` (faithful TS port of the Flask logic — honeypot, required-field check, length caps, HTML-escaped Resend email, optional visitor ack):
+- [x] **Step 2 [ME]:** Create `worker/index.ts` (faithful TS port of the Flask logic — honeypot, required-field check, length caps, HTML-escaped Resend email, optional visitor ack), plus `wrangler.jsonc` (`main` + `assets.binding: ASSETS`) and `tsconfig.json` exclude. *(done — Step A; deployed and verified live: `POST /api/contact {}` → 400 validation; assets still 200; env not yet set so valid payload → 500 "email not configured")*. The Pages-Function reference below is superseded by the Worker `fetch` handler actually used:
 
 ```ts
-// Cloudflare Pages Function — same-origin contact endpoint, replaces the Render Flask app.
+// Cloudflare Pages Function — superseded; actual impl is worker/index.ts (Worker fetch handler).
 interface Env {
   RESEND_API_KEY: string;
   OWNER_EMAIL: string;
@@ -413,8 +417,8 @@ connect-src 'self' https://cloudflareinsights.com;
 ```
 (Edit that token within the existing `Content-Security-Policy` line — remove only `https://portfolio-backend-wrwo.onrender.com`; `https://cloudflareinsights.com` must stay for the Web Analytics beacon.)
 
-- [ ] **Step 5 [YOU]:** Cloudflare Pages → project → **Settings → Environment variables → Production**, add (reuse the values already in Render):
-  - `RESEND_API_KEY` = *(your existing key)*
+- [ ] **Step 5 [YOU]:** Cloudflare → **Workers & Pages → `portfolio` → Settings → Variables and Secrets**, add (reuse the values already in Render), then **Deploy**:
+  - `RESEND_API_KEY` = *(your existing key)* — add as an **encrypted Secret**
   - `OWNER_EMAIL` = *(your email)*
   - `RESEND_FROM_EMAIL` = *(optional; else the Resend default is used)*
   - `SEND_VISITOR_ACK` = `true` *(optional)*
