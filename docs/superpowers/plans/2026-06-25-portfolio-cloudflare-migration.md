@@ -284,11 +284,12 @@ Expected: canonical and `og:url` = `https://shaansatsangi.com`; `og:image` resol
 
 All Cloudflare dashboard toggles for `shaansatsangi.com`, then promote the CSP to enforcing.
 
-- [ ] **Step 1 [YOU]:** **SSL/TLS** → **Overview** → set mode to **Full (strict)**. *(awaiting confirmation — not externally verifiable)*
+- [x] **Step 1 [YOU]:** **SSL/TLS** → **Overview** → set mode to **Full (strict)**. *(done — confirmed by user)*
 - [x] **Step 2 [YOU]:** **SSL/TLS** → **Edge Certificates** → enable **Always Use HTTPS** and **Automatic HTTPS Rewrites**. *(done — `http://` 301s to `https://` for apex + www)*
 - [x] **Step 3 [YOU]:** Same page → enable **HSTS** (max-age 6 months, include subdomains, preload) — confirm the warning prompt. *(done — `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` live)*
-- [ ] **Step 4 [YOU]:** **Security** → **Bots** → enable **Bot Fight Mode**. *(awaiting confirmation — not externally verifiable)*
-- [ ] **Step 5 [YOU]:** **Security** → **WAF** → **Managed rules** → deploy the **Cloudflare Free Managed Ruleset**. *(awaiting confirmation — not externally verifiable)*
+- [x] **Step 4 [YOU]:** **Security** → **Bots** → enable **Bot Fight Mode**. *(done — confirmed by user)*
+- [x] **Step 5 [YOU]:** **Security** → **WAF** → **Managed rules** → deploy the **Cloudflare Free Managed Ruleset**. *(done — confirmed by user)*
+- [x] **Step 5b [YOU]:** **SSL/TLS** → **Edge Certificates** → **Minimum TLS Version** = **1.2** *(added during hardening — TLS 1.0/1.1 were capping SSL Labs at B; now rejected, confirmed via curl)*
 - [x] **Step 6 [ME → YOU]:** Promote CSP to enforcing once clean. *(done — `1` violation found in Report-Only: Cloudflare Web Analytics beacon `static.cloudflareinsights.com`, auto-injected at the edge. Allowlisted per Cloudflare docs — added `https://static.cloudflareinsights.com` to `script-src` and `https://cloudflareinsights.com` to `connect-src` — then promoted to enforcing. Live header confirmed enforcing.)*
 ```bash
 git add public/_headers && git commit -m "feat: enforce CSP after report-only verification" && git push origin main
@@ -298,7 +299,7 @@ git add public/_headers && git commit -m "feat: enforce CSP after report-only ve
 ```bash
 curl.exe -sI https://shaansatsangi.com | grep -i "strict-transport-security\|content-security-policy\|x-frame-options\|x-content-type-options"
 ```
-Expected: HSTS, CSP (enforcing), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` all present. Then check the grade at https://securityheaders.com/?q=https://shaansatsangi.com (target A/A+) and TLS at https://www.ssllabs.com/ssltest/ (target A).
+Expected: HSTS, CSP (enforcing), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` all present. Then check the grade at https://securityheaders.com/?q=https://shaansatsangi.com (target A/A+) and TLS at https://www.ssllabs.com/ssltest/ (target A). **Achieved: securityheaders.com = A** (capped at A by `'unsafe-inline'` in `script-src`, which is unavoidable for a static Next.js export — no per-request nonces possible); **SSL Labs = A+** after setting Minimum TLS Version to 1.2.
 **Rollback:** toggle any individual Cloudflare setting off; revert the CSP commit if it breaks rendering.
 
 > Note: the contact endpoint is still on Render, protected by its own app-side limiter (5/hr, 2/min). It gains Cloudflare WAF + rate limiting in Task 10 when it moves on-platform.
