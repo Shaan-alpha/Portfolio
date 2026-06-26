@@ -51,8 +51,20 @@ const personJsonLd = {
   "@type": "Person",
   name: "Shaan Satsangi",
   url: SITE,
+  image: `${SITE}/og.png`,
   jobTitle: "Data Engineer",
+  description:
+    "Data engineer building bulletproof pipelines and shipping AI/ML + analytics projects.",
   email: "mailto:shaansatsangi@gmail.com",
+  knowsAbout: [
+    "Data Engineering",
+    "Apache Airflow",
+    "Apache Spark",
+    "dbt",
+    "FastAPI",
+    "Machine Learning",
+    "Data Analytics",
+  ],
   address: { "@type": "PostalAddress", addressLocality: "Jaipur", addressRegion: "Rajasthan", addressCountry: "IN" },
   sameAs: ["https://github.com/Shaan-alpha", "https://linkedin.com/in/shaansatsangi"],
 };
