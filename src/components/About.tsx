@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Mail, Phone, MapPin } from "lucide-react";
 
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -41,8 +42,15 @@ export default function About() {
         <div className="relative max-w-[400px] lg:max-w-none mx-auto lg:mx-0">
           <motion.div variants={itemVariants}>
             <div className="bg-surface border border-border rounded-[var(--r2)] p-6 sm:p-8 lg:p-10 text-center relative overflow-hidden">
-              <div className="w-[96px] h-[96px] rounded-[var(--r2)] mx-auto mb-5 bg-bg2 border border-border2 flex items-center justify-center">
-                <span className="font-display text-[28px] font-bold accent tracking-[-0.04em]">SS</span>
+              <div className="w-[96px] h-[96px] rounded-[var(--r2)] mx-auto mb-5 bg-bg2 border border-border2 overflow-hidden relative">
+                <Image
+                  src="/me.jpg"
+                  alt="Shaan Satsangi"
+                  fill
+                  sizes="96px"
+                  className="object-cover"
+                  priority
+                />
               </div>
               <div className="font-display text-[20px] sm:text-[24px] font-bold mb-1">Shaan Satsangi</div>
               <div className="text-muted mono text-[12px]">data engineer · ai/ml developer</div>

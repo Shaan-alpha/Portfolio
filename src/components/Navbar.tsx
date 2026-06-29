@@ -67,8 +67,6 @@ export default function Navbar() {
       }`}
       style={{ transform: "translateX(-50%) translateZ(0)", backfaceVisibility: "hidden" }}
     >
-      <div className="w-[6px] h-[6px] rounded-full bg-accent ml-1.5 mr-1.5 sm:mr-2 shrink-0 shadow-[0_0_8px_var(--accent)]"></div>
-
       {navLinks.map((link) => (
         <a
           key={link.id}
