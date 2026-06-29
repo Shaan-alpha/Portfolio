@@ -49,6 +49,7 @@ export default function About() {
                   fill
                   sizes="96px"
                   className="object-cover"
+                  style={{ objectPosition: "50% 20%" }}
                   priority
                 />
               </div>
