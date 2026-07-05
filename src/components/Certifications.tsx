@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, Award, ShieldCheck, Trophy, BadgeCheck, Compass } from "lucide-react";
+import { CheckCircle2, Award, ShieldCheck, Trophy, BadgeCheck, Compass, Sparkles } from "lucide-react";
 
 type Cert = {
   Icon: React.ComponentType<{ className?: string }>;
@@ -28,6 +28,7 @@ export default function Certifications() {
     { Icon: ShieldCheck, org: "CISCO Networking Academy", name: "Cybersecurity Essentials", date: "Networking Academy", badge: "completed" },
     { Icon: Trophy, org: "IEEE", name: "2nd Position — Debate Competition", date: "IEEE Student Chapter", badge: "runner-up" },
     { Icon: BadgeCheck, org: "micro1", name: "Data Science, AI/ML & Data Engineer", date: "May 2026", badge: "ai certified" },
+    { Icon: Sparkles, org: "Anthropic", name: "Introduction to Model Context Protocol", date: "Jun 2026", badge: "verified" },
     { Icon: Compass, org: "Interests", name: "Movies · Music · History", date: "Always curious", badge: "personal" },
   ];
 

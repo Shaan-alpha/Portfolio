@@ -12,6 +12,7 @@ const TECH: Record<string, Logo> = {
   "next.js": { file: "nextjs", invert: true },
   nextjs: { file: "nextjs", invert: true },
   react: { file: "react" },
+  "react 19": { file: "react" },
   typescript: { file: "typescript" },
   postgresql: { file: "postgresql" },
   "neon postgres": { file: "postgresql" },

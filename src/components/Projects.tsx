@@ -29,6 +29,21 @@ export default function Projects() {
 
   const projects: Project[] = [
     {
+      id: "vouchrank",
+      date: "Jul 2026",
+      status: "live",
+      title: "VouchRank — Reputation & AI-Search SaaS",
+      desc: "A multi-tenant, white-label reputation platform for marketing agencies — helps local businesses get recommended by AI search engines, built compliant with 2026 review-gating regulations.",
+      tags: ["React 19", "Vite", "Supabase", "Stripe", "Twilio", "Vercel"],
+      bullets: [
+        "AI-search (AIO/GEO) audit scoring how often ChatGPT / Gemini / Perplexity recommend a business for local-intent queries, with an optimization checklist",
+        "Compliant review funnel (Google / video / text + private feedback) with in-browser video capture and built-in consent — no review gating by design",
+        "Per-agency tenancy on Supabase Postgres row-level security with Deno Edge Functions, Stripe billing, embeddable social-proof widgets & SMS/email campaigns",
+      ],
+      link: "https://github.com/Shaan-alpha/vouchrank",
+      liveLink: "https://vouchrank.vercel.app",
+    },
+    {
       id: "cog-and-cosmos",
       date: "Jun 2026",
       status: "live",

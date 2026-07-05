@@ -23,9 +23,9 @@ export default function About() {
   };
 
   const stats = [
-    { value: "7+", label: "Projects Shipped" },
+    { value: "8+", label: "Projects Shipped" },
     { value: "2", label: "Internships" },
-    { value: "5+", label: "Certifications" },
+    { value: "6+", label: "Certifications" },
   ];
 
   const contacts = [

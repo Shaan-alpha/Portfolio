@@ -64,6 +64,7 @@ const personJsonLd = {
     "FastAPI",
     "Machine Learning",
     "Data Analytics",
+    "Model Context Protocol",
   ],
   address: { "@type": "PostalAddress", addressLocality: "Jaipur", addressRegion: "Rajasthan", addressCountry: "IN" },
   sameAs: ["https://github.com/Shaan-alpha", "https://linkedin.com/in/shaansatsangi"],
