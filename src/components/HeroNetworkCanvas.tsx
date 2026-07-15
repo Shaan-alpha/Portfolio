@@ -17,8 +17,9 @@ export default function HeroNetworkCanvas() {
     if (!ctx) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const accent =
+    const readAccent = () =>
       getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#3fb950";
+    let accent = readAccent();
 
     let raf = 0;
     let w = 0;
@@ -117,9 +118,32 @@ export default function HeroNetworkCanvas() {
 
     resize();
     window.addEventListener("resize", resize);
-    if (!reduce) raf = requestAnimationFrame(tick);
+
+    // Theme toggle swaps --accent (phosphor dark / deep-green light) — re-read it.
+    const mo = new MutationObserver(() => {
+      accent = readAccent();
+      if (reduce) draw();
+    });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "data-theme", "style"] });
+
+    // Only animate while the hero is actually on screen.
+    let running = false;
+    const io = new IntersectionObserver(([entry]) => {
+      if (reduce) return;
+      if (entry.isIntersecting && !running) {
+        running = true;
+        raf = requestAnimationFrame(tick);
+      } else if (!entry.isIntersecting && running) {
+        running = false;
+        cancelAnimationFrame(raf);
+      }
+    });
+    io.observe(canvas);
+
     return () => {
       cancelAnimationFrame(raf);
+      mo.disconnect();
+      io.disconnect();
       window.removeEventListener("resize", resize);
     };
   }, []);

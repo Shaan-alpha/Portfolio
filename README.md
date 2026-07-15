@@ -23,14 +23,16 @@ A terminal/data-themed developer portfolio built with **Next.js 16**, **React 19
 
 ## Featured projects
 
+- **VouchRank** — multi-tenant, white-label reputation & AI-search (AIO/GEO) SaaS for local businesses. *React · Vite · Supabase · Stripe · Twilio.*
+- **Telegram MCP** — local Model Context Protocol server giving AI agents read/write access to a Telegram account via MTProto. *Python · Telethon · MCP · Claude.*
+- **Cog & Cosmos** — pixel-art interconnected incremental/idle game; eight worlds feed one brass Fortune Engine. *Svelte 5 · TypeScript · PixiJS · PWA.*
 - **AI Reel Factory** — autonomous, near-$0/month content factory: researches news, writes scripts, narrates, renders captioned vertical video, and publishes 4–5 YouTube Shorts/day with one Telegram tap. *Python · Gemini · Supabase · FFmpeg · faster-whisper · edge-tts · YouTube API · GitHub Actions.*
-- **Skill Issue** — AI-powered GitHub intelligence platform: a deterministic 100-point engineering score and shareable receipts. *Next.js · FastAPI · Neon Postgres · Upstash Redis · Groq.*
+- **Skill Issue** — AI-powered GitHub intelligence platform: a deterministic 100-point engineering score and shareable receipts, live at [skillissue.tech](https://skillissue.tech). *Next.js · FastAPI · Neon Postgres · Upstash Redis · Groq.*
 - **CRM + Sales Warehouse** — Airflow ETL into a star-schema PostgreSQL warehouse, surfaced via Power BI.
 - **YouTube Wrapped** — Databricks medallion lakehouse (Bronze → Silver → Gold) on Delta Lake, served via FastAPI + Next.js.
-- **JARVIS** — offline, privacy-first AI voice assistant with local LLM inference and semantic memory.
-- **FaceFilter AI** — local face-recognition (OpenCV DNN: YuNet + SFace) with SQLite persistence and SSE progress.
+- **JARVIS** — offline, privacy-first voice assistant: local LLM inference (Ollama), semantic memory, wake-word detection, streaming TTS.
+- **Face Sort Studio** — local deep-learning photo organizer (OpenCV DNN: YuNet + SFace) with SQLite persistence and SSE progress.
 - **Sahara** — mobile-first women's-safety app with gesture SOS, MapLibre live location, and Twilio alerts on Supabase.
-- **Review Reader** — classical NLP sentiment pipeline (Scikit-learn + TF-IDF) in a Jupyter notebook.
 
 ## Local development
 

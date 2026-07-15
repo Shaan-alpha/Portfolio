@@ -14,17 +14,17 @@ export default function Preloader() {
       return;
     }
     if (n >= LINES.length) {
-      const t = setTimeout(() => setDone(true), 250);
+      const t = setTimeout(() => setDone(true), 150);
       return () => clearTimeout(t);
     }
-    const t = setTimeout(() => setN((v) => v + 1), 180);
+    const t = setTimeout(() => setN((v) => v + 1), 110);
     return () => clearTimeout(t);
   }, [n]);
 
   if (done) return null;
 
   return (
-    <div className="fixed inset-0 z-[10000] bg-background flex items-center justify-center">
+    <div className="preloader-overlay fixed inset-0 z-[10000] bg-background flex items-center justify-center">
       <div className="mono text-[13px] text-muted2 space-y-1">
         {LINES.slice(0, n).map((l, i) => (
           <div key={i}>

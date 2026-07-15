@@ -70,7 +70,7 @@ export default function Skills() {
     { file: "github", name: "GitHub", invert: true }, { file: "vscode", name: "VS Code" },
     { file: "flask", name: "Flask", invert: true }, { file: "supabase", name: "Supabase" },
     { file: "googlecloud", name: "Google Cloud" }, { file: "sqlite", name: "SQLite" },
-    { file: "linux", name: "Linux" }, { file: "vercel", name: "Vercel", invert: true },
+    { file: "linux", name: "Linux", invert: true }, { file: "vercel", name: "Vercel", invert: true },
     { file: "cloudflare", name: "Cloudflare" },
   ];
 

@@ -23,7 +23,7 @@ export default function About() {
   };
 
   const stats = [
-    { value: "8+", label: "Projects Shipped" },
+    { value: "15+", label: "Projects Shipped" },
     { value: "2", label: "Internships" },
     { value: "6+", label: "Certifications" },
   ];
@@ -44,7 +44,7 @@ export default function About() {
             <div className="bg-surface border border-border rounded-[var(--r2)] p-6 sm:p-8 lg:p-10 text-center relative overflow-hidden">
               <div className="w-[96px] h-[96px] rounded-[var(--r2)] mx-auto mb-5 bg-bg2 border border-border2 overflow-hidden relative">
                 <Image
-                  src="/me.jpg"
+                  src="/me-192.webp"
                   alt="Shaan Satsangi"
                   fill
                   sizes="96px"
@@ -54,7 +54,7 @@ export default function About() {
                 />
               </div>
               <div className="font-display text-[20px] sm:text-[24px] font-bold mb-1">Shaan Satsangi</div>
-              <div className="text-muted mono text-[12px]">data engineer · ai/ml developer</div>
+              <div className="text-muted mono text-[12px]">data &amp; ai engineer · rag/llm systems</div>
               <div className="inline-flex items-center gap-1.5 text-muted mono text-[11px] mt-2.5">
                 <MapPin className="w-3.5 h-3.5" />
                 Jaipur, Rajasthan, India

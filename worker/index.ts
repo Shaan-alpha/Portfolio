@@ -49,6 +49,10 @@ async function sendResend(
 }
 
 async function handleContact(request: Request, env: Env): Promise<Response> {
+  // Reject oversized bodies before buffering/parsing them.
+  const len = parseInt(request.headers.get("Content-Length") || "0", 10);
+  if (len > 10_000) return json({ status: "error", message: "payload too large" }, 413);
+
   let data: Record<string, string>;
   try {
     data = (await request.json()) as Record<string, string>;
@@ -67,6 +71,9 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
   if (!name || !email || !message)
     return json({ status: "error", message: "name, email, and message are required" }, 400);
 
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    return json({ status: "error", message: "invalid email address" }, 400);
+
   for (const [k, cap] of Object.entries(FIELD_LIMITS))
     if ((data[k] || "").trim().length > cap)
       return json({ status: "error", message: `${k} exceeds ${cap} characters` }, 400);
@@ -83,7 +90,7 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
     `New portfolio contact\nName: ${name}\nEmail: ${email}\nSubject: ${subject || "No subject"}\n\nMessage:\n${message}`;
 
   try {
-    await sendResend(env, env.OWNER_EMAIL, `New portfolio contact from ${name}`, html, text, email);
+    await sendResend(env, env.OWNER_EMAIL, `New portfolio contact from ${name.replace(/[\r\n]+/g, " ")}`, html, text, email);
   } catch {
     return json({ status: "error", message: "Failed to send message" }, 502);
   }

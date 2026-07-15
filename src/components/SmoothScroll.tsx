@@ -18,6 +18,8 @@ export default function SmoothScroll() {
 
     // Handle anchor link clicks for smooth scroll navigation
     const handleAnchorClick = (e: MouseEvent) => {
+      // Leave modified/secondary clicks (new tab, etc.) to the browser.
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const target = e.target as HTMLElement;
       const anchor = target.closest("a[href^='#']");
       if (anchor) {
@@ -32,14 +34,16 @@ export default function SmoothScroll() {
 
     document.addEventListener("click", handleAnchorClick);
 
+    let rafId = 0;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     return () => {
+      cancelAnimationFrame(rafId);
       document.removeEventListener("click", handleAnchorClick);
       lenis.destroy();
       lenisRef.current = null;

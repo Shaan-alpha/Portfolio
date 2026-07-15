@@ -178,3 +178,15 @@ nextjs-portal,
     scroll-behavior: auto !important;
   }
 }
+
+/* Preloader failsafe — fades the boot overlay out even if JS never hydrates,
+   so the exported HTML can never leave a visitor on a blank screen. */
+@keyframes preloader-auto-hide {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+.preloader-overlay {
+  animation: preloader-auto-hide 0.35s ease 1.1s forwards;
+}
