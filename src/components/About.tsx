@@ -100,7 +100,7 @@ export default function About() {
             My philosophy is simple: <em className="text-foreground">clean data over clever models, and bulletproof pipelines over flashy demos</em>. Whether it&apos;s a medallion lakehouse or an autonomous content factory, I care about the thing still working tomorrow.
           </motion.p>
           <motion.div variants={itemVariants} className="flex flex-wrap gap-2 mt-5">
-            {["Python", "SQL", "Apache Airflow", "Apache Spark", "dbt", "TensorFlow", "Scikit-learn", "OpenCV", "Next.js", "FastAPI", "Flask", "Docker", "PostgreSQL", "Redis", "Firebase", "Google Cloud", "C / C++"].map((skill) => (
+            {["Python", "SQL", "Apache Airflow", "Apache Spark", "dbt", "TensorFlow", "PyTorch", "LangChain", "FAISS", "Scikit-learn", "OpenCV", "Next.js", "FastAPI", "Flask", "Docker", "PostgreSQL", "Redis", "Firebase", "Google Cloud", "C / C++"].map((skill) => (
               <span key={skill} className="mono text-[11px] py-1 px-3 rounded-[6px] bg-surface border border-border text-muted2 transition-colors duration-200 hover:border-accent/50 hover:text-foreground">
                 {skill}
               </span>

@@ -27,13 +27,15 @@ export default function Skills() {
       ],
     },
     {
-      title: "Data Science & AI",
-      label: "> data_science_ai",
+      title: "AI & Machine Learning",
+      label: "> ai_ml",
       items: [
-        { name: "TensorFlow / Keras", tier: "strong" },
+        { name: "LLM APIs (Claude / Gemini / Groq)", tier: "strong" },
+        { name: "RAG / Vector DBs (FAISS)", tier: "strong" },
+        { name: "TensorFlow / PyTorch", tier: "strong" },
         { name: "Scikit-learn / Pandas", tier: "core" },
         { name: "OpenCV / NLP", tier: "strong" },
-        { name: "Local LLM Inference", tier: "working" },
+        { name: "Local LLM Inference (Ollama)", tier: "working" },
       ],
     },
     {
