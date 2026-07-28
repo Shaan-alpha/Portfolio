@@ -46,8 +46,11 @@ export default function Certifications() {
             <div>
               <div className="font-display text-[20px] sm:text-[26px] font-bold mb-1.5">Jaipur Engineering College<br />and Research Center</div>
               <div className="text-[13px] sm:text-[15px] text-muted2 mb-3.5">B.Tech in Computer Science & Engineering</div>
-              <div className="flex items-center gap-1.5 mono text-[12px] text-muted">
-                <CheckCircle2 className="w-3.5 h-3.5 text-accent" /> Nov 2022 – Present
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mono text-[12px] text-muted">
+                <span className="inline-flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-accent" /> Nov 2022 – Jun 2026
+                </span>
+                <span className="mono text-[10px] px-2 py-0.5 border border-accent text-accent">[ graduated ]</span>
               </div>
             </div>
             <div className="text-center bg-bg2 border border-border2 rounded-[var(--r2)] py-4 px-6 sm:py-6 sm:px-8 flex flex-col items-center">

@@ -77,12 +77,12 @@ export default function Projects() {
       date: "Jun 2026",
       status: "shipped",
       title: "AI Reel Factory — Autonomous Shorts",
-      desc: "A near-$0/month autonomous content factory: it researches news, writes scripts, narrates, renders captioned vertical video, and publishes 4–5 YouTube Shorts/day — with one human Telegram tap per day.",
-      tags: ["Python", "Gemini", "Supabase", "FFmpeg", "faster-whisper", "edge-tts", "YouTube API", "GitHub Actions"],
+      desc: "A near-$0/month autonomous content factory: it researches news, writes scripts, narrates in a near-human voice, generates AI B-roll, edits a captioned cinematic vertical video, and publishes 4–5 YouTube Shorts/day — with one human Telegram tap.",
+      tags: ["Python", "Gemini", "Cloudflare Workers AI", "Supabase", "FFmpeg", "faster-whisper", "YouTube API", "GitHub Actions"],
       bullets: [
-        "Idea→script→voice→captioned-video→publish pipeline orchestrated by GitHub Actions cron; one Telegram 'Morning Digest' approval per day",
-        "Gemini (Groq failover) scripting, edge-tts narration, Pexels/Pixabay visuals, FFmpeg assembly, faster-whisper word-by-word captions",
-        "Supabase Postgres state; publishes to YouTube @butitmatters at $0/month beyond an existing subscription",
+        "Multi-stage agent pipeline (ideation → script → voice → AI B-roll → edit → publish) on GitHub Actions cron; one Telegram 'Morning Digest' approval per day",
+        "Gemini (Groq failover) scripting, Google Chirp 3 HD narration with edge-tts/Kokoro fallback, Flux B-roll on Workers AI, faster-whisper word-by-word captions",
+        "Idempotent fail-soft run state in Supabase Postgres with safe retries and structured logging; publishes to YouTube @butitmatters at ~$0/month",
       ],
       link: "https://github.com/Shaan-alpha/AI-Reel-Factory",
       liveLink: "https://youtube.com/@butitmatters",
@@ -188,7 +188,7 @@ export default function Projects() {
             Featured <span className="accent">work</span>
           </motion.h2>
           <motion.p variants={itemVariants} className="mono text-[13px] lg:text-[14px] leading-[1.75] text-muted2 max-w-[560px]">
-            End-to-end projects spanning data engineering, AI/ML, and automation — all real, all shipped.
+            Agentic AI systems, developer platforms, and data pipelines — all real, all shipped, all running in production.
           </motion.p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-[60px]">

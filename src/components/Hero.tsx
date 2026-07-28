@@ -18,7 +18,7 @@ export default function Hero() {
         </h1>
         <p className="mono text-[clamp(13px,1.8vw,18px)] text-muted2 mt-6">
           <span className="accent">&gt; </span>
-          <TypedLine phrases={["data & ai engineer", "rag / llm systems", "ml / analytics", "pipelines over demos"]} />
+          <TypedLine phrases={["ai systems engineer", "multi-agent orchestration", "rag, retrieval & mcp tooling", "langchain / langgraph", "creator of skill issue", "systems, not demos"]} />
         </p>
 
         <div className="flex flex-wrap gap-3 mt-9">

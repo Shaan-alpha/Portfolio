@@ -54,7 +54,7 @@ export default function About() {
                 />
               </div>
               <div className="font-display text-[20px] sm:text-[24px] font-bold mb-1">Shaan Satsangi</div>
-              <div className="text-muted mono text-[12px]">data &amp; ai engineer · rag/llm systems</div>
+              <div className="text-muted mono text-[12px]">ai systems engineer · agents &amp; retrieval</div>
               <div className="inline-flex items-center gap-1.5 text-muted mono text-[11px] mt-2.5">
                 <MapPin className="w-3.5 h-3.5" />
                 Jaipur, Rajasthan, India
@@ -91,16 +91,16 @@ export default function About() {
         <div>
           <motion.div variants={itemVariants} className="eyebrow mb-4.5">about</motion.div>
           <motion.h2 variants={itemVariants} className="display mb-5.5">
-            Pipelines over <br /><span className="accent">flashy demos.</span>
+            I build systems, <br />not <span className="accent">demos.</span>
           </motion.h2>
           <motion.p variants={itemVariants} className="text-[15px] lg:text-[17px] leading-[1.75] text-muted2 mb-6">
-            I&apos;m a Computer Science undergrad at JECRC, Jaipur, working across the full data stack — <span className="accent font-medium">Data Engineering</span>, <span className="accent font-medium">Data Science</span>, and <span className="accent font-medium">Analytics</span>. I like turning messy inputs into systems that run themselves.
+            I design and ship <span className="accent font-medium">AI systems</span> — agents that plan, retrieve, and actually finish the job. B.Tech in Computer Science from JECRC Jaipur, class of 2026, now doing this full-time: multi-agent pipelines, <span className="accent font-medium">RAG</span> over real corpora, MCP-style tool routing, and all the unglamorous plumbing that keeps them alive in production. <span className="accent font-medium">LangChain</span> and <span className="accent font-medium">LangGraph</span> sit in the toolkit for when a graph beats hand-rolled orchestration.
           </motion.p>
           <motion.p variants={itemVariants} className="text-[15px] lg:text-[17px] leading-[1.75] text-muted2 mb-6">
-            My philosophy is simple: <em className="text-foreground">clean data over clever models, and bulletproof pipelines over flashy demos</em>. Whether it&apos;s a medallion lakehouse or an autonomous content factory, I care about the thing still working tomorrow.
+            I&apos;m the creator of <a href="https://skillissue.tech" target="_blank" rel="noreferrer" className="text-foreground underline decoration-accent/40 underline-offset-4 transition-colors hover:decoration-accent">Skill Issue</a>, a GitHub code-intelligence platform where the score is deterministic and the LLM only narrates. That&apos;s the whole philosophy — <em className="text-foreground">the model is a component, not the architecture</em>. Hand me a messy problem and you get a system back: retries, caches, idempotent state, and a human-in-the-loop gate exactly where it matters.
           </motion.p>
           <motion.div variants={itemVariants} className="flex flex-wrap gap-2 mt-5">
-            {["Python", "SQL", "Apache Airflow", "Apache Spark", "dbt", "TensorFlow", "PyTorch", "LangChain", "FAISS", "Scikit-learn", "OpenCV", "Next.js", "FastAPI", "Flask", "Docker", "PostgreSQL", "Redis", "Firebase", "Google Cloud", "C / C++"].map((skill) => (
+            {["Python", "LangChain", "LangGraph", "MCP", "RAG / FAISS", "PyTorch", "TensorFlow", "Scikit-learn", "OpenCV", "FastAPI", "TypeScript", "Next.js", "SQL", "PostgreSQL", "Redis", "Apache Airflow", "Apache Spark", "dbt", "Docker", "GitHub Actions", "Supabase", "Google Cloud", "Flask", "C / C++"].map((skill) => (
               <span key={skill} className="mono text-[11px] py-1 px-3 rounded-[6px] bg-surface border border-border text-muted2 transition-colors duration-200 hover:border-accent/50 hover:text-foreground">
                 {skill}
               </span>

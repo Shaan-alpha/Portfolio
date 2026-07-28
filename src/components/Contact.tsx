@@ -87,7 +87,7 @@ export default function Contact() {
               </div>
               <div className="flex flex-col gap-1.5 mb-4">
                 <label htmlFor="subject" className="mono text-[11px] tracking-[0.04em] text-muted">subject</label>
-                <input id="subject" name="subject" type="text" placeholder="Project idea, internship, collaboration…" className="bg-bg1 border border-border rounded-[var(--r)] px-4 py-3 text-foreground text-[14px] outline-none transition-colors duration-200 focus:border-accent" />
+                <input id="subject" name="subject" type="text" placeholder="Role, project idea, collaboration…" className="bg-bg1 border border-border rounded-[var(--r)] px-4 py-3 text-foreground text-[14px] outline-none transition-colors duration-200 focus:border-accent" />
               </div>
               <div className="flex flex-col gap-1.5 mb-4">
                 <label htmlFor="message" className="mono text-[11px] tracking-[0.04em] text-muted">message</label>

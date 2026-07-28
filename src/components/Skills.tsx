@@ -17,6 +17,52 @@ export default function Skills() {
 
   const skillsData: { title: string; label: string; items: { name: string; tier: Tier }[] }[] = [
     {
+      title: "Agentic AI & LLMs",
+      label: "> agentic_ai",
+      items: [
+        { name: "LangGraph (stateful agent graphs)", tier: "working" },
+        { name: "LangChain (chains & tool-calling)", tier: "working" },
+        { name: "Multi-Agent Orchestration", tier: "strong" },
+        { name: "MCP / Structured Tool Routing", tier: "strong" },
+        { name: "LLM APIs (Claude / Gemini / Groq)", tier: "strong" },
+        { name: "Local LLM Inference (Ollama)", tier: "working" },
+      ],
+    },
+    {
+      title: "Retrieval & Machine Learning",
+      label: "> retrieval_ml",
+      items: [
+        { name: "RAG / Vector DBs (FAISS)", tier: "core" },
+        { name: "Embeddings & Semantic Search", tier: "strong" },
+        { name: "PyTorch / TensorFlow", tier: "strong" },
+        { name: "Scikit-learn / Pandas", tier: "core" },
+        { name: "OpenCV / NLP", tier: "strong" },
+      ],
+    },
+    {
+      title: "Systems & Architecture",
+      label: "> systems_design",
+      items: [
+        { name: "System Design", tier: "strong" },
+        { name: "Distributed Systems & Scalability", tier: "working" },
+        { name: "Idempotency, Retries & Fail-Soft State", tier: "strong" },
+        { name: "Caching & Cache-Stampede Prevention", tier: "strong" },
+        { name: "OOP / DSA / C / C++", tier: "strong" },
+      ],
+    },
+    {
+      title: "Backend & Platform",
+      label: "> backend_platform",
+      items: [
+        { name: "FastAPI / REST APIs", tier: "core" },
+        { name: "PostgreSQL / Neon / Supabase", tier: "core" },
+        { name: "Redis (Upstash) / Queues", tier: "strong" },
+        { name: "Docker / GitHub Actions CI/CD", tier: "strong" },
+        { name: "Linux / Bash / Shell Tooling", tier: "strong" },
+        { name: "Observability (PostHog / Sentry)", tier: "working" },
+      ],
+    },
+    {
       title: "Data Engineering",
       label: "> data_engineering",
       items: [
@@ -24,18 +70,6 @@ export default function Skills() {
         { name: "dbt / SQL (PostgreSQL)", tier: "core" },
         { name: "Databricks / Delta Lake", tier: "working" },
         { name: "ETL / ELT Pipelines", tier: "strong" },
-      ],
-    },
-    {
-      title: "AI & Machine Learning",
-      label: "> ai_ml",
-      items: [
-        { name: "LLM APIs (Claude / Gemini / Groq)", tier: "strong" },
-        { name: "RAG / Vector DBs (FAISS)", tier: "strong" },
-        { name: "TensorFlow / PyTorch", tier: "strong" },
-        { name: "Scikit-learn / Pandas", tier: "core" },
-        { name: "OpenCV / NLP", tier: "strong" },
-        { name: "Local LLM Inference (Ollama)", tier: "working" },
       ],
     },
     {
@@ -48,23 +82,17 @@ export default function Skills() {
         { name: "Actionable Insights", tier: "strong" },
       ],
     },
-    {
-      title: "Software Engineering",
-      label: "> software_eng",
-      items: [
-        { name: "C / C++", tier: "strong" },
-        { name: "System Design", tier: "working" },
-        { name: "OOP / DSA", tier: "strong" },
-        { name: "Linux / Bash / Docker", tier: "strong" },
-      ],
-    },
   ];
 
   const tools = [
-    { file: "python", name: "Python" }, { file: "fastapi", name: "FastAPI" },
+    { file: "python", name: "Python" },
+    { file: "langchain", name: "LangChain", invert: true },
+    { file: "langgraph", name: "LangGraph", invert: true },
+    { file: "fastapi", name: "FastAPI" },
     { file: "nextjs", name: "Next.js", invert: true }, { file: "react", name: "React" },
     { file: "typescript", name: "TypeScript" }, { file: "postgresql", name: "PostgreSQL" },
     { file: "redis", name: "Redis" }, { file: "docker", name: "Docker" },
+    { file: "pytorch", name: "PyTorch" },
     { file: "tensorflow", name: "TensorFlow" }, { file: "scikitlearn", name: "Scikit-learn" },
     { file: "opencv", name: "OpenCV" }, { file: "pandas", name: "Pandas", invert: true },
     { file: "apachespark", name: "Apache Spark" }, { file: "apacheairflow", name: "Airflow" },

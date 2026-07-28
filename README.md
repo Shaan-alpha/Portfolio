@@ -2,7 +2,7 @@
 
 A terminal/data-themed developer portfolio built with **Next.js 16**, **React 19**, and **Tailwind CSS 4**. Monospace type, a single phosphor accent, flat surfaces, and a self-built generative hero — designed to read like an engineer made deliberate choices, not like a template.
 
-> "Clean data over clever models, and bulletproof pipelines over flashy demos."
+> "The model is a component, not the architecture. I build systems, not demos."
 
 ## Design
 
@@ -26,7 +26,7 @@ A terminal/data-themed developer portfolio built with **Next.js 16**, **React 19
 - **VouchRank** — multi-tenant, white-label reputation & AI-search (AIO/GEO) SaaS for local businesses. *React · Vite · Supabase · Stripe · Twilio.*
 - **Telegram MCP** — local Model Context Protocol server giving AI agents read/write access to a Telegram account via MTProto. *Python · Telethon · MCP · Claude.*
 - **Cog & Cosmos** — pixel-art interconnected incremental/idle game; eight worlds feed one brass Fortune Engine. *Svelte 5 · TypeScript · PixiJS · PWA.*
-- **AI Reel Factory** — autonomous, near-$0/month content factory: researches news, writes scripts, narrates, renders captioned vertical video, and publishes 4–5 YouTube Shorts/day with one Telegram tap. *Python · Gemini · Supabase · FFmpeg · faster-whisper · edge-tts · YouTube API · GitHub Actions.*
+- **AI Reel Factory** — autonomous, near-$0/month content factory: researches news, writes scripts, narrates in a near-human voice, generates AI B-roll, renders captioned vertical video, and publishes 4–5 YouTube Shorts/day with one Telegram tap. *Python · Gemini · Cloudflare Workers AI · Supabase · FFmpeg · faster-whisper · YouTube API · GitHub Actions.*
 - **Skill Issue** — AI-powered GitHub intelligence platform: a deterministic 100-point engineering score and shareable receipts, live at [skillissue.tech](https://skillissue.tech). *Next.js · FastAPI · Neon Postgres · Upstash Redis · Groq.*
 - **CRM + Sales Warehouse** — Airflow ETL into a star-schema PostgreSQL warehouse, surfaced via Power BI.
 - **YouTube Wrapped** — Databricks medallion lakehouse (Bronze → Silver → Gold) on Delta Lake, served via FastAPI + Next.js.
