@@ -47,6 +47,11 @@ const TECH: Record<string, Logo> = {
   gemini: { file: "gemini", invert: true },
   "google gemini": { file: "gemini", invert: true },
   "github actions": { file: "github", invert: true },
+  firestore: { file: "firebase" },
+  "cloud run": { file: "googlecloud" },
+  "google cloud run": { file: "googlecloud" },
+  sqlalchemy: { file: "python" },
+  "langgraph / langchain": { file: "langgraph", invert: true },
 };
 
 export function lookupTech(name: string): Logo | null {

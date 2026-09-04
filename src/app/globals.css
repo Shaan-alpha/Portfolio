@@ -26,7 +26,9 @@
   --foreground: #e6e8e6;
   --bg1: #111417;
   --bg2: #15191c;
-  --surface: #111417;
+  /* Must stay distinct from --bg1: cards sit on bg-bg1 sections, and an identical
+     value leaves them with no fill contrast at all in the default dark theme. */
+  --surface: #171b1f;
   --border: rgba(230, 232, 230, 0.10);
   --border2: rgba(230, 232, 230, 0.20);
   --muted: rgba(230, 232, 230, 0.50);
@@ -124,6 +126,15 @@ body {
 @keyframes blink {
   0%, 50% { opacity: 1; }
   50.01%, 100% { opacity: 0; }
+}
+
+/* Liveness dot on [ live ] project badges. Unlike `blink` (a caret, which ends
+   hidden), this resolves back to fully opaque — so the reduced-motion override
+   above, which freezes animations on their final frame, leaves the dot visible
+   rather than erasing it. */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
 /* Float kept for subtle accents if needed */

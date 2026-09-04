@@ -11,7 +11,7 @@ export default function Hero() {
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background pointer-events-none" />
 
-      <div className="relative z-10 max-w-[1100px] mx-auto px-[6vw] w-full">
+      <div className="relative z-10 max-w-[1200px] mx-auto px-[5vw] w-full">
         <div className="eyebrow mb-5">whoami</div>
         <h1 className="display">
           Shaan Satsangi<span className="accent">.</span>

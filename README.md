@@ -23,16 +23,24 @@ A terminal/data-themed developer portfolio built with **Next.js 16**, **React 19
 
 ## Featured projects
 
-- **VouchRank** — multi-tenant, white-label reputation & AI-search (AIO/GEO) SaaS for local businesses. *React · Vite · Supabase · Stripe · Twilio.*
+**Live in production**
+
+- **Skill Issue** — AI-powered GitHub intelligence platform: a deterministic 100-point engineering score and shareable receipts, live at [skillissue.tech](https://skillissue.tech). The score is computed; the model only narrates it. *Next.js · FastAPI · Neon Postgres · Upstash Redis · Groq.*
+- **Atlas** — an AI financial analyst that lives in [Telegram](https://t.me/AtlasAnalyst_bot): conversation-only, 20 Gemini-function-calling tools each closure-bound to one user, an eight-provider failover chain, and briefings gated on a salience check that returns `send: false` and means it. *Python · Gemini · Postgres · SQLAlchemy.*
+- **Syntrueno** — zero-trust autonomous cloud-ops swarm, [live on Cloud Run](https://syntrueno-18489510475.us-central1.run.app). Gemini agents diagnose incidents, judge their own remediation plans, and execute real infrastructure changes behind a single-use SHA-256 human gate, then re-read live state until it converges. *Python · Gemini · Cloud Run · Firestore.*
+- **AI Reel Factory** — autonomous, near-$0/month content factory: researches news, writes scripts, narrates in a near-human voice, generates AI B-roll, renders captioned vertical video, and publishes 4–5 YouTube Shorts/day to [@butitmatters](https://youtube.com/@butitmatters) with one Telegram tap. *Python · Gemini · Cloudflare Workers AI · Supabase · FFmpeg · faster-whisper · GitHub Actions.*
+- **VouchRank** — multi-tenant, white-label reputation & AI-search (AIO/GEO) SaaS for local businesses, [live](https://vouchrank.vercel.app). *React 19 · Vite · Supabase RLS · Stripe · Twilio.*
+- **Think9 Brain** — grounded institutional-memory assistant, [live](https://think9-brain.vercel.app). Cites the exact source section, states a good-as-of date, withholds superseded documents; refusal recall 1.000 across 32 unanswerable questions. *Python · LangGraph · FastAPI · Groq.*
+
+**Also shipped**
+
 - **Telegram MCP** — local Model Context Protocol server giving AI agents read/write access to a Telegram account via MTProto. *Python · Telethon · MCP · Claude.*
-- **Cog & Cosmos** — pixel-art interconnected incremental/idle game; eight worlds feed one brass Fortune Engine. *Svelte 5 · TypeScript · PixiJS · PWA.*
-- **AI Reel Factory** — autonomous, near-$0/month content factory: researches news, writes scripts, narrates in a near-human voice, generates AI B-roll, renders captioned vertical video, and publishes 4–5 YouTube Shorts/day with one Telegram tap. *Python · Gemini · Cloudflare Workers AI · Supabase · FFmpeg · faster-whisper · YouTube API · GitHub Actions.*
-- **Skill Issue** — AI-powered GitHub intelligence platform: a deterministic 100-point engineering score and shareable receipts, live at [skillissue.tech](https://skillissue.tech). *Next.js · FastAPI · Neon Postgres · Upstash Redis · Groq.*
-- **CRM + Sales Warehouse** — Airflow ETL into a star-schema PostgreSQL warehouse, surfaced via Power BI.
-- **YouTube Wrapped** — Databricks medallion lakehouse (Bronze → Silver → Gold) on Delta Lake, served via FastAPI + Next.js.
 - **JARVIS** — offline, privacy-first voice assistant: local LLM inference (Ollama), semantic memory, wake-word detection, streaming TTS.
 - **Face Sort Studio** — local deep-learning photo organizer (OpenCV DNN: YuNet + SFace) with SQLite persistence and SSE progress.
-- **Sahara** — mobile-first women's-safety app with gesture SOS, MapLibre live location, and Twilio alerts on Supabase.
+- **YouTube Wrapped** — Databricks medallion lakehouse (Bronze → Silver → Gold) on Delta Lake, served via FastAPI + Next.js.
+- **Sahaara** — mobile-first women's-safety app with gesture SOS, MapLibre live location, and Twilio alerts on Supabase.
+- **CRM + Sales Warehouse** — Airflow ETL into a star-schema PostgreSQL warehouse, surfaced via Power BI.
+- **Cog & Cosmos** — pixel-art interconnected incremental/idle game; eight worlds feed one brass Fortune Engine. *Svelte 5 · TypeScript · PixiJS · PWA.*
 
 ## Local development
 
