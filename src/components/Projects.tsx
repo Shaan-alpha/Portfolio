@@ -89,7 +89,7 @@ export default function Projects() {
         "A single-use SHA-256 gate bound to that exact action — approval for one change cannot be replayed against another",
         "Five guards that fail closed, evaluated cheapest-first; every refusal is audited into a hash-chained Firestore ledger, never silent",
         "After executing, it re-reads live Cloud Run state until it converges rather than trusting the API's acknowledgement that the change landed",
-        "113 tests run offline in ~0.9 s with no credentials. Built for the Google Cloud 'All Things Agentic' hackathon.",
+        "288 tests run offline in ~2.7 s with no credentials. Built for the Google Cloud 'All Things Agentic' hackathon.",
       ],
       link: "https://github.com/Shaan-alpha/syntrueno",
       liveLink: "https://syntrueno-18489510475.us-central1.run.app",
