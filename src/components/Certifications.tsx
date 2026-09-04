@@ -42,20 +42,14 @@ export default function Certifications() {
             <span className="accent">Education</span>
           </motion.h2>
 
-          <motion.div variants={itemVariants} className="bg-surface border border-border rounded-[var(--r2)] p-5 sm:p-9 mt-10 sm:mt-[60px] mb-16 sm:mb-[120px] grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-center transition-colors duration-300 hover:border-accent/50">
-            <div>
-              <div className="font-display text-[20px] sm:text-[26px] font-bold mb-1.5">Jaipur Engineering College<br />and Research Center</div>
-              <div className="text-[13px] sm:text-[15px] text-muted2 mb-3.5">B.Tech in Computer Science & Engineering</div>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mono text-[12px] text-muted">
-                <span className="inline-flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-accent" /> Nov 2022 – Jun 2026
-                </span>
-                <span className="mono text-[10px] px-2 py-0.5 border border-accent text-accent">[ graduated ]</span>
-              </div>
-            </div>
-            <div className="text-center bg-bg2 border border-border2 rounded-[var(--r2)] py-4 px-6 sm:py-6 sm:px-8 flex flex-col items-center">
-              <div className="font-display text-[32px] sm:text-[42px] font-bold accent">7.39</div>
-              <div className="mono text-[11px] text-muted mt-0.5">CGPA</div>
+          <motion.div variants={itemVariants} className="bg-surface border border-border rounded-[var(--r2)] p-5 sm:p-9 mt-10 sm:mt-[60px] mb-16 sm:mb-[120px] transition-colors duration-300 hover:border-accent/50">
+            <div className="font-display text-[20px] sm:text-[26px] font-bold mb-1.5">Jaipur Engineering College<br />and Research Center</div>
+            <div className="text-[13px] sm:text-[15px] text-muted2 mb-3.5">B.Tech in Computer Science & Engineering</div>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mono text-[12px] text-muted">
+              <span className="inline-flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-accent" /> Nov 2022 – Jun 2026
+              </span>
+              <span className="mono text-[10px] px-2 py-0.5 border border-accent text-accent">[ graduated ]</span>
             </div>
           </motion.div>
 
