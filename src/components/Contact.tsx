@@ -64,7 +64,7 @@ export default function Contact() {
       <div className="max-w-[1200px] mx-auto px-[5vw]">
         <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}>
           <motion.div variants={itemVariants} className="eyebrow mb-4.5 inline-block">contact</motion.div>
-          <motion.h2 variants={itemVariants} className="display mb-5.5">Get in <span className="accent">touch</span></motion.h2>
+          <motion.h2 variants={itemVariants} className="display-2 mb-5.5">Get in <span className="accent">touch</span></motion.h2>
           <motion.p variants={itemVariants} className="mono text-[13px] lg:text-[14px] leading-[1.75] text-muted2 max-w-[480px] mx-auto">
             Have a project, an opportunity, or just want to say hello? I&apos;d love to hear from you.
           </motion.p>

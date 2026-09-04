@@ -38,7 +38,7 @@ export default function Certifications() {
         <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}>
           {/* Education */}
           <motion.div variants={itemVariants} className="eyebrow mb-4.5">education</motion.div>
-          <motion.h2 variants={itemVariants} className="display mb-5.5">
+          <motion.h2 variants={itemVariants} className="display-2 mb-5.5">
             <span className="accent">Education</span>
           </motion.h2>
 
@@ -61,7 +61,7 @@ export default function Certifications() {
 
           {/* Certs */}
           <motion.div variants={itemVariants} className="eyebrow mb-4.5">credentials</motion.div>
-          <motion.h2 variants={itemVariants} className="display mb-5.5">
+          <motion.h2 variants={itemVariants} className="display-2 mb-5.5">
             Certs & <span className="accent">achievements</span>
           </motion.h2>
 

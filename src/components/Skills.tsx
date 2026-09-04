@@ -109,7 +109,7 @@ export default function Skills() {
       <div className="max-w-[1200px] mx-auto px-[5vw]">
         <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}>
           <motion.div variants={itemVariants} className="eyebrow mb-4.5">skills</motion.div>
-          <motion.h2 variants={itemVariants} className="display mb-5.5">
+          <motion.h2 variants={itemVariants} className="display-2 mb-5.5">
             Technical <span className="accent">stack</span>
           </motion.h2>
 

@@ -90,7 +90,7 @@ export default function About() {
         {/* Text col */}
         <div>
           <motion.div variants={itemVariants} className="eyebrow mb-4.5">about</motion.div>
-          <motion.h2 variants={itemVariants} className="display mb-5.5">
+          <motion.h2 variants={itemVariants} className="display-2 mb-5.5">
             I build systems, <br />not <span className="accent">demos.</span>
           </motion.h2>
           <motion.p variants={itemVariants} className="text-[15px] lg:text-[17px] leading-[1.75] text-muted2 mb-6">

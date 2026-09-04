@@ -2,14 +2,22 @@
 
 import HeroNetworkCanvas from "./HeroNetworkCanvas";
 import TypedLine from "./TypedLine";
+import { BUILD_SHA } from "@/lib/buildInfo";
 
 export default function Hero() {
   return (
     <section id="hero" className="relative min-h-screen flex items-center overflow-hidden grid-bg">
-      <div className="absolute inset-0 opacity-70">
+      {/* A mask, not a gradient scrim: it paints no color of its own, so it cannot
+          band or tint the graph in either theme. */}
+      <div
+        className="absolute inset-0 opacity-70"
+        style={{
+          maskImage: "linear-gradient(to bottom, #000 62%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, #000 62%, transparent 100%)",
+        }}
+      >
         <HeroNetworkCanvas />
       </div>
-      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background pointer-events-none" />
 
       <div className="relative z-10 max-w-[1200px] mx-auto px-[5vw] w-full">
         <div className="eyebrow mb-5">whoami</div>
@@ -42,6 +50,12 @@ export default function Hero() {
           >
             [ github ]
           </a>
+        </div>
+
+        {/* Stamped from git at build time — the boot line the old fake preloader
+            was only pretending to be. */}
+        <div className="mono text-[10.5px] text-muted mt-8">
+          <span className="accent">build</span> {BUILD_SHA} · static export · cloudflare workers
         </div>
       </div>
 

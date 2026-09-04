@@ -273,7 +273,7 @@ export default function Projects() {
         {/* ── Section head ─────────────────────────────────────────── */}
         <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-10%" }}>
           <motion.div variants={itemVariants} className="eyebrow mb-4.5">projects</motion.div>
-          <motion.h2 variants={itemVariants} className="display mb-5.5">
+          <motion.h2 variants={itemVariants} className="display-2 mb-5.5">
             Featured <span className="accent">work</span>
           </motion.h2>
           <motion.p variants={itemVariants} className="mono text-[13px] lg:text-[14px] leading-[1.75] text-muted2 max-w-[600px]">
@@ -327,7 +327,7 @@ export default function Projects() {
                   })}
                 </div>
 
-                <h3 className="font-display text-[19px] sm:text-[22px] font-bold mb-2.5">{proj.title}</h3>
+                <h3 className="display-3 mb-2.5">{proj.title}</h3>
                 <p className="text-[12.5px] sm:text-[13.5px] text-muted leading-[1.7] mb-5">{proj.desc}</p>
 
                 <ul className="flex flex-col gap-2 mb-6 flex-1">
