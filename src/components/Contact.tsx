@@ -95,7 +95,7 @@ export default function Contact() {
               </div>
 
               {/* Honeypot — bots fill this; humans never see it */}
-              <input type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden className="absolute left-[-9999px] w-px h-px opacity-0" />
+              <input type="text" name="hp" tabIndex={-1} autoComplete="off" aria-hidden className="absolute left-[-9999px] w-px h-px opacity-0" />
 
               {errorMsg && <div className="mono text-red-400 text-[13px] mb-4">{errorMsg}</div>}
 

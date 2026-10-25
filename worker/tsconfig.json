@@ -1,0 +1,12 @@
+{
+  // The root config excludes worker/ (it is bundled by wrangler, not Next), so
+  // the Worker and its tests are type-checked here: `npm run typecheck`.
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "types": ["node"],
+    "plugins": []
+  },
+  "include": ["./**/*.ts", "./**/*.mts"],
+  "exclude": []
+}

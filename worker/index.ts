@@ -8,7 +8,7 @@ interface Fetcher {
   fetch(request: Request): Promise<Response>;
 }
 
-interface Env {
+export interface Env {
   ASSETS: Fetcher;
   RESEND_API_KEY: string;
   OWNER_EMAIL: string;
@@ -17,12 +17,69 @@ interface Env {
 }
 
 const FIELD_LIMITS: Record<string, number> = { name: 100, email: 200, subject: 150, message: 5000 };
+// The caps above are in characters. Devanagari or CJK text takes three bytes a
+// character in UTF-8, so 5,450 characters can need about 16.4 KB of JSON. The
+// byte cap sits above that, so a full-length message in Hindi is never refused
+// as "too large".
+const MAX_BODY_BYTES = 24_000;
+// `hp` is the honeypot. It replaced `company`, a name browser autofill fills in.
+const FIELDS = ["name", "email", "subject", "message", "hp"] as const;
 
 const ESC: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 const esc = (s: string): string => s.replace(/[&<>"']/g, (c) => ESC[c]);
 
-const json = (data: unknown, status = 200): Response =>
-  new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
+const json = (data: unknown, status = 200, extra: Record<string, string> = {}): Response =>
+  new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      // _headers only covers responses served from ASSETS; Worker responses
+      // need their own.
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
+      ...extra,
+    },
+  });
+
+/** Read the body with a hard byte cap. Content-Length alone is not enough: a
+ *  chunked request carries none, and `request.json()` would buffer whatever
+ *  arrives. This stops reading the moment the cap is crossed. */
+async function readCapped(request: Request, cap: number): Promise<string | null> {
+  const declared = Number(request.headers.get("Content-Length") ?? "");
+  if (Number.isFinite(declared) && declared > cap) return null;
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > cap) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  const all = new Uint8Array(size);
+  let offset = 0;
+  for (const c of chunks) {
+    all.set(c, offset);
+    offset += c.byteLength;
+  }
+  return new TextDecoder().decode(all);
+}
+
+/** Browsers say where a request came from. Anything a browser marks as
+ *  cross-site is refused, so another page cannot use visitors' browsers to
+ *  relay spam through this form. Non-browser clients send neither header and
+ *  are left to the WAF rate limit. */
+function isCrossSite(request: Request, url: URL): boolean {
+  const site = request.headers.get("Sec-Fetch-Site");
+  if (site && site !== "same-origin") return true;
+  const origin = request.headers.get("Origin");
+  return origin !== null && origin !== url.origin;
+}
 
 async function sendResend(
   env: Env,
@@ -48,25 +105,40 @@ async function sendResend(
   if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
 }
 
-async function handleContact(request: Request, env: Env): Promise<Response> {
-  // Reject oversized bodies before buffering/parsing them.
-  const len = parseInt(request.headers.get("Content-Length") || "0", 10);
-  if (len > 10_000) return json({ status: "error", message: "payload too large" }, 413);
+async function handleContact(request: Request, env: Env, url: URL): Promise<Response> {
+  if (isCrossSite(request, url)) return json({ status: "error", message: "cross-site requests are not accepted" }, 403);
 
-  let data: Record<string, string>;
+  // The form always sends JSON. Requiring it also means a cross-origin page
+  // cannot post here without a CORS preflight, which this Worker never grants.
+  if (!(request.headers.get("Content-Type") || "").toLowerCase().includes("application/json"))
+    return json({ status: "error", message: "send the form as JSON" }, 415);
+
+  const raw = await readCapped(request, MAX_BODY_BYTES);
+  if (raw === null) return json({ status: "error", message: "payload too large" }, 413);
+
+  let parsed: unknown;
   try {
-    data = (await request.json()) as Record<string, string>;
+    parsed = JSON.parse(raw);
   } catch {
-    data = {};
+    return json({ status: "error", message: "the request body is not valid JSON" }, 400);
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+    return json({ status: "error", message: "the request body is not valid JSON" }, 400);
+
+  // Every field must be text. A number or object here used to reach .trim()
+  // and crash the Worker into a bare 500.
+  const fields: Record<string, string> = {};
+  for (const key of FIELDS) {
+    const value = (parsed as Record<string, unknown>)[key];
+    if (value === undefined || value === null) fields[key] = "";
+    else if (typeof value === "string") fields[key] = value.trim();
+    else return json({ status: "error", message: `${key} must be text` }, 400);
   }
 
-  // Honeypot — bots fill `company`; silently accept and drop.
-  if ((data.company || "").trim()) return json({ status: "success" });
+  // Honeypot — bots fill `hp`; silently accept and drop.
+  if (fields.hp) return json({ status: "success" });
 
-  const name = (data.name || "").trim();
-  const email = (data.email || "").trim();
-  const subject = (data.subject || "").trim();
-  const message = (data.message || "").trim();
+  const { name, email, subject, message } = fields;
 
   if (!name || !email || !message)
     return json({ status: "error", message: "name, email, and message are required" }, 400);
@@ -75,8 +147,7 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
     return json({ status: "error", message: "invalid email address" }, 400);
 
   for (const [k, cap] of Object.entries(FIELD_LIMITS))
-    if ((data[k] || "").trim().length > cap)
-      return json({ status: "error", message: `${k} exceeds ${cap} characters` }, 400);
+    if (fields[k].length > cap) return json({ status: "error", message: `${k} exceeds ${cap} characters` }, 400);
 
   if (!env.RESEND_API_KEY || !env.OWNER_EMAIL)
     return json({ status: "error", message: "email not configured" }, 500);
@@ -95,6 +166,9 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
     return json({ status: "error", message: "Failed to send message" }, 502);
   }
 
+  // Off by default, and best kept off: it mails whatever address the visitor
+  // typed, which makes the form a way to send mail to strangers from this
+  // domain. The WAF rate limit is the only brake on that if it is enabled.
   const ack = (env.SEND_VISITOR_ACK || "").toLowerCase();
   if (ack === "1" || ack === "true" || ack === "yes") {
     const aHtml = `<p>Hi ${esc(name)},</p><p>Thanks for contacting me via my portfolio. I'll get back to you soon.</p><p>- Shaan</p>`;
@@ -109,14 +183,16 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
   return json({ status: "success", message: "Message sent successfully. I received it." });
 }
 
-export default {
+const worker = {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname === "/api/contact") {
-      if (request.method !== "POST") return json({ status: "error", message: "Method not allowed" }, 405);
-      return handleContact(request, env);
+      if (request.method !== "POST") return json({ status: "error", message: "Method not allowed" }, 405, { Allow: "POST" });
+      return handleContact(request, env, url);
     }
     // Everything else → serve the static export.
     return env.ASSETS.fetch(request);
   },
 };
+
+export default worker;
