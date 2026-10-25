@@ -4,6 +4,11 @@ The personal site of an AI systems engineer, built with **Next.js 16**, **React 
 
 > "The model is a component, not the architecture."
 
+<p align="center">
+  <img src="docs/screenshots/hero-light.webp" alt="The portfolio's hero in light mode: the name, a one-line description, and the exploded 3D model of an AI system with the model as a yellow block between the plates" width="49%">
+  <img src="docs/screenshots/hero-dark.webp" alt="The same hero in dark mode, with the 3D model rendered in graphite" width="49%">
+</p>
+
 ## Design
 
 - **An interactive model in the hero.** A three.js model of the shape most of these systems share: interfaces, guards, orchestration, and memory and state as plates, with the model as one yellow block between them and no plate of its own. Drag to turn it, and select a layer to see which projects use it. The callouts and the caption read the same data as the scene, so the 3D object and the text cannot disagree.
@@ -11,6 +16,10 @@ The personal site of an AI systems engineer, built with **Next.js 16**, **React 
 - **Type and colour.** Archivo at two widths: expanded for display, normal for reading. The neutrals are cool aluminium in light mode and graphite in dark, plus one signal colour that only ever means "a model runs here". Every text colour clears WCAG AA in both themes, and axe reports no violations.
 - **3D as an enhancement.** The page first renders a flat isometric drawing of the model, projected with the same camera maths as the WebGL scene. three.js loads after first paint (as its own ~140 KB chunk) and the drawing resolves into the model. Without WebGL or with Save-Data on, the drawing and the layer buttons are the whole experience, and three.js is never downloaded. With reduced motion you get the model without the intro, inertia or scroll-linked turn.
 - **Quiet everywhere else.** No scroll-jacking, no reveal-on-scroll, no custom cursor. Apart from one short intro as the model loads, motion only answers something you did: keys press down, layers lift, and the new theme grows out of the toggle.
+
+<p align="center">
+  <img src="docs/screenshots/case-study.webp" alt="A case study on the site: Atlas, drawn as two flows, a chat message through the Gemini loop and user-scoped tools to a reply, and a morning briefing gated by a salience check" width="900">
+</p>
 
 ## Stack
 
