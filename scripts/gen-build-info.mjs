@@ -15,7 +15,9 @@ const target = join(root, "src", "lib", "buildInfo.ts");
 
 function sha() {
   try {
-    return execSync("git rev-parse --short HEAD", {
+    // --dirty marks a build made from uncommitted changes ("5cf16f6-dirty"),
+    // so the footer never credits a commit that does not contain the page.
+    return execSync("git describe --always --dirty --abbrev=7", {
       cwd: root,
       stdio: ["ignore", "pipe", "ignore"],
     })
