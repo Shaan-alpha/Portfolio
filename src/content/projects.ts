@@ -149,7 +149,10 @@ export const projects: Project[] = [
       "Idempotent fail-soft run state in Supabase Postgres with safe retries; publishes to @butitmatters on a cost target of $5/month or less",
     ],
     link: "https://github.com/Shaan-alpha/AI-Reel-Factory",
-    liveLink: "https://youtube.com/@butitmatters",
+    // Linked by channel id: youtube.com/@butitmatters returns 404 even though
+    // it is the channel's own canonical handle, and an id URL always resolves.
+    liveLink: "https://www.youtube.com/channel/UC5rDIoOPYLrHaf2IQ5hRlRw",
+    liveLabel: "the YouTube channel",
     flows: [
       {
         steps: [
