@@ -1,25 +1,35 @@
 # Shaan Satsangi — Portfolio
 
-A terminal/data-themed developer portfolio built with **Next.js 16**, **React 19**, and **Tailwind CSS 4**. Monospace type, a single phosphor accent, flat surfaces, and a self-built generative hero — designed to read like an engineer made deliberate choices, not like a template.
+The personal site of an AI systems engineer, built with **Next.js 16**, **React 19**, **Tailwind CSS 4** and **three.js**. It is organised around one idea, drawn the same way everywhere on the page:
 
-> "The model is a component, not the architecture. I build systems, not demos."
+> "The model is a component, not the architecture."
 
 ## Design
 
-- **Terminal / data identity** — JetBrains Mono display + labels, graph-paper grid, ASCII-style section prompts (`~/projects $`), monospace readouts, and one disciplined accent (phosphor `#3fb950` dark · deep green `#1a7f4b` on the "paper terminal" light mode). No gradients, no glassmorphism, no ambient blobs.
-- **Self-built generative hero** — a real-time HTML5 `<canvas>` renders a node/edge pipeline graph with packets flowing source → bronze → silver → gold → sink, behind a live-typed terminal status line. No video assets; `prefers-reduced-motion` paints a static graph.
-- **Smooth, accessible motion** — Lenis smooth scroll, restrained Framer Motion reveals, a custom cursor that never hides the caret in form fields, visible focus rings, and full reduced-motion support.
-- **Two themes** — dark-first near-black terminal, plus an ink-on-paper light mode, with an animated view-transition theme toggle.
+- **An interactive model in the hero.** A three.js model of the shape most of these systems share: interfaces, guards, orchestration, and memory and state as plates, with the model as one yellow block between them and no plate of its own. Drag to turn it, and select a layer to see which projects use it. The callouts and the caption read the same data as the scene, so the 3D object and the text cannot disagree.
+- **Pipelines instead of paragraphs.** Each production project is drawn as the path work takes through it, in the same visual language: yellow where a model runs, a shield where a guard or check sits, a hand where a person approves. A system with two separate paths, such as Atlas's chat replies and its gated morning briefing, gets two diagrams rather than one invented sequence.
+- **Type and colour.** Archivo at two widths: expanded for display, normal for reading. The neutrals are cool aluminium in light mode and graphite in dark, plus one signal colour that only ever means "a model runs here". Every text colour clears WCAG AA in both themes, and axe reports no violations.
+- **3D as an enhancement.** The page first renders a flat isometric drawing of the model, projected with the same camera maths as the WebGL scene. three.js loads after first paint (as its own ~140 KB chunk) and the drawing resolves into the model. Without WebGL or with Save-Data on, the drawing and the layer buttons are the whole experience, and three.js is never downloaded. With reduced motion you get the model without the intro, inertia or scroll-linked turn.
+- **Quiet everywhere else.** No scroll-jacking, no reveal-on-scroll, no custom cursor. Apart from one short intro as the model loads, motion only answers something you did: keys press down, layers lift, and the new theme grows out of the toggle.
 
 ## Stack
 
-- **Framework:** Next.js 16 (App Router, static export)
-- **Runtime:** React 19
-- **Styling:** Tailwind CSS 4
-- **Animation:** Framer Motion 12 · Lenis
-- **Fonts:** JetBrains Mono (display) · Outfit (body), via `next/font`
+- **Framework:** Next.js 16 (App Router, static export), React 19
+- **Styling:** Tailwind CSS 4, design tokens in [`globals.css`](src/app/globals.css)
+- **3D:** three.js 0.186, lazy-loaded, rendered on demand (the loop stops when nothing moves)
+- **Fonts:** Archivo (variable width and weight) via `next/font`
 - **Hosting:** Cloudflare Workers static assets at [`shaansatsangi.com`](https://shaansatsangi.com) — Cloudflare DNS · WAF · CDN, security headers, an enforced CSP, HSTS, and an SSL Labs **A+** edge config.
-- **Contact API:** a same-origin Cloudflare Worker route (`/api/contact`, see [`worker/index.ts`](worker/index.ts)) that emails via **Resend** — honeypot, required-field + length validation, and WAF rate limiting. No CORS, no cold start. *(Previously a Flask service on Render; now retired.)*
+- **Contact API:** a same-origin Cloudflare Worker route (`/api/contact`, see [`worker/index.ts`](worker/index.ts)) that emails via **Resend**. It has a honeypot, required-field and length validation, a streamed 24 KB body cap (room for a full-length message in a three-byte script such as Devanagari), type checks on every field, and refusal of cross-site browser requests. All of these are covered by a `node:test` suite. Rate limiting is a Cloudflare WAF rule in front of it. No CORS, no cold start.
+
+## Layout of the code
+
+```
+src/content/            the content data: profile, projects (with their flows), skills, experience, the hero's layers
+src/components/stack/   the hero model: geometry.ts (shared camera maths), scene.ts (three.js),
+                        drawing.ts + StackDrawing.tsx (SVG stand-in), StackStage.tsx (callouts, caption, state)
+src/app/og.png/         the social card, rendered at build time with next/og
+worker/                 the Cloudflare Worker and its tests
+```
 
 ## Featured projects
 
@@ -35,7 +45,7 @@ A terminal/data-themed developer portfolio built with **Next.js 16**, **React 19
 **Also shipped**
 
 - **Telegram MCP** — local Model Context Protocol server giving AI agents read/write access to a Telegram account via MTProto. *Python · Telethon · MCP · Claude.*
-- **JARVIS** — offline-capable, privacy-first voice assistant: local LLM inference (Ollama), semantic memory, wake-word detection, streaming TTS.
+- **JARVIS** — local-first voice assistant that still works offline: wake-word detection, local LLM inference (Ollama), long-term memory, streaming TTS.
 - **Face Sort Studio** — local deep-learning photo organizer (OpenCV DNN: YuNet + SFace) with SQLite persistence and SSE progress.
 - **YouTube Wrapped** — Databricks medallion lakehouse (Bronze → Silver → Gold) on Delta Lake, served via FastAPI + Next.js.
 - **Sahaara** — mobile-first women's-safety app with one-tap SOS, MapLibre live location, and Supabase Realtime alerts to nearby users.
@@ -48,14 +58,13 @@ A terminal/data-themed developer portfolio built with **Next.js 16**, **React 19
 git clone https://github.com/Shaan-alpha/Portfolio.git && cd Portfolio
 npm install
 npm run dev          # http://localhost:3000
-npm run build        # static export to ./out
+npm run build        # static export to ./out, including the social card at /og.png
+npm test             # contact Worker tests (node:test)
+npm run typecheck
+npm run lint
 ```
 
-Regenerate the social card after editing it:
-
-```bash
-node scripts/make-og.mjs   # writes public/og.png (1200×630)
-```
+`src/lib/buildInfo.ts` is generated from git by the `predev` / `prebuild` hooks and is not committed. The footer shows it; a build made from uncommitted changes reads `-dirty`, so commit before building a release.
 
 ---
 Built by **Shaan Satsangi** · Jaipur, Rajasthan
