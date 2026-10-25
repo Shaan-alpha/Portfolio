@@ -34,7 +34,7 @@ export default function Skills() {
       items: [
         { name: "RAG / Vector DBs (FAISS)", tier: "core" },
         { name: "Embeddings & Semantic Search", tier: "strong" },
-        { name: "PyTorch / TensorFlow", tier: "strong" },
+        { name: "PyTorch / TensorFlow", tier: "working" },
         { name: "Scikit-learn / Pandas", tier: "core" },
         { name: "OpenCV / NLP", tier: "strong" },
       ],
@@ -76,7 +76,7 @@ export default function Skills() {
       title: "Data Analysis & Analytics",
       label: "> analytics",
       items: [
-        { name: "Power BI / Tableau", tier: "strong" },
+        { name: "Power BI", tier: "strong" },
         { name: "SQL (Complex Queries)", tier: "core" },
         { name: "Matplotlib / Seaborn", tier: "strong" },
         { name: "Actionable Insights", tier: "strong" },
@@ -92,8 +92,7 @@ export default function Skills() {
     { file: "nextjs", name: "Next.js", invert: true }, { file: "react", name: "React" },
     { file: "typescript", name: "TypeScript" }, { file: "postgresql", name: "PostgreSQL" },
     { file: "redis", name: "Redis" }, { file: "docker", name: "Docker" },
-    { file: "pytorch", name: "PyTorch" },
-    { file: "tensorflow", name: "TensorFlow" }, { file: "scikitlearn", name: "Scikit-learn" },
+    { file: "scikitlearn", name: "Scikit-learn" },
     { file: "opencv", name: "OpenCV" }, { file: "pandas", name: "Pandas", invert: true },
     { file: "apachespark", name: "Apache Spark" }, { file: "apacheairflow", name: "Airflow" },
     { file: "jupyter", name: "Jupyter" }, { file: "git", name: "Git" },

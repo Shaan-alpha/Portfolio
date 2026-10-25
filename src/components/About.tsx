@@ -100,7 +100,7 @@ export default function About() {
             I&apos;m the creator of <a href="https://skillissue.tech" target="_blank" rel="noreferrer" className="text-foreground underline decoration-accent/40 underline-offset-4 transition-colors hover:decoration-accent">Skill Issue</a>, a GitHub code-intelligence platform where the score is deterministic and the LLM only narrates. That&apos;s the whole philosophy — <em className="text-foreground">the model is a component, not the architecture</em>. Hand me a messy problem and you get a system back: retries, caches, idempotent state, and a human-in-the-loop gate exactly where it matters.
           </motion.p>
           <motion.div variants={itemVariants} className="flex flex-wrap gap-2 mt-5">
-            {["Python", "LangChain", "LangGraph", "MCP", "RAG / FAISS", "PyTorch", "TensorFlow", "Scikit-learn", "OpenCV", "FastAPI", "TypeScript", "Next.js", "SQL", "PostgreSQL", "Redis", "Apache Airflow", "Apache Spark", "dbt", "Docker", "GitHub Actions", "Supabase", "Google Cloud", "Flask", "C / C++"].map((skill) => (
+            {["Python", "LangChain", "LangGraph", "MCP", "RAG / FAISS", "Scikit-learn", "OpenCV", "FastAPI", "TypeScript", "Next.js", "SQL", "PostgreSQL", "Redis", "Apache Airflow", "Apache Spark", "dbt", "Docker", "GitHub Actions", "Supabase", "Google Cloud", "Flask", "C / C++"].map((skill) => (
               <span key={skill} className="mono text-[11px] py-1 px-3 rounded-[6px] bg-surface border border-border text-muted2 transition-colors duration-200 hover:border-accent/50 hover:text-foreground">
                 {skill}
               </span>
