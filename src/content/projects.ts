@@ -43,9 +43,9 @@ export const projects: Project[] = [
     desc: "An AI-powered GitHub intelligence platform on its own domain. Drop in a username and it turns repos, OSS contributions, and coding discipline into a deterministic 100-point engineering score and a shareable receipt. The score is computed; the model only narrates it.",
     tags: ["Next.js", "FastAPI", "Python", "Neon Postgres", "Upstash Redis", "Groq"],
     bullets: [
-      "Deterministic 100-point score across repo quality, maturity, OSS, consistency & recruiter signal — every point traces to evidence, the LLM never touches a number",
+      "Deterministic 100-point score across repo quality, maturity, OSS, recruiter signal, consistency & trajectory — every point traces to evidence, the LLM never touches a number",
       "FastAPI + Next.js on Neon Postgres with GitHub OAuth and four Upstash Redis cache layers, designed for a sub-200 ms p95 on repeat analyses; the cache fails open",
-      "Survives GitHub GraphQL RESOURCE_LIMITS on whale accounts; shareable 1200×630 'GitHub Receipts' OG scorecards. Shipping at v1.0.13.",
+      "Survives GitHub GraphQL RESOURCE_LIMITS on whale accounts; shareable 1200×630 'GitHub Receipts' OG scorecards. Shipping at v1.0.17.",
     ],
     link: "https://github.com/Shaan-alpha/Skill-Issue",
     liveLink: "https://skillissue.tech",
