@@ -60,6 +60,9 @@ export function lookupTech(name: string): Logo | null {
 
 export function TechLogo({ file, invert, alt, className }: Logo & { alt: string; className?: string }) {
   return (
+    // Static export serves these SVGs as-is; next/image would add a wrapper
+    // and nothing else, since there is no optimizer to route them through.
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={`${BP}/devicon/${file}.svg`}
       alt={alt}
