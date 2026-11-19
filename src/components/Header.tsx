@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useActiveSection } from "@/lib/useActiveSection";
 import ThemeToggle from "./ThemeToggle";
+import SoundToggle from "./SoundToggle";
 import Mark from "./Mark";
 import { profile } from "@/content/profile";
+import { play } from "@/lib/sound";
 
 const NAV = [
   { id: "work", label: "Work" },
@@ -21,6 +23,16 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
+  const wasOpen = useRef(open);
+
+  // The menu sounds as it opens and closes, however it was closed (the button,
+  // Escape, a link, or growing past the breakpoint). Comparing with the last
+  // value keeps Strict Mode's second effect run silent.
+  useEffect(() => {
+    if (wasOpen.current === open) return;
+    wasOpen.current = open;
+    play(open ? "open" : "close");
+  }, [open]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -72,13 +84,15 @@ export default function Header() {
       data-scrolled={scrolled || open || undefined}
       className="sticky top-0 z-[1000] h-[var(--header)] border-b border-transparent bg-ground transition-[border-color] duration-200 data-[scrolled]:border-line"
     >
-      <div className="container-x flex h-full items-center justify-between gap-6">
+      {/* Phones are tight with two icon toggles and Menu beside the name: the
+          spacing closes up below md so the name stays on one line at 360px. */}
+      <div className="container-x flex h-full items-center justify-between gap-3 md:gap-6">
         <a href="#top" className="flex items-center gap-2.5 rounded-md text-ink" onClick={() => setOpen(false)}>
           <Mark className="h-6 w-6" />
           <span className="semi text-[15px] font-bold tracking-[-0.01em]">{profile.name}</span>
         </a>
 
-        <div className="flex items-center gap-1 md:gap-2">
+        <div className="flex items-center md:gap-2">
           <nav aria-label="Sections" className="hidden md:block">
             <ul className="flex items-center gap-1">
               {NAV.map((n) => {
@@ -106,11 +120,13 @@ export default function Header() {
             </ul>
           </nav>
 
+          <SoundToggle />
           <ThemeToggle />
 
           <button
             ref={menuButton}
             type="button"
+            data-sfx=""
             className="key key-secondary key-sm md:hidden"
             aria-expanded={open}
             aria-controls="mobile-menu"

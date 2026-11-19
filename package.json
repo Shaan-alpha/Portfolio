@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "node scripts/gen-build-info.mjs && tsc --noEmit && tsc --noEmit -p worker",
-    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test worker/index.test.mts"
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test worker/index.test.mts src/components/stack/detents.test.mts src/lib/soundEvents.test.mts"
   },
   "dependencies": {
     "lucide-react": "^1.14.0",
@@ -18,7 +18,8 @@
     "next-themes": "^0.4.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "three": "0.186.1"
+    "three": "0.186.1",
+    "uisfx": "0.4.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { layers, type LayerId } from "@/content/stack";
 import { projects } from "@/content/projects";
+import { play } from "@/lib/sound";
 import type { Anchor, StackScene } from "./scene";
 import { AZIMUTH, CUBE, ELEVATION, MODEL_SLOT, PLATE_D, PLATE_H, PLATE_W, VIEW_H, basis, project, slotY, type Vec3 } from "./geometry";
 
@@ -132,6 +133,10 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
             onHover: setHovered,
             onPick: (id) => setSelected((cur) => (id === null || id === cur ? null : id)),
             onRotated: setRotated,
+            // A detented dial: a quiet tick per notch, at least 45 ms apart so
+            // a hard spin never buzzes, each a few percent off in pitch so a
+            // run of them does not sound like a machine gun.
+            onDetent: () => play("typing", { cooldownMs: 45, playbackRate: 0.97 + Math.random() * 0.06 }),
             onAnchors: placeCallouts,
             // A lost context (iOS drops them in the background) takes the
             // model down for good: dispose it so the hidden canvas stops
@@ -160,6 +165,15 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
   }, []);
 
   useEffect(() => sceneRef.current?.setSelected(selected), [selected, status]);
+  // Selecting and clearing a layer sound the same whichever way they happen:
+  // the model, a tag, a phone button, a second press, or Escape. Comparing with
+  // the last value keeps Strict Mode's second effect run silent.
+  const wasSelected = useRef(selected);
+  useEffect(() => {
+    if (wasSelected.current === selected) return;
+    wasSelected.current = selected;
+    play(selected ? "select" : "deselect");
+  }, [selected]);
   useEffect(() => {
     if (!selected) return;
     const onKey = (e: KeyboardEvent) => {

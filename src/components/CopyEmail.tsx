@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { play } from "@/lib/sound";
 
 export default function CopyEmail({ email }: { email: string }) {
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
@@ -16,13 +17,16 @@ export default function CopyEmail({ email }: { email: string }) {
     try {
       await navigator.clipboard.writeText(email);
       setState("copied");
+      play("copy");
     } catch {
       setState("failed");
+      play("error");
     }
   };
 
   return (
-    <button type="button" onClick={copy} className="key key-secondary key-sm">
+    // data-sfx: this key plays its result, not the generic key press.
+    <button type="button" onClick={copy} data-sfx="" className="key key-secondary key-sm">
       {state === "copied" ? <Check aria-hidden className="h-3.5 w-3.5" /> : <Copy aria-hidden className="h-3.5 w-3.5" />}
       <span aria-live="polite">{state === "copied" ? "Copied" : state === "failed" ? "Select and copy" : "Copy"}</span>
     </button>

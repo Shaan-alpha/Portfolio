@@ -4,6 +4,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { Moon, Sun } from "lucide-react";
+import { play } from "@/lib/sound";
 
 export default function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -15,6 +16,8 @@ export default function ThemeToggle() {
   const label = isDark ? "Switch to light theme" : "Switch to dark theme";
 
   const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // A light switch: lights on for the light theme, off for the dark one.
+    play(next === "dark" ? "toggle-off" : "toggle-on");
     const doc = document as Document & {
       startViewTransition?: (cb: () => void) => { ready: Promise<void> };
     };
@@ -48,7 +51,7 @@ export default function ThemeToggle() {
       onClick={toggle}
       aria-label={label}
       title={label}
-      className="grid h-10 w-10 place-items-center rounded-[10px] text-ink-2 transition-colors hover:bg-ground-2 hover:text-ink"
+      className="grid h-10 w-9 place-items-center rounded-[10px] text-ink-2 transition-colors hover:bg-ground-2 hover:text-ink md:w-10"
     >
       {/* Before mount the theme is unknown; an empty box keeps the layout still. */}
       {mounted ? isDark ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" /> : null}

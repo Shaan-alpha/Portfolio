@@ -46,8 +46,12 @@ import {
   roundedRect,
   slotY,
 } from "./geometry";
+import { createDetents } from "./detents";
 
 export type Anchor = { id: LayerId; x: number; y: number };
+
+/** Degrees between the dial's detents: 24 ticks to a full turn. */
+const DETENT_DEG = 15;
 
 export type StackSceneOptions = {
   canvas: HTMLCanvasElement;
@@ -58,6 +62,8 @@ export type StackSceneOptions = {
   onHover: (id: LayerId | null) => void;
   onPick: (id: LayerId | null) => void;
   onRotated: (rotated: boolean) => void;
+  /** The visitor's own turning crossed into a new detent (see DETENT_DEG). */
+  onDetent?: () => void;
   onAnchors: (anchors: Anchor[]) => void;
   onLost: () => void;
 };
@@ -386,6 +392,11 @@ export function createStackScene(opts: StackSceneOptions): StackScene {
   let introStart = -1;
   let cubeSpin = 0;
   let rotatedReported = false;
+  // The visitor's share of the turn as it is shown on screen, smoothed with
+  // the same filter as the camera. Scroll and the intro never move it, so only
+  // a drag, its coast, and the wind-back after Reset view cross detents.
+  let azShown = 0;
+  const detents = createDetents(DETENT_DEG);
 
   const smoothing = reducedMotion ? 60 : 9;
 
@@ -438,6 +449,8 @@ export function createStackScene(opts: StackSceneOptions): StackScene {
     }
 
     az = approach(az, AZIMUTH + azUser + 28 * scroll);
+    azShown = approach(azShown, azUser);
+    if (detents(azShown)) opts.onDetent?.();
     el = approach(el, clamp(ELEVATION + elUser + 6 * scroll, 6, 64));
     gap = approach(gap, GAP + 0.14 * scroll);
 

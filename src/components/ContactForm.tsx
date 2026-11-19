@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { profile } from "@/content/profile";
+import { play } from "@/lib/sound";
 
 type State = { kind: "idle" } | { kind: "sending" } | { kind: "sent"; to: string } | { kind: "error"; message: string };
 
@@ -41,13 +42,16 @@ export default function ContactForm() {
       const body = isJson ? ((await res.json()) as { status?: string; message?: string }) : null;
       if (!res.ok || body?.status !== "success") {
         setState({ kind: "error", message: explain(res.status, body?.message) });
+        play("error");
         return;
       }
       setState({ kind: "sent", to: data.email });
+      play("send");
       form.reset();
       setCount(0);
     } catch {
       setState({ kind: "error", message: `Could not reach the server. Check your connection, or email me at ${profile.email}.` });
+      play("error");
     }
   };
 
