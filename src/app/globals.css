@@ -420,6 +420,20 @@ body > footer {
 html[data-film] header {
   border-color: transparent;
 }
+/* A step's marker shows its tile until the dots form on it, and keeps it
+   wherever the field does not draw the scene: without WebGL, and in a scene
+   too tall for the screen (`data-tiles`). */
+[data-glyph] {
+  transition: opacity 300ms var(--ease);
+}
+html[data-field] [data-scene]:not([data-tiles]) [data-glyph] {
+  opacity: 0;
+}
+/* The reading part's top is a snap stop, and its first section starts
+   exactly there. */
+#also-shipped {
+  scroll-margin-top: 0;
+}
 /* Once the dots have formed on the drawing, the drawing steps back. */
 [data-stack-box][data-live] [data-drawing] {
   opacity: 0;

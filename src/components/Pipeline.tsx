@@ -2,7 +2,7 @@ import { Box, Hand, ShieldCheck } from "lucide-react";
 import type { Flow, StepKind } from "@/content/projects";
 import { withCode } from "@/lib/withCode";
 
-const KIND_LABEL: Record<StepKind, string> = {
+export const KIND_LABEL: Record<StepKind, string> = {
   io: "",
   step: "",
   model: "model",
@@ -10,7 +10,7 @@ const KIND_LABEL: Record<StepKind, string> = {
   human: "human approval",
 };
 
-function KindIcon({ kind, className }: { kind: StepKind; className?: string }) {
+export function KindIcon({ kind, className }: { kind: StepKind; className?: string }) {
   if (kind === "model") return <Box aria-hidden className={className} />;
   if (kind === "guard") return <ShieldCheck aria-hidden className={className} />;
   if (kind === "human") return <Hand aria-hidden className={className} />;
@@ -20,7 +20,7 @@ function KindIcon({ kind, className }: { kind: StepKind; className?: string }) {
 /* A flow turns horizontal only when its own box is wide enough for the widest
    unbreakable label ("User-scoped", "Fact-check") to sit inside its block:
    51rem for up to six steps, 54rem for seven. These are container queries on
-   the wrapper (`@container` in ProjectCase), so the sidebar, the viewport and
+   the wrapper (`@container` on each flow below), so the sheet, the viewport and
    the visitor's font size all count. The class strings are spelled out in
    full because Tailwind only generates classes it can read in the source. */
 const ACROSS = {

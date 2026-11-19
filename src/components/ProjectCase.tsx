@@ -1,21 +1,10 @@
 import { ArrowUpRight } from "lucide-react";
 import Pipeline from "./Pipeline";
 import { GithubIcon } from "./icons";
+import { StatusLabel } from "./StatusLabel";
 import { hostOf, type Project } from "@/content/projects";
 import { lookupTech, TechLogo } from "@/lib/techIcons";
 import { withCode } from "@/lib/withCode";
-
-export function StatusLabel({ status }: { status: Project["status"] }) {
-  if (status === "live") {
-    return (
-      <span className="inline-flex items-center gap-1.5 font-semibold text-ink">
-        <span aria-hidden className="h-2 w-2 rounded-full bg-ok" />
-        Live
-      </span>
-    );
-  }
-  return <span className="font-semibold text-ink-2">{status === "shipped" ? "Shipped" : "Building"}</span>;
-}
 
 export default function ProjectCase({ project: p }: { project: Project }) {
   return (

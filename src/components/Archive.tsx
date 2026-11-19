@@ -1,5 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
-import { StatusLabel } from "./ProjectCase";
+import { StatusLabel } from "./StatusLabel";
 import { GithubIcon } from "./icons";
 import { lab } from "@/content/projects";
 import { spell } from "@/lib/format";
@@ -9,8 +9,10 @@ import { withCode } from "@/lib/withCode";
  *  grid, so the eye runs down names, then descriptions, then links. */
 export default function Archive() {
   return (
-    <section id="also-shipped" aria-labelledby="also-title" className="border-t border-line">
-      <div className="container-x py-20 lg:py-24">
+    <section id="also-shipped" aria-labelledby="also-title">
+      {/* The reading part's top: the header's hairline is the line it starts
+          from, so it needs no border of its own, only room under the header. */}
+      <div className="container-x pb-20 pt-[calc(var(--header)+3rem)] lg:pb-24 lg:pt-[calc(var(--header)+5rem)]">
         <h2 id="also-title" className="t-h3 text-ink">
           Also shipped
         </h2>

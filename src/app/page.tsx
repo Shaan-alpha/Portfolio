@@ -3,12 +3,13 @@ import Film from "@/components/film/Film";
 import HeroScene from "@/components/film/HeroScene";
 import ThesisScene from "@/components/film/ThesisScene";
 import WorkScene from "@/components/film/WorkScene";
-import CaseStudies from "@/components/CaseStudies";
+import SystemScene from "@/components/film/SystemScene";
 import Archive from "@/components/Archive";
 import About from "@/components/About";
 import Experience from "@/components/Experience";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import { flagship } from "@/content/projects";
 
 /** The film (full-screen scenes, one per gesture) and then the reading part,
  *  which is one tall snap area scrolled natively. The footer stays outside
@@ -23,9 +24,11 @@ export default function Home() {
           <HeroScene />
           <ThesisScene />
           <WorkScene />
+          {flagship.map((p) => (
+            <SystemScene key={p.id} project={p} />
+          ))}
         </Film>
         <div id="reading" data-reading>
-          <CaseStudies />
           <Archive />
           <About />
           <Experience />
