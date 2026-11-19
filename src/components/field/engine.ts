@@ -26,6 +26,7 @@ import { IDENTITY_FRAME, TIMING, snapshot, stackFrame, type Carry, type Frame, t
 import { lineAlpha, type Rect, type Targets } from "./targets.ts";
 import { FRAGMENT, MAX_MASKS, VERTEX } from "./shaders.ts";
 import { createLoop } from "./loop.ts";
+import { pushPast, tiltWanted } from "./polish.ts";
 
 export { MAX_MASKS };
 
@@ -216,11 +217,9 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
 
   function update(now: number, dt: number) {
     if (motion && targetFrame === "stack") az += TURN_DEG_PER_S * smoothstep(turnFrom, turnFrom + 1.5, now) * dt;
-    // The pointer tilts the stack on a spring, and parts nearby dots.
-    const want =
-      motion && pointer.inside && targetFrame === "stack"
-        ? [(0.5 - pointer.y / h) * TILT_DEG, (pointer.x / w - 0.5) * TILT_DEG]
-        : [0, 0];
+    // The pointer tilts the stack on a spring, once it has started to turn,
+    // and parts nearby dots.
+    const want = tiltWanted({ motion, inside: pointer.inside, stack: targetFrame === "stack", x: pointer.x, y: pointer.y, w, h, now, turnFrom, tiltDeg: TILT_DEG });
     for (let k = 0; k < 2; k++) {
       tiltVel[k] += (SPRING * SPRING * (want[k] - tilt[k]) - 2 * SPRING * tiltVel[k]) * dt;
       tilt[k] += tiltVel[k] * dt;
@@ -301,6 +300,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
       const fs = f.s;
       const scatter = (opts.quick || opts.instant ? 0 : 1) * Math.min(w, h);
       const push = scatter && w >= 1024 ? textRight + 24 : -Infinity;
+      const spread = Math.min(240, Math.max(0, w - push));
       for (let i = 0; i < n; i++) {
         const j = 3 * i;
         const lx = st.to[j];
@@ -312,7 +312,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
         const a = Math.random() * Math.PI * 2;
         const r = scatter * (0.06 + Math.random() * 0.06);
         let mx = (st.from[j] + tx) / 2 + Math.cos(a) * r;
-        if (mx < push) mx = push + Math.random() * 60;
+        if (mx < push) mx = pushPast(mx, push, spread);
         st.mid[j] = mx;
         st.mid[j + 1] = (st.from[j + 1] + ty) / 2 + Math.sin(a) * r;
         st.mid[j + 2] = (st.from[j + 2] + tz) / 2;
