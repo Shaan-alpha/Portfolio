@@ -51,6 +51,7 @@ uniform vec3 uModel;
 uniform vec3 uLine;
 uniform float uDustAlpha;
 uniform float uLineAlpha;
+uniform float uFade; // reduced motion's scene fade: 1 shown, 0 gone
 
 out vec3 vColor;
 out float vAlpha;
@@ -153,7 +154,7 @@ void main() {
   alpha = mix(alpha, 1.0, ink);
   size = mix(size, 2.8, ink);
   col = mix(col, uDust, grey);
-  alpha *= mix(aVisFrom, visibility(mode, c, u, aLoop.z, aLoop.w, dot(aFlow.xyz, aFlow.xyz) > 0.0), p);
+  alpha *= mix(aVisFrom, visibility(mode, c, u, aLoop.z, aLoop.w, dot(aFlow.xyz, aFlow.xyz) > 0.0), p) * uFade;
 
   // No dots behind the copy: anything inside a mask rect fades to 15%.
   for (int i = 0; i < ${MAX_MASKS}; i++) {

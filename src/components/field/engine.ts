@@ -26,7 +26,7 @@ import { IDENTITY_FRAME, TIMING, snapshot, stackFrame, type Carry, type Frame, t
 import { lineAlpha, type Rect, type Targets } from "./targets.ts";
 import { FRAGMENT, MAX_MASKS, VERTEX } from "./shaders.ts";
 import { createLoop } from "./loop.ts";
-import { pushPast, tiltWanted } from "./polish.ts";
+import { fadeAlpha, pushPast, refade, tiltWanted } from "./polish.ts";
 
 export { MAX_MASKS };
 
@@ -55,6 +55,8 @@ export type Field = {
 const DRIFT_PX = 1.2;
 /** A scene's behaviour starts this long after its morph, as its shape forms. */
 const LOOP_LEAD = 0.7;
+/** Reduced motion's scene change: out over this long, then back in. */
+const FADE_HALF = 0.1;
 const TURN_DEG_PER_S = 4;
 const TILT_DEG = 8;
 const SPRING = (2 * Math.PI) / 0.6; // a critically damped spring settling in about 0.6 s
@@ -157,6 +159,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     uLine: { value: new Vector3() },
     uDustAlpha: { value: 0.25 },
     uLineAlpha: { value: 0.1 },
+    uFade: { value: 1 },
     uLight: { value: 1 },
   };
   const material = new RawShaderMaterial({
@@ -204,6 +207,12 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     clock,
     motion,
     frame: (now, dt) => {
+      // A held scene is placed as the fade-out ends.
+      if (pending && now >= fadeStart + FADE_HALF) {
+        const t = pending;
+        pending = null;
+        apply(t, {}, true);
+      }
       update(now, dt);
       renderer.render(scene, camera);
     },
@@ -252,6 +261,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     u.uStack.value = targetFrame === "stack" ? 1 : 0;
     u.uNow.value = now;
     u.uLoopClock.value = loopClock(now);
+    u.uFade.value = fadeAlpha(now, fadeStart, FADE_HALF);
   }
 
   const onVisibility = () => {
@@ -264,78 +274,99 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
   };
   o.canvas.addEventListener("webglcontextlost", onLost);
 
+  // A scene held for reduced motion's fade, and when that fade began.
+  let pending: Targets | null = null;
+  let fadeStart = -1e3;
+
+  /** Morph to `t` from wherever every dot is now. */
+  function apply(t: Targets, opts: { quick?: boolean; instant?: boolean }, fromFrame = false) {
+    const now = clock();
+    const clk = loopClock(now);
+    // Where every dot is right now, drift included, and how it looks, in
+    // the frame and the programs it is leaving: one pass. Then the new
+    // targets' kinds.
+    const base = snapshot(st, now, frameNow(), clk, drift, snap, carry);
+    for (let i = 0; i < n; i++) {
+      kindTo[i] = t.kind[i];
+      group[i] = t.group[i];
+    }
+    const wasStack = targetFrame === "stack";
+    st.from.set(base);
+    st.to.set(t.to);
+    st.delay.set(t.delay);
+    st.flow.set(t.flow);
+    st.loop.set(t.loop);
+    st.wander.set(t.wander);
+    targetFrame = t.frame;
+    if (t.frame === "stack" && !wasStack) turnFrom = now + (opts.instant ? 0.35 : TIMING.shape);
+    // A new scene's behaviour starts as its shape forms; a resize keeps it.
+    if (opts.instant) loopStart = now;
+    else if (!opts.quick) loopStart = now + LOOP_LEAD;
+    still = t.still;
+
+    // A dot leaves for its target through a scattered midpoint, never
+    // through the text column, so the morph reads as dissolve-then-form.
+    // (No allocation per dot: this runs for every dot on a scene change.)
+    const f = frameNow();
+    const [m0, m1, m2, m3, m4, m5, m6, m7, m8] = f.m;
+    const [t0x, t0y, t0z] = f.t;
+    const fs = f.s;
+    const scatter = (opts.quick || opts.instant ? 0 : 1) * Math.min(w, h);
+    const push = scatter && w >= 1024 ? textRight + 24 : -Infinity;
+    const spread = Math.min(240, Math.max(0, w - push));
+    for (let i = 0; i < n; i++) {
+      const j = 3 * i;
+      const lx = st.to[j];
+      const ly = st.to[j + 1];
+      const lz = st.to[j + 2];
+      const tx = t0x + fs * (m0 * lx + m1 * ly + m2 * lz);
+      const ty = t0y + fs * (m3 * lx + m4 * ly + m5 * lz);
+      const tz = t0z + fs * (m6 * lx + m7 * ly + m8 * lz);
+      const a = Math.random() * Math.PI * 2;
+      const r = scatter * (0.06 + Math.random() * 0.06);
+      let mx = (st.from[j] + tx) / 2 + Math.cos(a) * r;
+      if (mx < push) mx = pushPast(mx, push, spread);
+      st.mid[j] = mx;
+      st.mid[j + 1] = (st.from[j + 1] + ty) / 2 + Math.sin(a) * r;
+      st.mid[j + 2] = (st.from[j + 2] + tz) / 2;
+    }
+
+    if (opts.instant || !motion) {
+      st.start = now - 1e3;
+      st.duration = 0;
+      st.stagger = 0;
+    } else if (opts.quick) {
+      st.start = now;
+      st.stagger = 0.1;
+      st.duration = TIMING.move - 0.1;
+    } else {
+      st.start = now;
+      st.stagger = TIMING.stagger;
+      st.duration = TIMING.shape - TIMING.stagger;
+    }
+    u.uStart.value = st.start;
+    u.uDuration.value = st.duration;
+    u.uStagger.value = st.stagger;
+    for (const a of [aFrom, aMid, aTo, aDelay, aFlow, aLoop, aWander, aVisFrom, aLookFrom, aTintFrom, aKindTo, aGroup]) a.needsUpdate = true;
+    // Inside a frame there is no need to ask for another.
+    if (!fromFrame) wake();
+  }
+
   return {
     show(t, opts = {}) {
       if (t.n !== n) throw new Error(`field: targets for ${t.n} dots, but the field draws ${n}`);
-      const now = clock();
-      const clk = loopClock(now);
-      // Where every dot is right now, drift included, and how it looks, in
-      // the frame and the programs it is leaving: one pass. Then the new
-      // targets' kinds.
-      const base = snapshot(st, now, frameNow(), clk, drift, snap, carry);
-      for (let i = 0; i < n; i++) {
-        kindTo[i] = t.kind[i];
-        group[i] = t.group[i];
+      // With reduced motion a scene change is a 200 ms fade: the field fades
+      // out, the new scene is placed (frame callback), and it fades back in.
+      // A second change mid-fade carries on from the level showing now.
+      if (!motion && !opts.instant && !opts.quick) {
+        const now = clock();
+        fadeStart = now < fadeStart + 2 * FADE_HALF ? refade(now, fadeStart, FADE_HALF) : now;
+        pending = t;
+        if (!disposed) loop.runFor(fadeStart + 2 * FADE_HALF - now);
+        return;
       }
-      const wasStack = targetFrame === "stack";
-      st.from.set(base);
-      st.to.set(t.to);
-      st.delay.set(t.delay);
-      st.flow.set(t.flow);
-      st.loop.set(t.loop);
-      st.wander.set(t.wander);
-      targetFrame = t.frame;
-      if (t.frame === "stack" && !wasStack) turnFrom = now + (opts.instant ? 0.35 : TIMING.shape);
-      // A new scene's behaviour starts as its shape forms; a resize keeps it.
-      if (opts.instant) loopStart = now;
-      else if (!opts.quick) loopStart = now + LOOP_LEAD;
-      still = t.still;
-
-      // A dot leaves for its target through a scattered midpoint, never
-      // through the text column, so the morph reads as dissolve-then-form.
-      // (No allocation per dot: this runs for every dot on a scene change.)
-      const f = frameNow();
-      const [m0, m1, m2, m3, m4, m5, m6, m7, m8] = f.m;
-      const [t0x, t0y, t0z] = f.t;
-      const fs = f.s;
-      const scatter = (opts.quick || opts.instant ? 0 : 1) * Math.min(w, h);
-      const push = scatter && w >= 1024 ? textRight + 24 : -Infinity;
-      const spread = Math.min(240, Math.max(0, w - push));
-      for (let i = 0; i < n; i++) {
-        const j = 3 * i;
-        const lx = st.to[j];
-        const ly = st.to[j + 1];
-        const lz = st.to[j + 2];
-        const tx = t0x + fs * (m0 * lx + m1 * ly + m2 * lz);
-        const ty = t0y + fs * (m3 * lx + m4 * ly + m5 * lz);
-        const tz = t0z + fs * (m6 * lx + m7 * ly + m8 * lz);
-        const a = Math.random() * Math.PI * 2;
-        const r = scatter * (0.06 + Math.random() * 0.06);
-        let mx = (st.from[j] + tx) / 2 + Math.cos(a) * r;
-        if (mx < push) mx = pushPast(mx, push, spread);
-        st.mid[j] = mx;
-        st.mid[j + 1] = (st.from[j + 1] + ty) / 2 + Math.sin(a) * r;
-        st.mid[j + 2] = (st.from[j + 2] + tz) / 2;
-      }
-
-      if (opts.instant || !motion) {
-        st.start = now - 1e3;
-        st.duration = 0;
-        st.stagger = 0;
-      } else if (opts.quick) {
-        st.start = now;
-        st.stagger = 0.1;
-        st.duration = TIMING.move - 0.1;
-      } else {
-        st.start = now;
-        st.stagger = TIMING.stagger;
-        st.duration = TIMING.shape - TIMING.stagger;
-      }
-      u.uStart.value = st.start;
-      u.uDuration.value = st.duration;
-      u.uStagger.value = st.stagger;
-      for (const a of [aFrom, aMid, aTo, aDelay, aFlow, aLoop, aWander, aVisFrom, aLookFrom, aTintFrom, aKindTo, aGroup]) a.needsUpdate = true;
-      wake();
+      pending = null;
+      apply(t, opts);
     },
     setStackBox(box) {
       center = [box.x + box.w / 2, box.y + box.h / 2];
