@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import { installFilm, probeCoveringSnap } from "@/components/field/snap";
 import { readColors, readScene, viewportOf } from "@/components/field/dom";
 import { createSequence } from "@/components/film/sequence";
-import { flowTargets, rng, stackTargets, type Rect, type Targets } from "@/components/field/targets";
+import { flowTargets, lineTargets, rng, stackTargets, type Rect, type Targets } from "@/components/field/targets";
+import { BEHAVIOURS } from "@/components/field/behaviours";
 import type { Field } from "@/components/field/engine";
 
 type Nav = Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
@@ -71,6 +72,9 @@ export default function Film({ children }: { children: React.ReactNode }) {
     const scenes = [...document.querySelectorAll<HTMLElement>("[data-scene]")];
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    // Anything that fails on the way to the field (the probe, the engine's
+    // download) leaves the page as it is: scenes, snap if it is on, and the
+    // hero's drawing.
     probeCoveringSnap().then(async (snapOk) => {
       if (cancelled || !snapOk) return;
       cleanups.push(installFilm({ scenes: () => scenes, reading: () => reading, reducedMotion }));
@@ -80,7 +84,12 @@ export default function Film({ children }: { children: React.ReactNode }) {
       if ((navigator as Nav).connection?.saveData || !hasWebGL2()) return;
       await idle();
       if (cancelled) return;
-      const { createField } = await import("@/components/field/engine");
+      let createField: typeof import("@/components/field/engine").createField;
+      try {
+        ({ createField } = await import("@/components/field/engine"));
+      } catch {
+        return;
+      }
       if (cancelled) return;
 
       const stackBox = scenes.find((s) => s.dataset.scene === "hero")?.querySelector<HTMLElement>("[data-stack-box]") ?? null;
@@ -97,7 +106,10 @@ export default function Film({ children }: { children: React.ReactNode }) {
 
       // Every scene's targets, from its own layout.
       let targets = new Map<string, { t: Targets; mask: Rect[]; textRight: number }>();
+      let line: Targets | null = null;
       const build = () => {
+        // After a lost context there is no field to build for.
+        if (stopped) return;
         // The canvas's own box: with a classic scrollbar the window is wider.
         const { w: vw, h: vh } = viewportOf(view);
         field.resize(vw, vh, Math.min(window.devicePixelRatio || 1, 2));
@@ -109,10 +121,19 @@ export default function Film({ children }: { children: React.ReactNode }) {
             field.setStackBox(layout.stackBox);
             next.set(name, { t: stackTargets(count, rng(1)), mask: layout.mask, textRight: layout.textRight });
           } else {
-            next.set(name, { t: flowTargets(count, layout.flows, { w: vw, h: vh }, layout.mask, rng(2 + k)), mask: layout.mask, textRight: layout.textRight });
+            // A scene taller than the screen is scrolled through, and a fixed
+            // field cannot follow it: its steps show as tiles, over dust.
+            const tall = s.offsetHeight > vh + 1;
+            s.toggleAttribute("data-tiles", tall);
+            const t = flowTargets(count, tall ? [] : layout.flows, { w: vw, h: vh }, layout.mask, rng(2 + k), BEHAVIOURS[name]);
+            next.set(name, { t, mask: layout.mask, textRight: layout.textRight });
           }
         });
         targets = next;
+        // The handoff's hairline sits just under the header, where the
+        // header's own hairline appears once the reading part holds the screen.
+        const header = document.querySelector("header");
+        line = lineTargets(count, (header?.getBoundingClientRect().bottom ?? 64) + 0.5, vw);
       };
       build();
       field.setColors(readColors());
@@ -135,6 +156,11 @@ export default function Film({ children }: { children: React.ReactNode }) {
         canvas.style.opacity = on ? "1" : "0";
         field.setRunning(on);
       };
+      let fadeTimer = 0;
+      const cancelFade = () => {
+        window.clearTimeout(fadeTimer);
+        fadeTimer = 0;
+      };
       const activate = (name: string | null, opts: { quick?: boolean; instant?: boolean } = {}) => {
         if (stopped) return;
         if (name === active && !opts.quick && !opts.instant) {
@@ -147,12 +173,31 @@ export default function Film({ children }: { children: React.ReactNode }) {
           field.highlight(-1);
         }
         active = name;
+        cancelFade();
         const scene = name ? targets.get(name) : undefined;
         if (!scene) {
-          // The reading part: the field steps back and stops.
-          visible(false);
+          // The reading part: the dots settle into one hairline under the
+          // header, the line the reading starts from, and then the canvas
+          // fades and stops. While the line forms the canvas sits above the
+          // reading part, which would otherwise slide over it; the line lies
+          // in the reading part's empty top padding.
+          const showing = canvas.style.opacity === "1";
+          if (line) {
+            field.setMask([], 0);
+            field.show(line, { quick: true });
+          }
+          if (!showing) {
+            visible(false);
+            return;
+          }
+          canvas.style.zIndex = "2";
+          fadeTimer = window.setTimeout(() => {
+            visible(false);
+            fadeTimer = window.setTimeout(() => (canvas.style.zIndex = ""), 320);
+          }, 650);
           return;
         }
+        canvas.style.zIndex = "";
         field.setMask(scene.mask, scene.textRight);
         field.show(scene.t, opts);
         visible(true);
@@ -173,6 +218,8 @@ export default function Film({ children }: { children: React.ReactNode }) {
         active = "hero";
       }
       stackBox?.setAttribute("data-live", "");
+      // The markers' tiles step back too: the dots draw the steps now.
+      root.dataset.field = "";
 
       // Which scene holds the middle of the screen.
       const sections = [...scenes, reading];
@@ -191,6 +238,17 @@ export default function Film({ children }: { children: React.ReactNode }) {
       );
       sections.forEach((s) => sceneIo.observe(s));
       cleanups.push(() => sceneIo.disconnect());
+      // The handoff starts as soon as the reading part comes up, so the line
+      // forms while the reader still sees it; the band above still covers
+      // keys and the scrollbar.
+      const leaving = new IntersectionObserver(
+        ([e]) => {
+          if (e?.isIntersecting && active !== null) activate(null);
+        },
+        { rootMargin: "0px 0px -12% 0px" },
+      );
+      leaving.observe(reading);
+      cleanups.push(() => leaving.disconnect());
 
       const onPointer = (e: PointerEvent) => field.setPointer(e.clientX, e.clientY, e.pointerType === "mouse");
       const onLeave = () => field.setPointer(-1e4, -1e4, false);
@@ -237,12 +295,15 @@ export default function Film({ children }: { children: React.ReactNode }) {
       function stop() {
         if (stopped) return;
         stopped = true;
+        cancelFade();
         view.style.opacity = "0";
+        view.style.zIndex = "";
         stackBox?.removeAttribute("data-live");
+        delete root.dataset.field;
         field.dispose();
       }
       cleanups.push(stop);
-    });
+    }).catch(() => {});
 
     return () => {
       cancelled = true;
