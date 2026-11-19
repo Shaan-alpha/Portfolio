@@ -480,12 +480,14 @@ html:not([data-film]) .ticks {
   height: 1.5rem;
   border-radius: 4px;
 }
+/* An idle tick is its link's only mark, so it takes ink-3 (3:1 or more in
+   both themes); the current one is longer and in ink. */
 .tick::after {
   content: "";
   width: 0.75rem;
   height: 2px;
   border-radius: 1px;
-  background: var(--line-2);
+  background: var(--ink-3);
   transition:
     width 200ms var(--ease),
     background-color 200ms var(--ease);
