@@ -5,55 +5,91 @@ The personal site of an AI systems engineer, built with **Next.js 16**, **React 
 > "The model is a component, not the architecture."
 
 <p align="center">
-  <img src="docs/screenshots/hero-light.webp" alt="The portfolio's hero in light mode: the name, a one-line description, and the exploded 3D model of an AI system with the model as a yellow block between the plates" width="49%">
-  <img src="docs/screenshots/hero-dark.webp" alt="The same hero in dark mode, with the 3D model rendered in graphite" width="49%">
+  <img src="docs/screenshots/hero-light.webp" alt="The portfolio's hero in light mode: the name and a one-line description beside a stack of four plates drawn in dots, with the model as a yellow cube between them and each layer named beside it" width="49%">
+  <img src="docs/screenshots/hero-dark.webp" alt="The same hero in dark mode, the dots light grey on graphite" width="49%">
 </p>
 
 ## Design
 
-- **An architect's model in the hero.** The site's line is built literally.
-  - **The model:** white card and aluminium, generated in code from about 1,200 parts, standing on a plinth engraved with "the model is a component, not the architecture".
-  - **Its five levels** are the layers most of these systems share: a vault for memory and state, a lobby for interfaces, a security hall for guards, and a plant floor for orchestration. The model itself is one yellow block hanging in the atrium, with no floor of its own.
-  - **As you scroll,** the hero holds while the building opens into its levels. Then the camera dives through the atrium to the block and climbs back out.
-  - **Interaction:** drag to turn it, and select a level to see which projects use it. The callouts and the caption read the same data as the scene, so the 3D object and the text cannot disagree.
-- **Projects as routes through it.** On wide screens the building stays beside the case studies.
-  - **The route:** as each case study scrolls past, its real pipeline is walked through the building stop by stop: an interface in the lobby, a guard at the gates, a person at the approval desk, a step on the plant floor, and the model in the atrium.
-  - **What you see:** a lit line and a travelling marker follow it, and the yellow block brightens when the route reaches the model.
-  - **The archive** is read in the vault. Phones keep the pipeline tiles.
-- **Pipelines instead of paragraphs.** Each production project is drawn as the path work takes through it, in the same visual language: yellow where a model runs, a shield where a guard or check sits, a hand where a person approves. A system with two separate paths, such as Atlas's chat replies and its gated morning briefing, gets two diagrams rather than one invented sequence.
-- **Type and colour.** Archivo at two widths: expanded for display, normal for reading. The neutrals are cool aluminium in light mode and graphite in dark, plus one signal colour that only ever means "a model runs here". Every text colour clears WCAG AA in both themes, and axe reports no violations.
-- **3D as an enhancement.**
-  - **Before the 3D loads,** the hero shows a still in your theme, rendered from the same scene by [`scripts/render-stills.mjs`](scripts/render-stills.mjs) using headless Chrome and ffmpeg.
-  - **three.js, the scene and GSAP** load after first paint as their own chunks, about 200 KB gzipped.
-  - **Without WebGL or with Save-Data on,** the still and the layer buttons are the whole experience, and none of the 3D code is downloaded.
-  - **With reduced motion,** the model stays but the flight does not: it cuts between two shots, and GSAP is never downloaded.
-  - **On a GPU that cannot keep up,** it drops ambient occlusion first, then detail.
-- **Quiet everywhere else.** No scroll-jacking: scrolling stays native, and the hero only holds while the building opens. No reveal-on-scroll, no custom cursor. Outside the hero's camera, motion only answers something you did: keys press down, levels lift, and the new theme grows out of the toggle.
-- **Sound that answers you.** Keys click as they bottom out, and the model ticks like a detented dial as you turn it. The theme toggle is a light switch, and selecting a layer, the menu, Copy and the contact form each have their own cue. Nothing plays on load, hover or scroll, and the speaker in the header mutes it and remembers. The sounds are [uisfx](https://github.com/romainsimon/uisfx)'s studio pack, synthesized in the page from recipes rather than audio files, and loaded after first paint. On iPhone the page asks Safari for its ambient audio session, which mixes with your music instead of pausing it and follows the silent switch.
+- **One idea, in dots.** Grey dots are the system and yellow dots are the model, the only warm colour on the page. Every scene says "the model is a component" without needing a caption.
+- **A film at the top.** Nine full-screen scenes, one per scroll gesture:
+  - **The hero:** the stack, a layered drawing of a system with the model as one yellow cube.
+  - **The thesis:** the stack becomes one flow.
+  - **Selected work:** the six systems side by side.
+  - **One scene per system.**
+- **Smooth before anything else.**
+  - **Scrolling:** native CSS snap, plus one small rule: a wheel gesture moves exactly one scene. Touch, keys and the scrollbar use snap alone. Both apply only after a hidden test shows the browser handles snap properly.
+  - **The morphs** run on their own clock and never on the scroll position, so a mouse-wheel notch can never make the dots jump.
+- **One field of dots.**
+  - **It is one three.js `Points` draw call:** 16,000 dots on a desktop and fewer on phones.
+  - **Its motion** is computed entirely in the vertex shader.
+  - **The CPU** mirrors the same maths ([`morph.ts`](src/components/field/morph.ts)). On a scene change, every dot starts exactly where it is, with the same colour and size.
+- **Each system's guard does its job, taken from its own text.** A table ([`behaviours.ts`](src/components/field/behaviours.ts)) gives each system's dots a small program:
+
+  | System | What its dots do |
+  |---|---|
+  | Skill Issue | The score is a rigid grid that the narrator never enters. |
+  | Atlas | The briefing stops at its salience check and lets one packet through now and then. |
+  | Syntrueno | It waits at the human gate for a single-use approval. |
+  | AI Reel Factory | It sends out six pitches and lets three continue through the fact-check. |
+  | VouchRank | The audit runs inside the agency's workspace, and consent filters nothing. |
+  | Think9 Brain | It holds back superseded documents and turns some answers around. |
+
+- **Every fact stays in HTML.**
+  - **The dots form on real HTML markers,** with each step's label and note beside them.
+  - **"Read the case study"** opens a sheet with the bullets, the stack and the links.
+  - **Ticks on the right edge** list the scenes.
+  - **After the film,** the archive, About, Experience and Contact scroll normally. The film ends on one hairline, which becomes the header's.
+- **Fallbacks.**
+  - **Without WebGL, with Save-Data, after a lost graphics context, or in a browser that fails the snap test,** every step shows as a tile and the hero keeps its drawing.
+  - **With reduced motion,** each scene appears in its final shape after a 200 ms fade, and each system's behaviour is a still frame.
+  - **Without JavaScript,** the case studies read in place.
+- **Type and colour.**
+  - Archivo at two widths: expanded for display, normal for reading.
+  - The neutrals are cool aluminium in light mode and graphite in dark, plus one signal colour that only ever means "a model runs here". The portrait is grayscale, for the same reason.
+  - Every text colour clears WCAG AA in both themes, and axe reports no violations.
+- **Sound that answers you.**
+  - **What makes a sound:** keys click as they bottom out, and the theme toggle is a light switch. The menu, the case-study sheet, Copy and the contact form each have their own cue.
+  - **What doesn't:** nothing plays on load, hover or scroll. The speaker in the header mutes it and remembers.
+  - **Where the sounds come from:** [uisfx](https://github.com/romainsimon/uisfx)'s studio pack, synthesized in the page from recipes rather than audio files, and loaded after first paint.
+  - **On iPhone,** the page asks Safari for its ambient audio session, which mixes with your music instead of pausing it and follows the silent switch.
 
 <p align="center">
-  <img src="docs/screenshots/case-study.webp" alt="A case study on the site: Atlas, drawn as two flows, a chat message through the Gemini loop and user-scoped tools to a reply, and a morning briefing gated by a salience check" width="900">
+  <img src="docs/screenshots/case-study.webp" alt="The Atlas scene: its name, status and description beside its two flows drawn in dots, a chat message through the Gemini loop and user-scoped tools to a reply, and a morning briefing gated by a salience check" width="900">
 </p>
 
 ## Stack
 
 - **Framework:** Next.js 16 (App Router, static export), React 19
 - **Styling:** Tailwind CSS 4, design tokens in [`globals.css`](src/app/globals.css)
-- **3D:** three.js 0.186 with GTAO, lazy-loaded and rendered on demand (the loop stops when nothing moves); GSAP 3.15 ScrollTrigger pins the hero and scrubs the camera
+- **3D:** three.js 0.186. It draws one `Points` call with a custom GLSL 3 shader, lazy-loaded after first paint, and the loop stops whenever nothing moves.
 - **Fonts:** Archivo (variable width and weight) via `next/font`
 - **Sound:** uisfx 0.4.0 (pinned; MIT code, CC0 sounds), a 12 KB lazy chunk driven by [`src/lib/sound.ts`](src/lib/sound.ts)
-- **Hosting:** Cloudflare Workers static assets at [`shaansatsangi.com`](https://shaansatsangi.com) — Cloudflare DNS · WAF · CDN, security headers, an enforced CSP, HSTS, and an SSL Labs **A+** edge config.
-- **Contact API:** a same-origin Cloudflare Worker route (`/api/contact`, see [`worker/index.ts`](worker/index.ts)) that emails via **Resend**. It has a honeypot, required-field and length validation, a streamed 24 KB body cap (room for a full-length message in a three-byte script such as Devanagari), type checks on every field, and refusal of cross-site browser requests. All of these are covered by a `node:test` suite. Rate limiting is a Cloudflare WAF rule in front of it. No CORS, no cold start.
+- **Hosting:** Cloudflare Workers static assets at [`shaansatsangi.com`](https://shaansatsangi.com).
+  - Cloudflare provides DNS, the WAF and the CDN.
+  - The edge adds security headers, an enforced CSP and HSTS, and scores **A+** on SSL Labs.
+- **Contact API:** a same-origin Cloudflare Worker route (`/api/contact`, see [`worker/index.ts`](worker/index.ts)) that emails via **Resend**.
+  - **It checks:**
+    - a honeypot;
+    - required fields and their lengths;
+    - the type of every field;
+    - a streamed 24 KB body cap, which leaves room for a full-length message in a three-byte script such as Devanagari.
+  - **It refuses** cross-site browser requests.
+  - **Testing:** a `node:test` suite covers all of these.
+  - **Rate limiting** is a Cloudflare WAF rule in front of it.
+  - No CORS, no cold start.
 
 ## Layout of the code
 
 ```
-src/content/            the content data: profile, projects (with their flows), skills, experience, the hero's layers
-src/components/building/ the hero: blueprint.ts (the building as tested data), shots.ts (camera shots and the
-                        scroll choreography), routes.ts (each project's flows as a route), scene.ts (three.js),
-                        BuildingStage.tsx (the hero: pin, callouts, caption), RouteStage.tsx (the Work section)
-src/components/stack/   the October stack drawing, still used by the social card
-scripts/                the build stamp, and render-stills.mjs for the hero's fallback stills
+src/content/            the content data: profile, projects (with their flows), skills, experience, the stack's layers
+src/components/film/    the film: its scenes (hero, thesis, work, one per system), the case-study sheet, the scene
+                        ticks, and Film.tsx, which reads the page's layout and drives the field
+src/components/field/   the dot field: morph.ts (the motion maths the shader mirrors), targets.ts (every scene's dots),
+                        behaviours.ts (what each system's dots do), shaders.ts, engine.ts (three.js), and wheel.ts and
+                        snap.ts (one scene per wheel gesture)
+src/components/stack/   the stack drawing: the hero's first paint and fallback, and the social card
+scripts/                the build stamp
 src/app/og.png/         the social card, rendered at build time with next/og
 worker/                 the Cloudflare Worker and its tests
 ```
@@ -86,7 +122,7 @@ git clone https://github.com/Shaan-alpha/Portfolio.git && cd Portfolio
 npm install
 npm run dev          # http://localhost:3000
 npm run build        # static export to ./out, including the social card at /og.png
-npm test             # contact Worker tests (node:test)
+npm test             # node:test: the field's maths and targets, the film's rules, sound, the contact Worker
 npm run typecheck
 npm run lint
 ```
