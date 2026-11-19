@@ -1,5 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
+import CaseSheet from "./CaseSheet";
 import SceneFlows from "./SceneFlows";
+import CaseDetails from "@/components/CaseDetails";
 import { GithubIcon } from "@/components/icons";
 import { StatusLabel } from "@/components/StatusLabel";
 import { hostOf, type Project } from "@/content/projects";
@@ -30,6 +32,9 @@ export default function SystemScene({ project: p }: { project: Project }) {
         <p className="semi mt-2 text-[17px] font-semibold text-ink-2">{p.kicker}</p>
         <p className="mt-5 max-w-[52ch] text-ink-2 max-md:hidden">{withCode(p.desc)}</p>
         <div className="mt-8 flex flex-wrap gap-3">
+          <CaseSheet id={p.id} name={p.name}>
+            <CaseDetails project={p} />
+          </CaseSheet>
           {p.liveLink && (
             <a href={p.liveLink} target="_blank" rel="noreferrer" className="key key-secondary key-sm">
               Open {p.liveLabel ?? hostOf(p.liveLink)}
