@@ -19,21 +19,29 @@ import {
   project,
   slotY,
 } from "../stack/geometry.ts";
+import { MODE } from "./morph.ts";
+import type { Behaviour, EdgeProgram, StepBehaviour } from "./behaviours.ts";
 
-/** 0 dust, 1 system, 2 model (the only yellow). */
-export type Kind = 0 | 1 | 2;
+/** 0 dust, 1 system, 2 model (the only yellow), 3 the handoff's hairline. */
+export type Kind = 0 | 1 | 2 | 3;
 
 /** `to` is in the target frame: local stack units for `frame: "stack"`,
  *  viewport pixels for `frame: "screen"`. `flow` holds an edge vector and a
- *  phase per dot (a zero vector sits still). `group` names the part a dot
- *  belongs to, for highlights; -1 is none. */
+ *  phase per dot (a zero vector sits still). `loop` holds each dot's program:
+ *  mode, rate in cycles per second and window (`morph.ts`). `wander` scales
+ *  its drift. `group` names the part a dot belongs to, for highlights; -1 is
+ *  none. `still` is the loop clock, in seconds, that a reduced-motion visitor
+ *  sees. */
 export type Targets = {
   n: number;
   to: Float32Array;
   kind: Uint8Array;
   delay: Float32Array;
   flow: Float32Array;
+  loop: Float32Array;
+  wander: Float32Array;
   group: Int16Array;
+  still: number;
   frame: "stack" | "screen";
 };
 
@@ -51,7 +59,12 @@ export function rng(seed: number): () => number {
   };
 }
 
-type Builder = { put(x: number, y: number, z: number, kind: Kind, delay: number, group: number, flow?: [number, number, number, number]): void; done(): Targets };
+type Vec4 = [number, number, number, number];
+
+type Builder = {
+  put(x: number, y: number, z: number, kind: Kind, delay: number, group: number, flow?: Vec4, loop?: Vec4, wander?: number): void;
+  done(): Targets;
+};
 
 function builder(n: number, frame: Targets["frame"]): Builder {
   const t: Targets = {
@@ -60,12 +73,15 @@ function builder(n: number, frame: Targets["frame"]): Builder {
     kind: new Uint8Array(n),
     delay: new Float32Array(n),
     flow: new Float32Array(4 * n),
+    loop: new Float32Array(4 * n),
+    wander: new Float32Array(n).fill(1),
     group: new Int16Array(n).fill(-1),
+    still: 0,
     frame,
   };
   let i = 0;
   return {
-    put(x, y, z, kind, delay, group, flow) {
+    put(x, y, z, kind, delay, group, flow, loop, wander = 1) {
       if (i >= n) return;
       t.to[3 * i] = x;
       t.to[3 * i + 1] = y;
@@ -74,6 +90,8 @@ function builder(n: number, frame: Targets["frame"]): Builder {
       t.delay[i] = delay;
       t.group[i] = group;
       if (flow) t.flow.set(flow, 4 * i);
+      if (loop) t.loop.set(loop, 4 * i);
+      t.wander[i] = wander;
       i++;
     },
     done() {
@@ -185,32 +203,34 @@ export function slotLabelTops(): number[] {
 // ── Flows ────────────────────────────────────────────────────────────────
 
 /** A step's centre in viewport pixels. `grid` is the thesis's deterministic
- *  scoring, drawn as a lattice. */
-export type FlowNode = { x: number; y: number; kind: StepKind | "grid" };
+ *  scoring, drawn as a lattice. `step` is the step's label, which a system's
+ *  behaviour is keyed by. */
+export type FlowNode = { x: number; y: number; kind: StepKind | "grid"; step?: string };
 export type FlowInput = { nodes: FlowNode[]; radius: number };
 
 const NODE_SHARE = 0.5;
 const EDGE_SHARE = 0.22;
 
+/** Streams move at this many pixels a second, whatever an edge's length;
+ *  edges shorter than `MIN_STREAM_SPAN` move as if they were that long. */
+export const STREAM_PX_PER_S = 16;
+const MIN_STREAM_SPAN = 24;
+/** Dots in one packet. */
+export const PACKET_DOTS = 14;
+/** How far an exit runs past the last step of its flow. */
+export const EXIT_PX = 56;
+/** The 10×10 lattice is at least this wide, so its dots stay apart. */
+const GRID_MIN_PX = 36;
+
 /** One dot on a step's shape, centred on (cx, cy) with radius r. */
 function shapePoint(kind: FlowNode["kind"], cx: number, cy: number, r: number, k: number, random: () => number): [number, number] {
-  const ring = (radius: number, width: number): [number, number] => {
-    const a = random() * Math.PI * 2;
-    const rr = radius + (random() - 0.5) * width;
-    return [cx + rr * Math.cos(a), cy + rr * Math.sin(a)];
-  };
-  const disc = (radius: number): [number, number] => {
-    const a = random() * Math.PI * 2;
-    const rr = radius * Math.sqrt(random());
-    return [cx + rr * Math.cos(a), cy + rr * Math.sin(a)];
-  };
   switch (kind) {
     case "io":
-      return ring(r, r * 0.12);
+      return ringPoint(cx, cy, r, r * 0.12, random);
     case "step":
-      return disc(r * 0.75);
+      return discPoint(cx, cy, r * 0.75, random);
     case "human":
-      return random() < 0.6 ? ring(r, r * 0.1) : disc(r * 0.28);
+      return random() < 0.6 ? ringPoint(cx, cy, r, r * 0.1, random) : discPoint(cx, cy, r * 0.28, random);
     case "guard": {
       // Two posts the stream passes between.
       const side = random() < 0.5 ? -1 : 1;
@@ -219,7 +239,7 @@ function shapePoint(kind: FlowNode["kind"], cx: number, cy: number, r: number, k
     case "grid": {
       // A 10×10 lattice: every dot on a lattice point.
       const cell = k % 100;
-      const step = (1.6 * r) / 9;
+      const step = Math.max(1.6 * r, GRID_MIN_PX) / 9;
       return [cx + ((cell % 10) - 4.5) * step, cy + (Math.floor(cell / 10) - 4.5) * step];
     }
     case "model": {
@@ -232,6 +252,38 @@ function shapePoint(kind: FlowNode["kind"], cx: number, cy: number, r: number, k
       return [cx + (X - Z) * 0.866, cy + (X + Z) * 0.5 - Y];
     }
   }
+}
+
+function ringPoint(cx: number, cy: number, radius: number, width: number, random: () => number): [number, number] {
+  const a = random() * Math.PI * 2;
+  const rr = radius + (random() - 0.5) * width;
+  return [cx + rr * Math.cos(a), cy + rr * Math.sin(a)];
+}
+
+function discPoint(cx: number, cy: number, radius: number, random: () => number): [number, number] {
+  const a = random() * Math.PI * 2;
+  const rr = radius * Math.sqrt(random());
+  return [cx + rr * Math.cos(a), cy + rr * Math.sin(a)];
+}
+
+/** `count` short posts on alternating sides of the stream, spaced evenly
+ *  down the step: the stream passes every one of them. */
+function postPoint(cx: number, cy: number, r: number, count: number, k: number, random: () => number): [number, number] {
+  const post = k % count;
+  const pitch = count > 1 ? (1.8 * r) / (count - 1) : 0;
+  const side = post % 2 === 0 ? -1 : 1;
+  return [cx + side * r * 0.55 + (random() - 0.5) * r * 0.18, cy + (post - (count - 1) / 2) * pitch + (random() - 0.5) * r * 0.28];
+}
+
+/** A point on a rectangle's outline, a hair either side of it. */
+function boxPoint(box: Rect, random: () => number): [number, number] {
+  const per = 2 * (box.w + box.h);
+  let d = random() * per;
+  const jitter = (random() - 0.5) * 1.2;
+  if (d < box.w) return [box.x + d, box.y + jitter];
+  if ((d -= box.w) < box.h) return [box.x + box.w + jitter, box.y + d];
+  if ((d -= box.h) < box.w) return [box.x + box.w - d, box.y + box.h + jitter];
+  return [box.x + jitter, box.y + box.h - (d - box.w)];
 }
 
 /** At most this many dots on a step, so a shape still reads as dots rather
@@ -253,47 +305,132 @@ function capFor(kind: FlowNode["kind"], r: number): number {
   return Math.max(24, Math.round(cap));
 }
 
-/** Dots per pixel along a streaming edge. */
+/** Dots per pixel along a streaming edge, and along a box's outline. */
 const EDGE_DENSITY = 0.45;
+const BOX_DENSITY = 0.5;
 
 function inside(rects: Rect[], x: number, y: number): boolean {
   return rects.some((m) => x >= m.x && x <= m.x + m.w && y >= m.y && y <= m.y + m.h);
 }
 
-/** Flows drawn top to bottom: every step as a shape by its kind, dots
- *  streaming down each edge, and dust everywhere the text is not. */
-export function flowTargets(n: number, flows: FlowInput[], viewport: { w: number; h: number }, mask: Rect[], random: () => number): Targets {
+/** Edges reach a guard's centre, so a stream visibly passes between its
+ *  posts; they stop short of every other step. */
+const gapOf = (node: { kind: FlowNode["kind"]; r: number }) => (node.kind === "guard" ? 0 : node.r * 1.25);
+
+const STREAM: EdgeProgram[] = [{ kind: "stream" }];
+
+/** Flows drawn top to bottom: every step as a shape by its kind, dots moving
+ *  down each edge by the system's behaviour (streams by default), and dust
+ *  everywhere the text is not. */
+export function flowTargets(
+  n: number,
+  flows: FlowInput[],
+  viewport: { w: number; h: number },
+  mask: Rect[],
+  random: () => number,
+  behaviour?: Behaviour,
+): Targets {
   const b = builder(n, "screen");
-  type Placed = FlowNode & { r: number; delay: number; group: number };
+  const loopRate = 1 / (behaviour?.period ?? 3);
+  type Placed = FlowNode & { r: number; delay: number; group: number; flow: number; beh?: StepBehaviour };
+  type End = { x: number; y: number; kind: FlowNode["kind"]; r: number };
   const nodes: Placed[] = [];
-  const edges: { a: Placed; b: Placed }[] = [];
-  for (const f of flows) {
+  const edges: { a: Placed; b: End; programs: EdgeProgram[] }[] = [];
+  flows.forEach((f, fi) => {
     f.nodes.forEach((node, k) => {
-      const placed = { ...node, r: f.radius, delay: k / Math.max(1, f.nodes.length - 1), group: nodes.length };
-      if (k > 0) edges.push({ a: nodes[nodes.length - 1], b: placed });
+      const placed: Placed = {
+        ...node,
+        r: f.radius,
+        delay: k / Math.max(1, f.nodes.length - 1),
+        group: nodes.length,
+        flow: fi,
+        beh: node.step ? behaviour?.steps?.[node.step] : undefined,
+      };
+      if (k > 0) {
+        const a = nodes[nodes.length - 1];
+        edges.push({ a, b: placed, programs: (a.step && behaviour?.edges?.[a.step]) || STREAM });
+      }
       nodes.push(placed);
     });
-  }
+    // An exit carries on past the flow's last step, the way the flow runs.
+    const last = nodes[nodes.length - 1];
+    const exit = f.nodes.length && last.step ? behaviour?.exits?.[last.step] : undefined;
+    if (exit) {
+      const prev = f.nodes.length > 1 ? nodes[nodes.length - 2] : null;
+      const [dx, dy] = prev ? [last.x - prev.x, last.y - prev.y] : [0, 1];
+      const len = Math.hypot(dx, dy) || 1;
+      const reach = gapOf(last) + EXIT_PX;
+      edges.push({ a: last, b: { x: last.x + (dx / len) * reach, y: last.y + (dy / len) * reach, kind: "io", r: 0 }, programs: exit });
+    }
+  });
+
+  // The rectangle a "box" step draws: 1.5 radii outside its whole flow.
+  const boxOf = (node: Placed): Rect => {
+    const own = nodes.filter((m) => m.flow === node.flow);
+    const pad = node.r * 1.5;
+    const x0 = Math.min(...own.map((m) => m.x)) - pad;
+    const y0 = Math.min(...own.map((m) => m.y)) - pad;
+    return { x: x0, y: y0, w: Math.max(...own.map((m) => m.x)) + pad - x0, h: Math.max(...own.map((m) => m.y)) + pad - y0 };
+  };
+  const capOf = (node: Placed) => {
+    const shape = node.beh?.shape;
+    if (shape === "box") {
+      const box = boxOf(node);
+      return Math.round(2 * (box.w + box.h) * BOX_DENSITY);
+    }
+    return capFor(shape === "grid" ? "grid" : shape === "posts" ? "guard" : node.kind, node.r);
+  };
 
   const nodeN = nodes.length ? Math.round(n * NODE_SHARE) : 0;
   const edgeN = edges.length ? Math.round(n * EDGE_SHARE) : 0;
-  const perNode = split(nodeN, Math.max(1, nodes.length)).map((c, k) => (nodes[k] ? Math.min(c, capFor(nodes[k].kind, nodes[k].r)) : 0));
+  const perNode = split(nodeN, Math.max(1, nodes.length)).map((c, k) => (nodes[k] ? Math.min(c, capOf(nodes[k])) : 0));
   const jitter = (d: number) => d * 0.85 + random() * 0.15;
-  type Dot = { x: number; y: number; kind: Kind; delay: number; group: number; flow?: [number, number, number, number] };
+  type Dot = { x: number; y: number; kind: Kind; delay: number; group: number; flow?: Vec4; loop?: Vec4; wander?: number };
   const model: Dot[] = [];
   const system: Dot[] = [];
 
   // Steps from the top down; model steps' dots go to the model block.
   const order = nodes.map((node, k) => ({ node, count: perNode[k] })).sort((p, q) => p.node.y - q.node.y);
   for (const { node, count } of order) {
+    const beh = node.beh;
     const isModel = node.kind === "model";
+    const ring = Math.round(count * 0.6);
     for (let k = 0; k < count; k++) {
-      const [x, y] = shapePoint(node.kind, node.x, node.y, node.r, k, random);
-      (isModel ? model : system).push({ x, y, kind: isModel ? 2 : 1, delay: jitter(node.delay), group: node.group });
+      let xy: [number, number];
+      let flow: Vec4 | undefined;
+      let loop: Vec4 | undefined;
+      if (beh?.shape === "box") xy = boxPoint(boxOf(node), random);
+      else if (beh?.shape === "posts") xy = postPoint(node.x, node.y, node.r, beh.posts ?? 2, k, random);
+      else if (beh?.arrive && node.kind === "human") {
+        if (k < ring) xy = ringPoint(node.x, node.y, node.r, node.r * 0.1, random);
+        else {
+          // The approval: a bright centre that travels in from the left.
+          const [px, py] = discPoint(node.x, node.y, node.r * 0.28, random);
+          const reach = node.r * 1.8;
+          xy = [px - reach, py];
+          flow = [reach, 0, 0, 0];
+          loop = [MODE.arrive, loopRate, beh.arrive[0], beh.arrive[1]];
+        }
+      } else xy = shapePoint(beh?.shape === "grid" ? "grid" : node.kind, node.x, node.y, node.r, k, random);
+      if (beh?.pulseAt !== undefined) {
+        flow = [xy[0] - node.x, xy[1] - node.y, 0, 0];
+        loop = [MODE.pulse, loopRate, beh.pulseAt, beh.pulseAt];
+      }
+      (isModel ? model : system).push({
+        x: xy[0],
+        y: xy[1],
+        kind: isModel ? 2 : 1,
+        delay: jitter(node.delay),
+        group: node.group,
+        flow,
+        loop,
+        wander: beh?.wander ?? 1,
+      });
     }
   }
 
-  // Each edge runs from just outside one step to just outside the next.
+  // Each edge runs from just outside one step (a guard's centre) to just
+  // outside the next, carrying the programs the behaviour gives it.
   const sorted = [...edges].sort((p, q) => p.a.y - q.a.y);
   split(edgeN, Math.max(1, sorted.length)).forEach((count, k) => {
     const e = sorted[k];
@@ -302,15 +439,38 @@ export function flowTargets(n: number, flows: FlowInput[], viewport: { w: number
     const dy = e.b.y - e.a.y;
     const len = Math.hypot(dx, dy) || 1;
     const [ux, uy] = [dx / len, dy / len];
-    const gapA = e.a.r * 1.25;
-    const gapB = e.b.r * 1.25;
-    const span = Math.max(0, len - gapA - gapB);
-    const take = Math.min(count, Math.max(4, Math.round(span * EDGE_DENSITY)));
-    for (let m = 0; m < take; m++) {
-      const side = (random() - 0.5) * 1.6;
-      const sx = e.a.x + ux * gapA - uy * side;
-      const sy = e.a.y + uy * gapA + ux * side;
-      system.push({ x: sx, y: sy, kind: 1, delay: jitter(e.a.delay), group: -1, flow: [ux * span, uy * span, 0, random()] });
+    const gapA = gapOf(e.a);
+    const r = e.a.r;
+    const at = (along: number, side: number): [number, number] => [e.a.x + ux * (gapA + along) - uy * side, e.a.y + uy * (gapA + along) + ux * side];
+    for (const prog of e.programs) {
+      const gapB = prog.kind === "hold" || prog.kind === "bounce" ? prog.stopShort * e.b.r : gapOf(e.b);
+      const span = Math.max(0, len - gapA - gapB);
+      const vec = (phase: number): Vec4 => [ux * span, uy * span, 0, phase];
+      if (prog.kind === "stream" || prog.kind === "hold") {
+        const budget = Math.min(count, Math.max(4, Math.round(span * EDGE_DENSITY)));
+        const take = Math.round(budget * (prog.share ?? 1));
+        for (let m = 0; m < take; m++) {
+          if (prog.kind === "stream") {
+            const [sx, sy] = at(0, (random() - 0.5) * 1.6);
+            system.push({ x: sx, y: sy, kind: 1, delay: jitter(e.a.delay), group: -1, flow: vec(random()), loop: [MODE.stream, STREAM_PX_PER_S / Math.max(span, MIN_STREAM_SPAN), 0, 1] });
+          } else {
+            // Held back: a trickle that stops short of the gate, side by side.
+            const [sx, sy] = at(0, (random() - 0.5) * 0.9 * r);
+            system.push({ x: sx, y: sy, kind: 1, delay: jitter(e.a.delay), group: -1, flow: vec(-0.2 * random()), loop: [MODE.hold, loopRate, prog.window[0], prog.window[1]] });
+          }
+        }
+      } else {
+        // Packets and bounces: small clusters, packet j leaving j·gap later.
+        const spread = prog.kind === "packets" ? (prog.spread ?? 0) : 0;
+        const mode = prog.kind === "packets" ? MODE.packet : MODE.bounce;
+        for (let j = 0; j < prog.count; j++) {
+          const offset = prog.count > 1 ? spread * r * ((2 * j) / (prog.count - 1) - 1) : 0;
+          for (let m = 0; m < PACKET_DOTS; m++) {
+            const [sx, sy] = at((random() - 0.5) * 4, offset + (random() - 0.5) * 3);
+            system.push({ x: sx, y: sy, kind: 1, delay: jitter(e.a.delay), group: -1, flow: vec(-j * (prog.gap ?? 0)), loop: [mode, loopRate, prog.window[0], prog.window[1]] });
+          }
+        }
+      }
     }
   });
 
@@ -325,7 +485,7 @@ export function flowTargets(n: number, flows: FlowInput[], viewport: { w: number
     if (inside(mask, x, y)) x = viewport.w - random() * viewport.w * 0.1;
     b.put(x, y, 0, 0, random(), -1);
   };
-  const put = (d: Dot) => b.put(d.x, d.y, 0, d.kind, d.delay, d.group, d.flow);
+  const put = (d: Dot) => b.put(d.x, d.y, 0, d.kind, d.delay, d.group, d.flow, d.loop, d.wander);
 
   const { modelEnd, systemEnd } = blocks(n);
   let i = 0;
@@ -339,5 +499,29 @@ export function flowTargets(n: number, flows: FlowInput[], viewport: { w: number
     i++;
   }
   for (; i < n; i++) dust();
+  const t = b.done();
+  t.still = behaviour ? behaviour.still * behaviour.period : 0;
+  return t;
+}
+
+// ── The handoff ──────────────────────────────────────────────────────────
+
+/** The film's last frame: every dot on one hairline at `y`, spread evenly
+ *  across `width` and drawn from left to right, with no drift. */
+export function lineTargets(n: number, y: number, width: number): Targets {
+  const b = builder(n, "screen");
+  for (let i = 0; i < n; i++) {
+    const x = ((i + 0.5) / n) * width;
+    b.put(x, y, 0, 3, x / Math.max(1, width), -1, undefined, undefined, 0);
+  }
   return b.done();
+}
+
+/** The hairline's alpha per dot, so that its overlapping dots add up to one
+ *  hairline: with `d` dots to a pixel, normal blending (light) needs
+ *  1 − 0.1^(1/d) for 90% cover, additive blending (dark) about 0.8/d. */
+export function lineAlpha(n: number, width: number, dark: boolean): number {
+  const d = Math.max(1e-3, n / Math.max(1, width));
+  const a = dark ? 0.8 / d : 1 - Math.pow(0.1, 1 / d);
+  return Math.min(0.6, Math.max(0.02, a));
 }
