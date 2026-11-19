@@ -1,11 +1,8 @@
 import { ArrowUpRight } from "lucide-react";
 import ProjectCase, { StatusLabel } from "./ProjectCase";
 import { withCode } from "@/lib/withCode";
-import WorkIndex from "./WorkIndex";
 import { PipelineLegend } from "./Pipeline";
 import { GithubIcon } from "./icons";
-import RouteStage from "./building/RouteStage";
-import Still from "./building/Still";
 import { flagship, lab, liveCount, projects } from "@/content/projects";
 import { spell } from "@/lib/format";
 
@@ -29,21 +26,8 @@ export default function Work() {
           </div>
         </div>
 
-        {/* On wide screens the left column holds the building: each project's
-            route walked through it as its case study passes, the vault for
-            the archive, and the directory under it. */}
         <div className="mt-20 grid grid-cols-1 gap-x-12 lg:grid-cols-12">
-          <div className="hidden lg:col-span-5 lg:block">
-            <div className="sticky top-[calc(var(--header)+2rem)] flex flex-col gap-6">
-              <RouteStage still={<Still shot="section" className="h-full w-full" />} />
-              <WorkIndex
-                items={flagship.map(({ id, name, kicker }) => ({ id, name, kicker }))}
-                archiveId="also-shipped"
-                archiveCount={lab.length}
-              />
-            </div>
-          </div>
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-12">
             {flagship.map((p) => (
               <ProjectCase key={p.id} project={p} />
             ))}

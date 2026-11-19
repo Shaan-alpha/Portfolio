@@ -1,7 +1,3 @@
-import BuildingStage from "./building/BuildingStage";
-import Still from "./building/Still";
-import { restingTops } from "./building/resting";
-import { BEATS } from "./building/shots";
 import { profile } from "@/content/profile";
 import { flagship } from "@/content/projects";
 import { spell } from "@/lib/format";
@@ -43,16 +39,6 @@ export default function Hero() {
             </a>
             . {spell(flagship.length, true)} of my systems are running in production.
           </p>
-        </div>
-
-        <div className="lg:col-span-7">
-          <BuildingStage
-            still={<Still shot="site" className="h-full w-full" />}
-            sectionStill={<Still shot="section" className="h-full w-full" />}
-            resting={restingTops()}
-            sectionAt={BEATS[1].at}
-            settledAt={BEATS[BEATS.length - 1].at}
-          />
         </div>
       </section>
     </>
