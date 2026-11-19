@@ -74,6 +74,8 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     delay: new Float32Array(n),
     seed: Float32Array.from({ length: n }, Math.random),
     flow: new Float32Array(4 * n),
+    loop: new Float32Array(4 * n),
+    wander: new Float32Array(n).fill(1),
     start: -1e3,
     duration: 0,
     stagger: 0,
@@ -235,7 +237,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     show(t, opts = {}) {
       const now = clock();
       // Where every dot is right now, in the frame it is heading for now.
-      const base = snapshot(st, now, frameNow(), u.uFlowSpeed.value);
+      const base = snapshot(st, now, frameNow(), now, motion ? DRIFT_PX : 0);
       for (let i = 0; i < n; i++) {
         const p = dotProgress(now, st.start, st.delay[i], st.duration, st.stagger);
         kindFrom[i] = p >= 0.5 ? kindTo[i] : kindFrom[i];
