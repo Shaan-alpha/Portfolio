@@ -96,20 +96,20 @@ export default function Film({ children }: { children: React.ReactNode }) {
       }
 
       // Every scene's targets, from its own layout.
-      let targets = new Map<string, { t: Targets; mask: Rect[] }>();
+      let targets = new Map<string, { t: Targets; mask: Rect[]; textRight: number }>();
       const build = () => {
         // The canvas's own box: with a classic scrollbar the window is wider.
         const { w: vw, h: vh } = viewportOf(view);
         field.resize(vw, vh, Math.min(window.devicePixelRatio || 1, 2));
-        const next = new Map<string, { t: Targets; mask: Rect[] }>();
+        const next = new Map<string, { t: Targets; mask: Rect[]; textRight: number }>();
         scenes.forEach((s, k) => {
           const layout = readScene(s);
           const name = s.dataset.scene ?? String(k);
           if (layout.stackBox) {
             field.setStackBox(layout.stackBox);
-            next.set(name, { t: stackTargets(count, rng(1)), mask: layout.mask });
+            next.set(name, { t: stackTargets(count, rng(1)), mask: layout.mask, textRight: layout.textRight });
           } else {
-            next.set(name, { t: flowTargets(count, layout.flows, { w: vw, h: vh }, layout.mask, rng(2 + k)), mask: layout.mask });
+            next.set(name, { t: flowTargets(count, layout.flows, { w: vw, h: vh }, layout.mask, rng(2 + k)), mask: layout.mask, textRight: layout.textRight });
           }
         });
         targets = next;
@@ -153,7 +153,7 @@ export default function Film({ children }: { children: React.ReactNode }) {
           visible(false);
           return;
         }
-        field.setMask(scene.mask);
+        field.setMask(scene.mask, scene.textRight);
         field.show(scene.t, opts);
         visible(true);
         if (name === "thesis" && !thesisPlayed && !reducedMotion) {
@@ -168,7 +168,7 @@ export default function Film({ children }: { children: React.ReactNode }) {
       // morphs from it if the page opened further down.
       const hero = targets.get("hero");
       if (hero) {
-        field.setMask(hero.mask);
+        field.setMask(hero.mask, hero.textRight);
         field.show(hero.t, { instant: true });
         active = "hero";
       }

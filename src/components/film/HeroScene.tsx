@@ -13,7 +13,7 @@ export default function HeroScene() {
       aria-labelledby="hero-title"
       className="container-x grid grid-cols-1 content-center gap-x-12 gap-y-8 pb-10 lg:grid-cols-12"
     >
-      <div data-mask className="lg:col-span-5">
+      <div data-mask="text" className="lg:col-span-5">
         <h1 id="hero-title" className="t-display text-ink">
           Shaan
           <br />

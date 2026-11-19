@@ -14,7 +14,7 @@ export default function ThesisScene() {
       aria-labelledby="thesis-title"
       className="container-x grid grid-cols-1 content-center gap-x-12 gap-y-10 pb-10 lg:grid-cols-12"
     >
-      <div data-mask className="lg:col-span-5">
+      <div data-mask="text" className="lg:col-span-5">
         <h2 id="thesis-title" className="t-h2 text-ink">
           The model is a component, not the architecture.
         </h2>

@@ -42,6 +42,7 @@ export default function StackDrawing() {
         {layers.map((layer, slot) => (
           <li
             key={layer.id}
+            data-mask
             className="absolute flex -translate-y-1/2 items-center gap-2 whitespace-nowrap text-[13.5px] text-ink-3"
             style={{ top: `${tops[slot]}%` }}
           >

@@ -6,7 +6,9 @@
 import type { FieldColors } from "./engine.ts";
 import type { FlowInput, FlowNode, Rect } from "./targets.ts";
 
-export type SceneLayout = { flows: FlowInput[]; stackBox: Rect | null; mask: Rect[] };
+/** `textRight` is the right edge of the scene's text column
+ *  (`data-mask="text"`), which no morph path crosses; 0 when it has none. */
+export type SceneLayout = { flows: FlowInput[]; stackBox: Rect | null; mask: Rect[]; textRight: number };
 
 /** The field's viewport is the canvas's own box. With a classic scrollbar
  *  the window is wider, and drawing to its width would set every dot off its
@@ -14,6 +16,8 @@ export type SceneLayout = { flows: FlowInput[]; stackBox: Rect | null; mask: Rec
 export function viewportOf(el: { clientWidth: number; clientHeight: number }): { w: number; h: number } {
   return { w: Math.max(1, el.clientWidth), h: Math.max(1, el.clientHeight) };
 }
+
+const sized = (r: Rect) => r.w > 0 && r.h > 0;
 
 export function readScene(section: HTMLElement): SceneLayout {
   const top = section.getBoundingClientRect().top;
@@ -28,19 +32,32 @@ export function readScene(section: HTMLElement): SceneLayout {
     const b = rect(el);
     const id = el.dataset.flow ?? "0";
     const flow = flows.get(id) ?? { nodes: [], radius: Math.min(b.w, b.h) / 2 };
-    flow.nodes.push({ x: b.x + b.w / 2, y: b.y + b.h / 2, kind: el.dataset.kind as FlowNode["kind"] });
+    const node: FlowNode = { x: b.x + b.w / 2, y: b.y + b.h / 2, kind: el.dataset.kind as FlowNode["kind"] };
+    if (el.dataset.step) node.step = el.dataset.step;
+    flow.nodes.push(node);
     flows.set(id, flow);
   }
 
-  const box = section.querySelector("[data-stack-box]");
-  const mask = [...section.querySelectorAll("[data-mask]")].map(rect);
-  // The header overlays every scene: its band is part of the mask too.
+  // The header overlays every scene, so its band is always masked. It comes
+  // first: the engine keeps only the first few masks.
+  const mask: Rect[] = [];
   const header = document.querySelector("header[data-mask]");
   if (header) {
     const b = header.getBoundingClientRect();
     mask.push({ x: b.left, y: b.top, w: b.width, h: b.height });
   }
-  return { flows: [...flows.values()], stackBox: box ? rect(box) : null, mask };
+  // A label hidden at this width has an empty box: it masks nothing.
+  for (const el of section.querySelectorAll("[data-mask]")) {
+    const r = rect(el);
+    if (sized(r)) mask.push(r);
+  }
+  let textRight = 0;
+  for (const el of section.querySelectorAll('[data-mask="text"]')) {
+    const r = rect(el);
+    if (sized(r)) textRight = Math.max(textRight, r.x + r.w);
+  }
+  const box = section.querySelector("[data-stack-box]");
+  return { flows: [...flows.values()], stackBox: box ? rect(box) : null, mask, textRight };
 }
 
 function rgb(value: string): [number, number, number] {
@@ -63,6 +80,7 @@ export function readColors(): FieldColors {
     dust: v("--line-2"),
     model: v("--model"),
     modelEdge: v("--model-edge"),
+    line: v("--line"),
     dark,
   };
 }

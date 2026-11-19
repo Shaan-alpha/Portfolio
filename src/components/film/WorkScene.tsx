@@ -14,7 +14,7 @@ export default function WorkScene() {
       aria-labelledby="work-title"
       className="container-x grid grid-cols-1 content-center gap-x-12 gap-y-10 pb-10 lg:grid-cols-12"
     >
-      <div data-mask className="lg:col-span-5">
+      <div data-mask="text" className="lg:col-span-5">
         <h2 id="work-title" className="t-h2 text-ink">
           Selected work
         </h2>
@@ -31,7 +31,7 @@ export default function WorkScene() {
       <ul className="grid grid-cols-3 gap-x-3 gap-y-8 sm:grid-cols-6 lg:col-span-7">
         {flagship.map((p, lane) => (
           <li key={p.id} className="flex flex-col items-center gap-5">
-            <a href={`#${p.id}`} className="link min-h-[2.6em] text-center text-[13.5px] font-semibold leading-snug text-ink-2">
+            <a href={`#${p.id}`} data-mask className="link min-h-[2.6em] text-center text-[13.5px] font-semibold leading-snug text-ink-2">
               {p.name}
             </a>
             <ol aria-hidden className="flex flex-col items-center gap-y-3.5">

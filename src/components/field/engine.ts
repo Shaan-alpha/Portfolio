@@ -22,22 +22,27 @@ import {
   WebGLRenderer,
 } from "three";
 import { AZIMUTH, ELEVATION, VIEW_H } from "../stack/geometry.ts";
-import { IDENTITY_FRAME, TIMING, dotProgress, snapshot, stackFrame, type Frame, type MorphState } from "./morph.ts";
-import type { Rect, Targets } from "./targets.ts";
-import { FRAGMENT, VERTEX } from "./shaders.ts";
+import { IDENTITY_FRAME, TIMING, dotProgress, shownVisibility, snapshot, stackFrame, type Frame, type MorphState } from "./morph.ts";
+import { lineAlpha, type Rect, type Targets } from "./targets.ts";
+import { FRAGMENT, MAX_MASKS, VERTEX } from "./shaders.ts";
 import { createLoop } from "./loop.ts";
+
+export { MAX_MASKS };
 
 type RGB = [number, number, number];
 
-export type FieldColors = { system: RGB; bright: RGB; dust: RGB; model: RGB; modelEdge: RGB; dark: boolean };
+export type FieldColors = { system: RGB; bright: RGB; dust: RGB; model: RGB; modelEdge: RGB; line: RGB; dark: boolean };
 
 export type Field = {
-  /** Morph to a new set of targets. `quick` is a short move of the same
-   *  shape (after a resize); `instant` places the dots with no morph at all
-   *  (the first frame, on top of the drawing). */
+  /** Morph to a new set of targets, which must hold exactly as many dots as
+   *  the field. `quick` is a short move of the same shape (after a resize);
+   *  `instant` places the dots with no morph at all (the first frame, on top
+   *  of the drawing). */
   show(t: Targets, opts?: { quick?: boolean; instant?: boolean }): void;
   setStackBox(box: Rect): void;
-  setMask(rects: Rect[]): void;
+  /** The first `MAX_MASKS` rects fade the dots inside them. No morph path
+   *  crosses left of `textRight`, the text column's right edge (0: none). */
+  setMask(rects: Rect[], textRight: number): void;
   setPointer(x: number, y: number, inside: boolean): void;
   highlight(group: number): void;
   setColors(c: FieldColors): void;
@@ -46,8 +51,9 @@ export type Field = {
   dispose(): void;
 };
 
-const FLOW_SPEED = 0.25; // edge lengths per second
 const DRIFT_PX = 1.2;
+/** A scene's behaviour starts this long after its morph, as its shape forms. */
+const LOOP_LEAD = 0.7;
 const TURN_DEG_PER_S = 4;
 const TILT_DEG = 8;
 const SPRING = (2 * Math.PI) / 0.6; // a critically damped spring settling in about 0.6 s
@@ -60,7 +66,8 @@ const smoothstep = (a: number, b: number, x: number) => {
 export function createField(o: { canvas: HTMLCanvasElement; count: number; reducedMotion: boolean; onLost: () => void }): Field {
   const n = o.count;
   const motion = !o.reducedMotion;
-  const renderer = new WebGLRenderer({ canvas: o.canvas, antialias: false, alpha: true, powerPreference: "high-performance" });
+  const drift = motion ? DRIFT_PX : 0;
+  const renderer = new WebGLRenderer({ canvas: o.canvas, antialias: false, alpha: true, powerPreference: "default" });
   renderer.setClearColor(0x000000, 0);
   const t0 = performance.now();
   const clock = () => (performance.now() - t0) / 1000;
@@ -83,7 +90,16 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
   const kindFrom = new Float32Array(n);
   const kindTo = new Float32Array(n);
   const group = new Float32Array(n).fill(-1);
+  const visFrom = new Float32Array(n).fill(1);
+  // A scene change's snapshot, allocated once.
+  const snap = new Float32Array(3 * n);
   let targetFrame: Targets["frame"] = "screen";
+
+  // The scene's loop clock: its behaviour runs from `loopStart`; with reduced
+  // motion it stands still on the scene's chosen frame.
+  let loopStart = 0;
+  let still = 0;
+  const loopClock = (now: number) => (motion ? now - loopStart : still);
 
   const geometry = new BufferGeometry();
   const attr = (name: string, array: Float32Array, size: number) => {
@@ -97,6 +113,9 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
   const aDelay = attr("aDelay", st.delay, 1);
   attr("aSeed", st.seed, 1);
   const aFlow = attr("aFlow", st.flow, 4);
+  const aLoop = attr("aLoop", st.loop, 4);
+  const aWander = attr("aWander", st.wander, 1);
+  const aVisFrom = attr("aVisFrom", visFrom, 1);
   const aKindFrom = attr("aKindFrom", kindFrom, 1);
   const aKindTo = attr("aKindTo", kindTo, 1);
   const aGroup = attr("aGroup", group, 1);
@@ -106,8 +125,8 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     uStart: { value: st.start },
     uDuration: { value: 0 },
     uStagger: { value: 0 },
-    uFlowSpeed: { value: motion ? FLOW_SPEED : 0 },
-    uDrift: { value: motion ? DRIFT_PX : 0 },
+    uLoopClock: { value: 0 },
+    uDrift: { value: drift },
     uRow0: { value: new Vector3(1, 0, 0) },
     uRow1: { value: new Vector3(0, 1, 0) },
     uRow2: { value: new Vector3(0, 0, 1) },
@@ -116,7 +135,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     uStack: { value: 0 },
     uViewport: { value: new Vector2(1, 1) },
     uDpr: { value: 1 },
-    uMask: { value: [new Vector4(), new Vector4(), new Vector4(), new Vector4()] },
+    uMask: { value: Array.from({ length: MAX_MASKS }, () => new Vector4()) },
     uMaskCount: { value: 0 },
     uPointer: { value: new Vector2(-1e4, -1e4) },
     uPointerAmt: { value: 0 },
@@ -127,7 +146,9 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     uDust: { value: new Vector3() },
     uModel: { value: new Vector3() },
     uModelEdge: { value: new Vector3() },
+    uLine: { value: new Vector3() },
     uDustAlpha: { value: 0.25 },
+    uLineAlpha: { value: 0.1 },
     uLight: { value: 1 },
   };
   const material = new RawShaderMaterial({
@@ -147,6 +168,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
 
   let w = 1;
   let h = 1;
+  let dark = false;
   let center: [number, number] = [0, 0];
   let scale = 1;
   let az = AZIMUTH;
@@ -157,7 +179,8 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
   let highlightGroup = -1;
   let textRight = 0;
 
-  const colorsNow = { system: [0, 0, 0], bright: [0, 0, 0], dust: [0, 0, 0], model: [0, 0, 0], modelEdge: [0, 0, 0] };
+  const COLOR_KEYS = ["system", "bright", "dust", "model", "modelEdge", "line"] as const;
+  const colorsNow = { system: [0, 0, 0], bright: [0, 0, 0], dust: [0, 0, 0], model: [0, 0, 0], modelEdge: [0, 0, 0], line: [0, 0, 0] };
   let colorsFrom = structuredClone(colorsNow);
   let colorsTo = structuredClone(colorsNow);
   let colorStart = -1e3;
@@ -202,7 +225,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     if (highlightGroup >= 0) u.uHighlight.value = highlightGroup;
 
     const c = haveColors ? smoothstep(colorStart, colorStart + 0.4, now) : 1;
-    for (const key of ["system", "bright", "dust", "model", "modelEdge"] as const) {
+    for (const key of COLOR_KEYS) {
       const a = colorsFrom[key];
       const b = colorsTo[key];
       for (let k = 0; k < 3; k++) colorsNow[key][k] = a[k] + (b[k] - a[k]) * c;
@@ -212,6 +235,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     u.uDust.value.fromArray(colorsNow.dust);
     u.uModel.value.fromArray(colorsNow.model);
     u.uModelEdge.value.fromArray(colorsNow.modelEdge);
+    u.uLine.value.fromArray(colorsNow.line);
 
     const f = frameNow();
     u.uRow0.value.set(f.m[0], f.m[1], f.m[2]);
@@ -221,6 +245,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     u.uFrameS.value = f.s;
     u.uStack.value = targetFrame === "stack" ? 1 : 0;
     u.uNow.value = now;
+    u.uLoopClock.value = loopClock(now);
   }
 
   const onVisibility = () => {
@@ -235,10 +260,14 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
 
   return {
     show(t, opts = {}) {
+      if (t.n !== n) throw new Error(`field: targets for ${t.n} dots, but the field draws ${n}`);
       const now = clock();
-      // Where every dot is right now, in the frame it is heading for now.
-      const base = snapshot(st, now, frameNow(), now, motion ? DRIFT_PX : 0);
+      const clk = loopClock(now);
+      // Where every dot is right now, drift included, and how much of it
+      // shows, in the frame and the programs it is leaving.
+      const base = snapshot(st, now, frameNow(), clk, drift, snap);
       for (let i = 0; i < n; i++) {
+        visFrom[i] = shownVisibility(st, i, now, clk, visFrom);
         const p = dotProgress(now, st.start, st.delay[i], st.duration, st.stagger);
         kindFrom[i] = p >= 0.5 ? kindTo[i] : kindFrom[i];
         kindTo[i] = t.kind[i];
@@ -249,8 +278,14 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
       st.to.set(t.to);
       st.delay.set(t.delay);
       st.flow.set(t.flow);
+      st.loop.set(t.loop);
+      st.wander.set(t.wander);
       targetFrame = t.frame;
       if (t.frame === "stack" && !wasStack) turnFrom = now + (opts.instant ? 0.35 : TIMING.shape);
+      // A new scene's behaviour starts as its shape forms; a resize keeps it.
+      if (opts.instant) loopStart = now;
+      else if (!opts.quick) loopStart = now + LOOP_LEAD;
+      still = t.still;
 
       // A dot leaves for its target through a scattered midpoint, never
       // through the text column, so the morph reads as dissolve-then-form.
@@ -287,7 +322,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
       u.uStart.value = st.start;
       u.uDuration.value = st.duration;
       u.uStagger.value = st.stagger;
-      for (const a of [aFrom, aMid, aTo, aDelay, aFlow, aKindFrom, aKindTo, aGroup]) a.needsUpdate = true;
+      for (const a of [aFrom, aMid, aTo, aDelay, aFlow, aLoop, aWander, aVisFrom, aKindFrom, aKindTo, aGroup]) a.needsUpdate = true;
       wake();
     },
     setStackBox(box) {
@@ -295,12 +330,11 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
       scale = box.h / VIEW_H;
       wake();
     },
-    setMask(rects) {
-      const list = rects.slice(0, 4);
+    setMask(rects, right) {
+      const list = rects.slice(0, MAX_MASKS);
       list.forEach((r, k) => u.uMask.value[k].set(r.x, r.y, r.w, r.h));
       u.uMaskCount.value = list.length;
-      // The text column: masks narrower than most of the screen (not the header band).
-      textRight = Math.max(0, ...list.filter((r) => r.w < w * 0.9).map((r) => r.x + r.w));
+      textRight = right;
       wake();
     },
     setPointer(x, y, inside) {
@@ -314,12 +348,14 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     },
     setColors(c) {
       colorsFrom = structuredClone(colorsNow);
-      colorsTo = { system: c.system, bright: c.bright, dust: c.dust, model: c.model, modelEdge: c.modelEdge };
+      colorsTo = { system: c.system, bright: c.bright, dust: c.dust, model: c.model, modelEdge: c.modelEdge, line: c.line };
       if (!haveColors) colorsFrom = structuredClone(colorsTo);
       haveColors = true;
       // With reduced motion only single frames are drawn, so switch at once.
       colorStart = motion ? clock() : -1e3;
+      dark = c.dark;
       u.uDustAlpha.value = c.dark ? 0.28 : 0.22;
+      u.uLineAlpha.value = lineAlpha(n, w, c.dark);
       u.uLight.value = c.dark ? 0 : 1;
       if (c.dark) {
         // Dense clusters glow on a dark ground.
@@ -344,6 +380,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
       renderer.setSize(w, h, false);
       u.uViewport.value.set(w, h);
       u.uDpr.value = dpr;
+      u.uLineAlpha.value = lineAlpha(n, w, dark);
       wake();
     },
     dispose() {
