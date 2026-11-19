@@ -422,8 +422,12 @@ body > footer {
 [data-reading] :is(a, button, input, select, textarea, summary, [tabindex]) {
   scroll-margin-top: calc(var(--header) + 24px);
 }
-html[data-film] header {
-  border-color: transparent;
+/* The header's hairline, drawn just below its box (row 64, the row the
+   film's closing line lands in): only once the reading part holds the
+   screen, or with the phone menu open. */
+html[data-read] header,
+header[data-open] {
+  box-shadow: 0 1px 0 var(--line);
 }
 /* A step's marker shows its tile until the dots form on it, and keeps it
    wherever the field does not draw the scene: without WebGL, and in a scene

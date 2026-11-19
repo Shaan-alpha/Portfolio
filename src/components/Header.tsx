@@ -24,7 +24,6 @@ const SPY = ["work", ...SYSTEM_IDS, "also-shipped", "about", "experience", "cont
 
 export default function Header() {
   const active = navCurrent(useActiveSection(SPY), SYSTEM_IDS);
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
@@ -38,13 +37,6 @@ export default function Header() {
     wasOpen.current = open;
     play(open ? "open" : "close");
   }, [open]);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   // Mobile menu: lock the page behind it, move focus in, Escape closes and
   // hands focus back to the button that opened it. The page behind is made
@@ -87,8 +79,8 @@ export default function Header() {
   return (
     <header
       data-mask
-      data-scrolled={scrolled || open || undefined}
-      className="fixed inset-x-0 top-0 z-[1000] h-[var(--header)] border-b border-transparent bg-ground transition-[border-color] duration-200 data-[scrolled]:border-line"
+      data-open={open || undefined}
+      className="fixed inset-x-0 top-0 z-[1000] h-[var(--header)] bg-ground transition-[box-shadow] duration-200"
     >
       {/* Phones are tight with two icon toggles and Menu beside the name: the
           spacing closes up below md so the name stays on one line at 360px. */}

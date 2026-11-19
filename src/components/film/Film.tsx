@@ -63,8 +63,16 @@ export default function Film({ children }: { children: React.ReactNode }) {
     // reading part reaches the top of the viewport (a 1% band at the top).
     const filmIo = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) delete root.dataset.film;
-        else if (entry.boundingClientRect.top > 0) root.dataset.film = "";
+        // `data-read` is its opposite, set only once the reading part holds
+        // the screen: the header's hairline shows then, and not before the
+        // film has had a say (so it never flashes in at load).
+        if (entry.isIntersecting) {
+          delete root.dataset.film;
+          root.dataset.read = "";
+        } else if (entry.boundingClientRect.top > 0) {
+          root.dataset.film = "";
+          delete root.dataset.read;
+        }
       },
       { rootMargin: "0px 0px -99% 0px" },
     );
@@ -332,6 +340,7 @@ export default function Film({ children }: { children: React.ReactNode }) {
       cancelled = true;
       cleanups.reverse().forEach((c) => c());
       delete root.dataset.film;
+      delete root.dataset.read;
     };
   }, []);
 

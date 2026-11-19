@@ -12,6 +12,9 @@ export default function CaseSheet({ id, name, children }: { id: string; name: st
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLButtonElement>(null);
   const overflow = useRef("");
+  // Whether the press that ends in a click began on the backdrop: a text
+  // selection dragged out of the panel must not close it.
+  const pressedOutside = useRef(false);
 
   // However it closes (Escape, Close, the backdrop), one handler hands the
   // page back.
@@ -37,11 +40,18 @@ export default function CaseSheet({ id, name, children }: { id: string; name: st
   };
 
   // A click on the backdrop lands on the dialog itself, outside its panel.
-  const onBackdrop = (e: React.MouseEvent<HTMLDialogElement>) => {
+  const outside = (e: React.MouseEvent<HTMLDialogElement>) => {
     const d = dialog.current;
-    if (!d || e.target !== d) return;
+    if (!d || e.target !== d) return false;
     const r = d.getBoundingClientRect();
-    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) d.close();
+    return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+  };
+  const onPress = (e: React.MouseEvent<HTMLDialogElement>) => {
+    pressedOutside.current = outside(e);
+  };
+  const onBackdrop = (e: React.MouseEvent<HTMLDialogElement>) => {
+    if (pressedOutside.current && outside(e)) dialog.current?.close();
+    pressedOutside.current = false;
   };
 
   return (
@@ -49,7 +59,7 @@ export default function CaseSheet({ id, name, children }: { id: string; name: st
       <button ref={opener} type="button" data-sfx="" aria-haspopup="dialog" className="key key-primary key-sm" onClick={open}>
         Read the case study
       </button>
-      <dialog ref={dialog} aria-labelledby={`${id}-sheet-title`} className="sheet" onClick={onBackdrop}>
+      <dialog ref={dialog} aria-labelledby={`${id}-sheet-title`} className="sheet" onMouseDown={onPress} onClick={onBackdrop}>
         <div className="sheet-head">
           <h2 id={`${id}-sheet-title`} className="t-h3 text-ink">
             {name}

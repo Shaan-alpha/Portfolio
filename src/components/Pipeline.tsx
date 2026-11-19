@@ -66,7 +66,7 @@ export default function Pipeline({ flows, name }: { flows: Flow[]; name: string 
         const title = named ? `${name}, ${flow.name?.toLowerCase()}` : name;
         return (
           <div key={flow.name ?? f} className="@container">
-            {named && <h4 className="mb-3 text-[14px] font-semibold text-ink-2">{flow.name}</h4>}
+            {named && <h3 className="mb-3 text-[14px] font-semibold text-ink-2">{flow.name}</h3>}
             <ol
               aria-label={`How ${title} runs, step by step`}
               className={`grid grid-cols-1 gap-y-4 ${across.list}`}
