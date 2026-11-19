@@ -224,6 +224,28 @@ function shapePoint(kind: FlowNode["kind"], cx: number, cy: number, r: number, k
   }
 }
 
+/** At most this many dots on a step, so a shape still reads as dots rather
+ *  than a smudge: a share of its outline or area. The rest go to the dust. */
+function capFor(kind: FlowNode["kind"], r: number): number {
+  const ring = 2 * Math.PI * r * 0.9;
+  const cap =
+    kind === "io"
+      ? ring
+      : kind === "human"
+        ? ring + Math.PI * (0.28 * r) ** 2 * 0.5
+        : kind === "step"
+          ? Math.PI * (0.75 * r) ** 2 * 0.22
+          : kind === "guard"
+            ? 0.72 * r * r * 0.35
+            : kind === "grid"
+              ? 200
+              : 2.598 * (1.15 * r) ** 2 * 0.18;
+  return Math.max(24, Math.round(cap));
+}
+
+/** Dots per pixel along a streaming edge. */
+const EDGE_DENSITY = 0.45;
+
 function inside(rects: Rect[], x: number, y: number): boolean {
   return rects.some((m) => x >= m.x && x <= m.x + m.w && y >= m.y && y <= m.y + m.h);
 }
@@ -245,8 +267,9 @@ export function flowTargets(n: number, flows: FlowInput[], viewport: { w: number
 
   const nodeN = nodes.length ? Math.round(n * NODE_SHARE) : 0;
   const edgeN = edges.length ? Math.round(n * EDGE_SHARE) : 0;
-  const perNode = split(nodeN, Math.max(1, nodes.length));
+  const perNode = split(nodeN, Math.max(1, nodes.length)).map((c, k) => (nodes[k] ? Math.min(c, capFor(nodes[k].kind, nodes[k].r)) : 0));
   const jitter = (d: number) => d * 0.85 + random() * 0.15;
+  let placed = 0;
 
   // Model steps first, then the rest from the top down.
   const order = nodes.map((node, k) => ({ node, count: perNode[k] }));
@@ -255,6 +278,7 @@ export function flowTargets(n: number, flows: FlowInput[], viewport: { w: number
     for (let k = 0; k < count; k++) {
       const [x, y] = shapePoint(node.kind, node.x, node.y, node.r, k, random);
       b.put(x, y, 0, node.kind === "model" ? 2 : 1, jitter(node.delay), node.group);
+      placed++;
     }
   }
 
@@ -270,15 +294,17 @@ export function flowTargets(n: number, flows: FlowInput[], viewport: { w: number
     const gapA = e.a.r * 1.25;
     const gapB = e.b.r * 1.25;
     const span = Math.max(0, len - gapA - gapB);
-    for (let m = 0; m < count; m++) {
+    const take = Math.min(count, Math.max(4, Math.round(span * EDGE_DENSITY)));
+    for (let m = 0; m < take; m++) {
       const side = (random() - 0.5) * 1.6;
       const sx = e.a.x + ux * gapA - uy * side;
       const sy = e.a.y + uy * gapA + ux * side;
       b.put(sx, sy, 0, 1, jitter(e.a.delay), -1, [ux * span, uy * span, 0, random()]);
+      placed++;
     }
   });
 
-  for (let k = nodeN + edgeN; k < n; k++) {
+  for (let k = placed; k < n; k++) {
     let x = 0;
     let y = 0;
     for (let tries = 0; tries < 64; tries++) {

@@ -84,6 +84,26 @@ test("flowTargets streams only edge dots", () => {
   assert.ok(streaming > 0, "some dots stream");
 });
 
+test("flowTargets keeps steps and edges light enough to read as dots", () => {
+  // With the full desktop budget on three small steps, the extra dots must go
+  // to the dust, not pile up on the shapes until they smudge.
+  const t = flowTargets(16000, [flow], viewport, [], rng(6));
+  const near = [100, 200, 300].map((y) => {
+    let k = 0;
+    for (let i = 0; i < t.n; i++) {
+      if (t.kind[i] === 0) continue;
+      if (t.flow[4 * i] !== 0 || t.flow[4 * i + 1] !== 0) continue;
+      if (Math.hypot(t.to[3 * i] - 600, t.to[3 * i + 1] - y) <= 24 * 1.6) k++;
+    }
+    return k;
+  });
+  for (const k of near) assert.ok(k > 40 && k <= 400, `a step holds ${k} dots`);
+  let streaming = 0;
+  for (let i = 0; i < t.n; i++) if (t.flow[4 * i] !== 0 || t.flow[4 * i + 1] !== 0) streaming++;
+  // Two edges of about 140 px each.
+  assert.ok(streaming > 20 && streaming <= 200, `${streaming} streaming dots`);
+});
+
 test("slot labels line up with the drawing", () => {
   const tops = slotLabelTops();
   assert.equal(tops.length, 5);
