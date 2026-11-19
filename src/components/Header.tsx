@@ -81,8 +81,9 @@ export default function Header() {
 
   return (
     <header
+      data-mask
       data-scrolled={scrolled || open || undefined}
-      className="sticky top-0 z-[1000] h-[var(--header)] border-b border-transparent bg-ground transition-[border-color] duration-200 data-[scrolled]:border-line"
+      className="fixed inset-x-0 top-0 z-[1000] h-[var(--header)] border-b border-transparent bg-ground transition-[border-color] duration-200 data-[scrolled]:border-line"
     >
       {/* Phones are tight with two icon toggles and Menu beside the name: the
           spacing closes up below md so the name stays on one line at 360px. */}

@@ -75,8 +75,10 @@
 
 /* ── Base ─────────────────────────────────────────────────────────────── */
 @layer base {
+  /* No scroll padding: the film's scenes snap flush to the top, under the
+     overlay header. Anchors in the reading part carry their own margin. */
   html {
-    scroll-padding-top: calc(var(--header) + 24px);
+    scroll-padding-top: 0;
     -webkit-text-size-adjust: 100%;
   }
   @media (prefers-reduced-motion: no-preference) {
@@ -375,6 +377,47 @@
 }
 ::view-transition-old(root) {
   z-index: 1;
+}
+
+/* ── The film ──────────────────────────────────────────────────────────────
+   Full-screen scenes, one per wheel gesture (field/snap.ts), then the
+   reading part: one snap area taller than the screen, which the reader
+   scrolls freely inside. Snap is switched on by script, and only after a
+   browser test passes; without it the page scrolls like any other. */
+html[data-snap] {
+  scroll-snap-type: y mandatory;
+}
+[data-scene] {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  padding-top: var(--header);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+[data-reading],
+body > footer {
+  position: relative;
+  z-index: 1;
+  background: var(--ground);
+}
+[data-reading] {
+  scroll-snap-align: start;
+}
+/* The footer's end is a resting place of its own, so the very bottom of the
+   page is reachable with snap on. */
+body > footer {
+  scroll-snap-align: end;
+}
+[data-reading] :is(section, article, li)[id] {
+  scroll-margin-top: calc(var(--header) + 24px);
+}
+html[data-film] header {
+  border-color: transparent;
+}
+/* Once the dots have formed on the drawing, the drawing steps back. */
+[data-stack-box][data-live] [data-drawing] {
+  opacity: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

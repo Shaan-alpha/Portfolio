@@ -1,5 +1,7 @@
 # Portfolio Renovation II — "The architecture"
 
+> **Superseded** on 2026-11-19 by [the dot field](2026-11-19-portfolio-dot-field-design.md). Shaan rejected the building as jittery.
+
 **Date:** 2026-11-19
 **Owner:** Shaan Satsangi
 **Status:** Phases 1 and 2 (acts I to IV) built and deployed on 2026-11-19. Phases 3 and 4 remain. Shaan gave full creative authority; every call below is mine unless marked as his.
