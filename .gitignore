@@ -32,3 +32,6 @@ next-env.d.ts
 
 # generated at build time by scripts/gen-build-info.mjs
 /src/lib/buildInfo.ts
+
+# Plan-execution scratch (ledger, task briefs)
+.superpowers/
