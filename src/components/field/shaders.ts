@@ -138,15 +138,16 @@ void main() {
   col = mix(col, uBright, 0.6 * hl);
   alpha = min(1.0, alpha * (1.0 + 0.6 * hl));
 
-  // The program's look: a held dot greys once it rests, an arriving approval
-  // is bright, and every dot shows as much as its program says, eased from
-  // what it showed when its morph began.
-  if (isMode(mode, 2.0)) col = mix(col, uDust, smoothstep(aLoop.w, aLoop.w + 0.1, c) * p);
-  if (isMode(mode, 5.0)) {
+  // The program's look: packets and an arriving approval are drawn in ink, so
+  // a single piece of work reads against the grey stream; a held dot greys
+  // once it rests; and every dot shows as much as its program says, eased
+  // from what it showed when its morph began.
+  if (isMode(mode, 1.0) || isMode(mode, 3.0) || isMode(mode, 5.0)) {
     col = mix(col, uBright, p);
     alpha = mix(alpha, 1.0, p);
-    size = mix(size, 3.0, p);
+    size = mix(size, isMode(mode, 5.0) ? 3.0 : 2.6, p);
   }
+  if (isMode(mode, 2.0)) col = mix(col, uDust, smoothstep(aLoop.w, aLoop.w + 0.1, c) * p);
   alpha *= mix(aVisFrom, visibility(mode, c, u, aLoop.z, aLoop.w, dot(aFlow.xyz, aFlow.xyz) > 0.0), p);
 
   // No dots behind the copy: anything inside a mask rect fades to 15%.

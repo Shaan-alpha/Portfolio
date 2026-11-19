@@ -260,7 +260,8 @@ test("Atlas: the briefing passes the salience check one packet at a time", () =>
     assert.ok(e.length > 0, `${message[k]} streams`);
     for (const i of e) assert.equal(t.loop[4 * i], MODE.stream, `${message[k]}: dot ${i}`);
   }
-  assert.ok(Math.abs(t.still - 0.8 * 4) < 1e-9, `still ${t.still}`);
+  // A reduced-motion visitor sees the moment the table names, in seconds.
+  assert.ok(Math.abs(t.still - BEHAVIOURS.atlas.still * BEHAVIOURS.atlas.period) < 1e-9, `still ${t.still}`);
 });
 
 test("Syntrueno: five posts, an arriving approval, one packet, then a pulse", () => {

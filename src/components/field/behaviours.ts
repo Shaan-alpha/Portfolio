@@ -50,8 +50,8 @@ export const BEHAVIOURS: Record<string, Behaviour> = {
   // the check, and only now and then does one packet reach Briefing.
   atlas: {
     period: 4,
-    still: 0.8,
-    edges: { "Salience check": [{ kind: "packets", window: [0.62, 0.9], count: 1 }] },
+    still: 0.48,
+    edges: { "Salience check": [{ kind: "packets", window: [0.3, 0.58], count: 1 }] },
   },
   // "Five guards", then "Single-use SHA-256 approval": the approval arrives,
   // exactly one packet goes on, and execution pulses "until live state

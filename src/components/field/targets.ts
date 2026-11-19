@@ -215,8 +215,9 @@ const EDGE_SHARE = 0.22;
  *  edges shorter than `MIN_STREAM_SPAN` move as if they were that long. */
 export const STREAM_PX_PER_S = 16;
 const MIN_STREAM_SPAN = 24;
-/** Dots in one packet. */
-export const PACKET_DOTS = 14;
+/** Dots in one packet: enough, with its spread, to read as one piece of work
+ *  about 7 px across. */
+export const PACKET_DOTS = 22;
 /** How far an exit runs past the last step of its flow. */
 export const EXIT_PX = 56;
 /** The 10×10 lattice is at least this wide, so its dots stay apart. */
@@ -466,7 +467,7 @@ export function flowTargets(
         for (let j = 0; j < prog.count; j++) {
           const offset = prog.count > 1 ? spread * r * ((2 * j) / (prog.count - 1) - 1) : 0;
           for (let m = 0; m < PACKET_DOTS; m++) {
-            const [sx, sy] = at((random() - 0.5) * 4, offset + (random() - 0.5) * 3);
+            const [sx, sy] = at((random() - 0.5) * 6, offset + (random() - 0.5) * 5);
             system.push({ x: sx, y: sy, kind: 1, delay: jitter(e.a.delay), group: -1, flow: vec(-j * (prog.gap ?? 0)), loop: [mode, loopRate, prog.window[0], prog.window[1]] });
           }
         }
