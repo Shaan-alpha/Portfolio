@@ -22,7 +22,7 @@ import {
   WebGLRenderer,
 } from "three";
 import { AZIMUTH, ELEVATION, VIEW_H } from "../stack/geometry.ts";
-import { IDENTITY_FRAME, TIMING, dotProgress, shownVisibility, snapshot, stackFrame, type Frame, type MorphState } from "./morph.ts";
+import { IDENTITY_FRAME, TIMING, snapshot, stackFrame, type Carry, type Frame, type MorphState } from "./morph.ts";
 import { lineAlpha, type Rect, type Targets } from "./targets.ts";
 import { FRAGMENT, MAX_MASKS, VERTEX } from "./shaders.ts";
 import { createLoop } from "./loop.ts";
@@ -91,8 +91,9 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
   const kindTo = new Float32Array(n);
   const group = new Float32Array(n).fill(-1);
   const visFrom = new Float32Array(n).fill(1);
-  // A scene change's snapshot, allocated once.
+  // A scene change's snapshot and what it carries, allocated once.
   const snap = new Float32Array(3 * n);
+  const carry: Carry = { visFrom, progress: new Float32Array(n) };
   let targetFrame: Targets["frame"] = "screen";
 
   // The scene's loop clock: its behaviour runs from `loopStart`; with reduced
@@ -264,12 +265,11 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
       const now = clock();
       const clk = loopClock(now);
       // Where every dot is right now, drift included, and how much of it
-      // shows, in the frame and the programs it is leaving.
-      const base = snapshot(st, now, frameNow(), clk, drift, snap);
+      // shows, in the frame and the programs it is leaving: one pass.
+      const base = snapshot(st, now, frameNow(), clk, drift, snap, carry);
+      const progress = carry.progress;
       for (let i = 0; i < n; i++) {
-        visFrom[i] = shownVisibility(st, i, now, clk, visFrom);
-        const p = dotProgress(now, st.start, st.delay[i], st.duration, st.stagger);
-        kindFrom[i] = p >= 0.5 ? kindTo[i] : kindFrom[i];
+        kindFrom[i] = progress[i] >= 0.5 ? kindTo[i] : kindFrom[i];
         kindTo[i] = t.kind[i];
         group[i] = t.group[i];
       }
@@ -289,21 +289,28 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
 
       // A dot leaves for its target through a scattered midpoint, never
       // through the text column, so the morph reads as dissolve-then-form.
+      // (No allocation per dot: this runs for every dot on a scene change.)
       const f = frameNow();
+      const [m0, m1, m2, m3, m4, m5, m6, m7, m8] = f.m;
+      const [t0x, t0y, t0z] = f.t;
+      const fs = f.s;
       const scatter = (opts.quick || opts.instant ? 0 : 1) * Math.min(w, h);
+      const push = scatter && w >= 1024 ? textRight + 24 : -Infinity;
       for (let i = 0; i < n; i++) {
         const j = 3 * i;
-        const [lx, ly, lz] = [st.to[j], st.to[j + 1], st.to[j + 2]];
-        const tx = f.t[0] + f.s * (f.m[0] * lx + f.m[1] * ly + f.m[2] * lz);
-        const ty = f.t[1] + f.s * (f.m[3] * lx + f.m[4] * ly + f.m[5] * lz);
+        const lx = st.to[j];
+        const ly = st.to[j + 1];
+        const lz = st.to[j + 2];
+        const tx = t0x + fs * (m0 * lx + m1 * ly + m2 * lz);
+        const ty = t0y + fs * (m3 * lx + m4 * ly + m5 * lz);
+        const tz = t0z + fs * (m6 * lx + m7 * ly + m8 * lz);
         const a = Math.random() * Math.PI * 2;
         const r = scatter * (0.06 + Math.random() * 0.06);
         let mx = (st.from[j] + tx) / 2 + Math.cos(a) * r;
-        const my = (st.from[j + 1] + ty) / 2 + Math.sin(a) * r;
-        if (scatter && w >= 1024 && mx < textRight + 24) mx = textRight + 24 + Math.random() * 60;
+        if (mx < push) mx = push + Math.random() * 60;
         st.mid[j] = mx;
-        st.mid[j + 1] = my;
-        st.mid[j + 2] = (st.from[j + 2] + (f.t[2] + f.s * (f.m[6] * lx + f.m[7] * ly + f.m[8] * lz))) / 2;
+        st.mid[j + 1] = (st.from[j + 1] + ty) / 2 + Math.sin(a) * r;
+        st.mid[j + 2] = (st.from[j + 2] + tz) / 2;
       }
 
       if (opts.instant || !motion) {

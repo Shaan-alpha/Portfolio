@@ -129,27 +129,24 @@ export type MorphState = {
   stagger: number;
 };
 
-/** Where dot `i` is at `now`: a quadratic Bézier from its source through its
- *  scattered midpoint to its framed, moving target, plus its drift, which
- *  grows in as the dot arrives. `clock` is the scene's loop clock and `drift`
- *  the ambient amplitude in pixels. */
-export function dotPosition(
-  out: Float32Array,
-  o: number,
-  st: MorphState,
-  i: number,
-  now: number,
-  frame: Frame,
-  clock: number,
-  drift: number,
-): void {
+/** What a scene change carries over besides positions: how much of each dot
+ *  shows (updated in place, as `shownVisibility` would) and each dot's
+ *  progress through its morph. */
+export type Carry = { visFrom: Float32Array; progress: Float32Array };
+
+/** The one implementation behind `dotPosition` and `snapshot`, so a scene
+ *  change walks the dots once and the shader has one formula to match. */
+function place(out: Float32Array, o: number, st: MorphState, i: number, now: number, frame: Frame, clock: number, drift: number, carry?: Carry): void {
   const p = dotProgress(now, st.start, st.delay[i], st.duration, st.stagger);
   const f = 4 * i;
   const j = 3 * i;
   const mode = st.loop[f];
   const rate = st.loop[f + 1];
+  const lo = st.loop[f + 2];
+  const hi = st.loop[f + 3];
   const c = cycle(st.flow[f + 3], rate, clock);
-  const k = mode === MODE.pulse ? pulseFactor(c, st.loop[f + 2], rate) : travel(mode, c, st.loop[f + 2], st.loop[f + 3]);
+  const u = travel(mode, c, lo, hi);
+  const k = mode === MODE.pulse ? pulseFactor(c, lo, rate) : u;
   const lx = st.to[j] + st.flow[f] * k;
   const ly = st.to[j + 1] + st.flow[f + 1] * k;
   const lz = st.to[j + 2] + st.flow[f + 2] * k;
@@ -167,14 +164,38 @@ export function dotPosition(
   out[o] = a * st.from[j] + b * st.mid[j] + cc * tx + w * Math.sin(now * (0.6 + 0.5 * sd) + 6.283 * sd);
   out[o + 1] = a * st.from[j + 1] + b * st.mid[j + 1] + cc * ty + w * Math.cos(now * (0.7 + 0.4 * sd) + 6.283 * sd);
   out[o + 2] = a * st.from[j + 2] + b * st.mid[j + 2] + cc * tz;
+  if (carry) {
+    const moving = st.flow[f] !== 0 || st.flow[f + 1] !== 0 || st.flow[f + 2] !== 0;
+    const v = visibility(mode, c, u, lo, hi, moving);
+    carry.visFrom[i] += (v - carry.visFrom[i]) * p;
+    carry.progress[i] = p;
+  }
+}
+
+/** Where dot `i` is at `now`: a quadratic Bézier from its source through its
+ *  scattered midpoint to its framed, moving target, plus its drift, which
+ *  grows in as the dot arrives. `clock` is the scene's loop clock and `drift`
+ *  the ambient amplitude in pixels. */
+export function dotPosition(
+  out: Float32Array,
+  o: number,
+  st: MorphState,
+  i: number,
+  now: number,
+  frame: Frame,
+  clock: number,
+  drift: number,
+): void {
+  place(out, o, st, i, now, frame, clock, drift);
 }
 
 /** Every dot's position at `now`, drift included, so a morph that starts from
  *  this snapshot starts exactly where the dots are on screen. Writes into
- *  `out` when given one, so a scene change allocates nothing. */
-export function snapshot(st: MorphState, now: number, frame: Frame, clock: number, drift: number, out?: Float32Array): Float32Array {
+ *  `out` when given one, so a scene change allocates nothing; with `carry`,
+ *  the same pass updates each dot's visibility and records its progress. */
+export function snapshot(st: MorphState, now: number, frame: Frame, clock: number, drift: number, out?: Float32Array, carry?: Carry): Float32Array {
   const dst = out ?? new Float32Array(3 * st.n);
-  for (let i = 0; i < st.n; i++) dotPosition(dst, 3 * i, st, i, now, frame, clock, drift);
+  for (let i = 0; i < st.n; i++) place(dst, 3 * i, st, i, now, frame, clock, drift, carry);
   return dst;
 }
 

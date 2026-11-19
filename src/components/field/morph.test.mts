@@ -253,3 +253,21 @@ test("the stack frame matches the drawing's projection", () => {
     close(out[1], -y, 1e-6, "y");
   }
 });
+
+test("one pass carries each dot's visibility and progress with its position", () => {
+  // A scene change does this for every dot, so it does it once: the same
+  // numbers as the separate functions, from a single walk over the dots.
+  const random = lcg(41);
+  const st = programState(500, random, 3, 900, [0, 1, 3]);
+  const now = st.start + 0.5;
+  const visFrom = Float32Array.from({ length: st.n }, random);
+  const want = Float32Array.from({ length: st.n }, (_, i) => shownVisibility(st, i, now, 1.9, visFrom));
+  const carry = { visFrom: Float32Array.from(visFrom), progress: new Float32Array(st.n) };
+  const s = snapshot(st, now, IDENTITY_FRAME, 1.9, 1.2, undefined, carry);
+  const alone = snapshot(st, now, IDENTITY_FRAME, 1.9, 1.2);
+  for (let i = 0; i < st.n; i++) {
+    close(carry.visFrom[i], want[i], 1e-6, `visibility ${i}`);
+    close(carry.progress[i], dotProgress(now, st.start, st.delay[i], st.duration, st.stagger), 1e-6, `progress ${i}`);
+  }
+  for (let k = 0; k < s.length; k++) close(s[k], alone[k], 1e-9, `position ${k}`);
+});
