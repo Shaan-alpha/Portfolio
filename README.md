@@ -16,6 +16,10 @@ The personal site of an AI systems engineer, built with **Next.js 16**, **React 
   - **Its five levels** are the layers most of these systems share: a vault for memory and state, a lobby for interfaces, a security hall for guards, and a plant floor for orchestration. The model itself is one yellow block hanging in the atrium, with no floor of its own.
   - **As you scroll,** the hero holds while the building opens into its levels. Then the camera dives through the atrium to the block and climbs back out.
   - **Interaction:** drag to turn it, and select a level to see which projects use it. The callouts and the caption read the same data as the scene, so the 3D object and the text cannot disagree.
+- **Projects as routes through it.** On wide screens the building stays beside the case studies.
+  - **The route:** as each case study scrolls past, its real pipeline is walked through the building stop by stop: an interface in the lobby, a guard at the gates, a person at the approval desk, a step on the plant floor, and the model in the atrium.
+  - **What you see:** a lit line and a travelling marker follow it, and the yellow block brightens when the route reaches the model.
+  - **The archive** is read in the vault. Phones keep the pipeline tiles.
 - **Pipelines instead of paragraphs.** Each production project is drawn as the path work takes through it, in the same visual language: yellow where a model runs, a shield where a guard or check sits, a hand where a person approves. A system with two separate paths, such as Atlas's chat replies and its gated morning briefing, gets two diagrams rather than one invented sequence.
 - **Type and colour.** Archivo at two widths: expanded for display, normal for reading. The neutrals are cool aluminium in light mode and graphite in dark, plus one signal colour that only ever means "a model runs here". Every text colour clears WCAG AA in both themes, and axe reports no violations.
 - **3D as an enhancement.**
@@ -46,7 +50,8 @@ The personal site of an AI systems engineer, built with **Next.js 16**, **React 
 ```
 src/content/            the content data: profile, projects (with their flows), skills, experience, the hero's layers
 src/components/building/ the hero: blueprint.ts (the building as tested data), shots.ts (camera shots and the
-                        scroll choreography), scene.ts (three.js), BuildingStage.tsx (pin, callouts, caption, state)
+                        scroll choreography), routes.ts (each project's flows as a route), scene.ts (three.js),
+                        BuildingStage.tsx (the hero: pin, callouts, caption), RouteStage.tsx (the Work section)
 src/components/stack/   the October stack drawing, still used by the social card
 scripts/                the build stamp, and render-stills.mjs for the hero's fallback stills
 src/app/og.png/         the social card, rendered at build time with next/og

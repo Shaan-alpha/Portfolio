@@ -5,7 +5,7 @@ import type { Blueprint, Vec3 } from "./blueprint";
 // path (it must never pass through the building) are unit-tested.
 
 export type Shot = { position: Vec3; target: Vec3; fov: number };
-export type ShotName = "site" | "section" | "above" | "dive";
+export type ShotName = "site" | "section" | "above" | "dive" | "vault";
 /** Where the levels stand at a beat: `separation` pulls the levels apart and
  *  `cut` slides the cut-away façades off, both 0 to 1. */
 export type Beat = { shot: ShotName; separation: number; cut: number };
@@ -61,6 +61,8 @@ export function shotFor(name: ShotName, aspect: number, bp: Pick<Blueprint, "cen
   // Phone stages are about square; the wide framing is tuned for 4:3.
   const portrait = aspect < 1.1;
   const m = bp.model.center;
+  // Act IV: through the plinth's open side into level B, the vault.
+  if (name === "vault") return { position: [9.2, -0.3, 1.4], target: [1.6, -0.85, 0.1], fov: portrait ? 44 : 36 };
   if (name === "above") return { position: [m[0], m[1] + 4.6, m[2] + 0.35], target: [...m] as Vec3, fov: portrait ? 52 : 40 };
   // Far enough above the block to frame it with the columns and railings
   // round the opening, still inside the atrium.

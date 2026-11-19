@@ -240,30 +240,28 @@ export default function BuildingStage({
             setInside(now);
           }
         };
+        // scrub only smooths an animation, so the pin drives a tween of a
+        // plain number and the scene reads it: a wheel's steps become a
+        // glide that catches up over a second.
+        const fly = (trigger: Element) => {
+          const flight = { p: 0 };
+          gsap.to(flight, {
+            p: 1,
+            ease: "none",
+            onUpdate: () => onProgress(flight.p),
+            scrollTrigger: { trigger, start: `top top+=${header}`, end: `+=${PIN * 100}%`, pin: true, scrub: 1 },
+          });
+        };
         const ctx = gsap.context(() => {
           const mm = gsap.matchMedia();
           // Wide screens hold the whole hero, text beside the model. Narrow
           // ones hold the figure (stage, layer buttons, caption), which sits
           // under the text and fits a phone screen.
           mm.add("(min-width: 64rem)", () => {
-            ScrollTrigger.create({
-              trigger: figure.closest("section") ?? figure,
-              start: `top top+=${header}`,
-              end: `+=${PIN * 100}%`,
-              pin: true,
-              scrub: 1,
-              onUpdate: (self) => onProgress(self.progress),
-            });
+            fly(figure.closest("section") ?? figure);
           });
           mm.add("(max-width: 63.99rem)", () => {
-            ScrollTrigger.create({
-              trigger: figure,
-              start: `top top+=${header}`,
-              end: `+=${PIN * 100}%`,
-              pin: true,
-              scrub: 1,
-              onUpdate: (self) => onProgress(self.progress),
-            });
+            fly(figure);
           });
         }, figure);
         revert = () => ctx.revert();

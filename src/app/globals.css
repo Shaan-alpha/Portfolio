@@ -38,6 +38,8 @@
   --alu: #a7aeb6;
   --acrylic: #cfd8df;
   --glow: #8d96a2;
+  /* The line a project's route draws through the building. */
+  --route: #111318;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --header: 64px;
 }
@@ -70,6 +72,7 @@
   --alu: #6b7480;
   --acrylic: #4a515c;
   --glow: #dbe7ff;
+  --route: #dbe7ff;
 }
 
 @theme inline {

@@ -2,12 +2,14 @@ import {
   BoxGeometry,
   CanvasTexture,
   Color,
+  CurvePath,
   CylinderGeometry,
   DirectionalLight,
   Group,
   HalfFloatType,
   HemisphereLight,
   InstancedMesh,
+  LineCurve3,
   Matrix4,
   Mesh,
   MeshBasicMaterial,
@@ -21,6 +23,8 @@ import {
   Raycaster,
   SRGBColorSpace,
   Scene,
+  SphereGeometry,
+  TubeGeometry,
   Vector2,
   Vector3,
   WebGLRenderTarget,
@@ -38,6 +42,7 @@ import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import type { LayerId } from "@/content/stack";
 import { buildBlueprint, CYLINDER_SEGMENTS, type Blueprint, type Detail, type MaterialId, type Owner, type StoreyId } from "./blueprint";
 import { choreograph, lerpShot, shotFor } from "./shots";
+import { routeShot, travelAt, type Route } from "./routes";
 import { createDetents } from "./detents";
 import { createDegrade } from "./degrade";
 
@@ -47,6 +52,12 @@ export type BuildingSceneOptions = {
   canvas: HTMLCanvasElement;
   detail: Detail;
   reducedMotion: boolean;
+  /** "hero" is acts I and II. "routes" is acts III and IV: the cut-away open,
+   *  the levels closed, no dragging, and the camera following a project's
+   *  route (see routes.ts) or looking into the vault. */
+  mode?: "hero" | "routes";
+  /** Each project's routes, by project id, for routes mode. */
+  routes?: Record<string, Route[]>;
   onReady: () => void;
   onHover: (id: LayerId | null) => void;
   onPick: (id: LayerId | null) => void;
@@ -60,6 +71,9 @@ export type BuildingSceneOptions = {
 export type BuildingScene = {
   /** Acts I and II, 0 to 1: see BEATS in shots.ts. */
   setProgress(p: number): void;
+  /** Routes mode: show project `id`'s routes at point `p` (0 to 1) of its
+   *  scroll, or the vault with "vault", or the overview with null. */
+  setRoute(id: string | null, p: number): void;
   setSelected(id: LayerId | null): void;
   setHighlighted(id: LayerId | null): void;
   resetView(): void;
@@ -80,7 +94,7 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const rad = (d: number) => (d * Math.PI) / 180;
 
-type Palette = { card: Color; alu: Color; acrylic: Color; glow: Color; model: Color; ground: Color; ink: Color; part: Color };
+type Palette = { card: Color; alu: Color; acrylic: Color; glow: Color; model: Color; ground: Color; ink: Color; part: Color; route: Color };
 
 function readPalette(): Palette {
   const cs = getComputedStyle(document.documentElement);
@@ -94,6 +108,7 @@ function readPalette(): Palette {
     ground: v("--ground", "#eceef1"),
     ink: v("--ink", "#111318"),
     part: v("--part", "#c4cad2"),
+    route: v("--route", "#111318"),
   };
 }
 
@@ -321,6 +336,49 @@ export function createBuildingScene(opts: BuildingSceneOptions): BuildingScene {
     })
     .catch(() => {});
 
+  // ── Routes mode: each project's flows as lit lines through the building ─
+  // Polylines, not splines: a travelling marker placed by arc length then
+  // lands exactly on each stop when the camera does (see travelAt).
+  const routesMode = opts.mode === "routes";
+  type RouteRig = { group: Group; curves: CurvePath<Vector3>[]; routes: Route[] };
+  const routeRigs = new Map<string, RouteRig>();
+  const routeMat = new MeshBasicMaterial({ color: palette.route.clone() });
+  const discGeo = new CylinderGeometry(0.1, 0.1, 0.02, 20);
+  const travelerGeo = new SphereGeometry(0.075, 16, 12);
+  const routeGeoms: BufferGeometry[] = [discGeo, travelerGeo];
+  const traveler = new Mesh(travelerGeo, routeMat);
+  traveler.visible = false;
+  if (routesMode && opts.routes) {
+    for (const [id, routes] of Object.entries(opts.routes)) {
+      const group = new Group();
+      group.visible = false;
+      const curves = routes.map((r) => {
+        const path = new CurvePath<Vector3>();
+        for (let i = 1; i < r.path.length; i++) path.add(new LineCurve3(new Vector3(...r.path[i - 1]), new Vector3(...r.path[i])));
+        if (r.path.length > 1) {
+          const tube = new TubeGeometry(path, Math.max(24, r.path.length * 16), 0.028, 6, false);
+          routeGeoms.push(tube);
+          group.add(new Mesh(tube, routeMat));
+        }
+        // A disc on the floor under each stop. The model needs none: the
+        // block itself brightens when the route reaches it.
+        for (const s of r.stops) {
+          if (s.kind === "model") continue;
+          const disc = new Mesh(discGeo, routeMat);
+          disc.position.set(s.position[0], s.position[1] - 0.34, s.position[2]);
+          group.add(disc);
+        }
+        return path;
+      });
+      world.add(group);
+      routeRigs.set(id, { group, curves, routes });
+    }
+    world.add(traveler);
+  }
+  let activeRoute: string | null = null;
+  let routeP = 0;
+  let modelGlow = 0.12;
+
   // ── Post-processing: ambient occlusion at high detail only ──────────────
   let composer: EffectComposer | null = null;
   let gtao: GTAOPass | null = null;
@@ -354,6 +412,7 @@ export function createBuildingScene(opts: BuildingSceneOptions): BuildingScene {
 
   function applyPalette() {
     hemi.groundColor.copy(palette.part);
+    routeMat.color.copy(palette.route);
     engrave();
   }
 
@@ -389,15 +448,38 @@ export function createBuildingScene(opts: BuildingSceneOptions): BuildingScene {
     // Camera, separation and the cut-away all follow the scroll progress,
     // which ScrollTrigger has already smoothed.
     const aspect = width / height;
-    const { from, to, t } = choreograph(progress);
-    const shot = lerpShot(shotFor(from.shot, aspect, bp), shotFor(to.shot, aspect, bp), t);
+    let shot;
+    let separation;
+    let cut;
+    let glowTarget = 0.12;
+    if (routesMode) {
+      const rig = activeRoute && activeRoute !== "vault" ? routeRigs.get(activeRoute) : undefined;
+      shot = activeRoute === "vault" ? shotFor("vault", aspect, bp) : rig ? routeShot(rig.routes, routeP, aspect, bp) : shotFor("section", aspect, bp);
+      separation = 0;
+      cut = 1;
+      traveler.visible = !!rig;
+      if (rig) {
+        const { route, t } = travelAt(rig.routes, routeP);
+        const r = rig.routes[route];
+        const curve = rig.curves[route];
+        if (curve.curves.length) traveler.position.copy(curve.getPointAt(clamp(t, 0, 1)));
+        else traveler.position.set(...r.path[0]);
+        if (r.stops.some((s, i) => s.kind === "model" && Math.abs(r.at[i] - t) < 0.04)) glowTarget = 0.35;
+      }
+    } else {
+      const { from, to, t } = choreograph(progress);
+      shot = lerpShot(shotFor(from.shot, aspect, bp), shotFor(to.shot, aspect, bp), t);
+      separation = lerp(from.separation, to.separation, t);
+      cut = lerp(from.cut, to.cut, t);
+    }
     camera.position.set(...shot.position);
     camera.fov = shot.fov;
     camera.aspect = aspect;
     camera.updateProjectionMatrix();
     camera.lookAt(...shot.target);
-    const separation = lerp(from.separation, to.separation, t);
-    const cut = lerp(from.cut, to.cut, t);
+    modelGlow = approach(modelGlow, glowTarget);
+    const modelMat = modelMesh?.material;
+    if (modelMat instanceof MeshStandardMaterial) modelMat.emissiveIntensity = modelGlow;
 
     const focus = hovered ?? highlighted ?? selected;
     for (const r of rigs.values()) {
@@ -454,7 +536,7 @@ export function createBuildingScene(opts: BuildingSceneOptions): BuildingScene {
     last = now;
     const moving = step(dt);
     draw();
-    emitAnchors();
+    if (!routesMode) emitAnchors();
     if (firstFrame) {
       firstFrame = false;
       opts.onReady();
@@ -572,12 +654,16 @@ export function createBuildingScene(opts: BuildingSceneOptions): BuildingScene {
     if (!down) setHover(null);
   };
 
-  canvas.style.cursor = "grab";
-  canvas.addEventListener("pointerdown", onDown);
-  canvas.addEventListener("pointermove", onMove);
-  canvas.addEventListener("pointerup", onUp);
-  canvas.addEventListener("pointercancel", onCancel);
-  canvas.addEventListener("pointerleave", onLeave);
+  // Routes mode only watches: the camera follows the page, so there is
+  // nothing to turn or pick.
+  if (!routesMode) {
+    canvas.style.cursor = "grab";
+    canvas.addEventListener("pointerdown", onDown);
+    canvas.addEventListener("pointermove", onMove);
+    canvas.addEventListener("pointerup", onUp);
+    canvas.addEventListener("pointercancel", onCancel);
+    canvas.addEventListener("pointerleave", onLeave);
+  }
 
   const onLost = (e: Event) => {
     e.preventDefault();
@@ -647,6 +733,16 @@ export function createBuildingScene(opts: BuildingSceneOptions): BuildingScene {
       progress = next;
       invalidate();
     },
+    setRoute(id, p) {
+      const next = clamp(p, 0, 1);
+      if (id === activeRoute && Math.abs(next - routeP) < 1e-5) return;
+      if (id !== activeRoute) {
+        for (const [key, rig] of routeRigs) rig.group.visible = key === id;
+        activeRoute = id;
+      }
+      routeP = next;
+      invalidate();
+    },
     setSelected(id) {
       selected = id;
       invalidate();
@@ -703,6 +799,8 @@ export function createBuildingScene(opts: BuildingSceneOptions): BuildingScene {
       canvas.removeEventListener("webglcontextlost", onLost);
       unbuild();
       shared.forEach((g) => g.dispose());
+      routeGeoms.forEach((g) => g.dispose());
+      routeMat.dispose();
       hitMat.dispose();
       engraving.geometry.dispose();
       engraveMat.dispose();

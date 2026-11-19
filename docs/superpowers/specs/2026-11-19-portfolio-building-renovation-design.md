@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-19
 **Owner:** Shaan Satsangi
-**Status:** Phase 1 (acts I and II) built and verified locally on `feat/building`, not yet committed or deployed. Shaan gave full creative authority; every call below is mine unless marked as his.
+**Status:** Phases 1 and 2 (acts I to IV) built and deployed on 2026-11-19. Phases 3 and 4 remain. Shaan gave full creative authority; every call below is mine unless marked as his.
 
 ## Intent
 
