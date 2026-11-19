@@ -398,7 +398,7 @@
 - [ ] **Step 7: Frame timing.**
   - Record the canvas with `captureStream(30)` while stepping through the three scenes with real notches, the same method used on insert.gr.
   - Extract the frame timing with ffprobe.
-  - Expected: no frame gaps over 50 ms after the first second.
+  - Expected: no frame over 25 ms after the first second, the spec's budget. (Corrected from 50 ms after the final review.)
 - [ ] **Step 8: The recording for Shaan.**
   - Combine a webm of the canvas with a screen-level GIF of the page.
   - Send it with SendUserFile, along with what is still to come in phase 2.
