@@ -64,7 +64,7 @@ export function installFilm(o: { scenes: () => HTMLElement[]; reading: () => HTM
     const scale = e.deltaMode === 1 ? LINE_PX : e.deltaMode === 2 ? window.innerHeight : 1;
     const decision = decideWheel(
       { deltaX: e.deltaX * scale, deltaY: e.deltaY * scale, ctrlKey: e.ctrlKey, timeStamp: e.timeStamp },
-      { y: window.scrollY, stops: [...o.scenes().map(top), top(o.reading())], lastAt, moving, blocked },
+      { y: window.scrollY, stops: [...o.scenes().map(top), top(o.reading())], vh: root.clientHeight, lastAt, moving, blocked },
     );
     if (decision.kind === "pass") return;
     e.preventDefault();

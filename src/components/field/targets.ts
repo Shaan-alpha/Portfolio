@@ -96,6 +96,15 @@ const PLATE_SHARE = 0.62;
 const CUBE_SHARE = 0.14;
 const RIM_SHARE = 0.3;
 
+/** The same index blocks in every scene: model dots in the first block,
+ *  system dots in the second, dust after. A scene that needs fewer fills the
+ *  rest of a block with dust, so a dot only ever trades its part for its
+ *  counterpart or for dust: yellow never turns grey, grey never turns yellow. */
+function blocks(n: number) {
+  const modelEnd = Math.round(n * CUBE_SHARE);
+  return { modelEnd, systemEnd: modelEnd + Math.round(n * PLATE_SHARE) };
+}
+
 function insideRoundedRect(x: number, z: number): boolean {
   const ax = Math.abs(x) - (PLATE_W / 2 - PLATE_R);
   const az = Math.abs(z) - (PLATE_D / 2 - PLATE_R);
@@ -111,8 +120,9 @@ const slotDelay = (slot: number, random: () => number) => (slot / 4) * 0.85 + ra
  *  around it. */
 export function stackTargets(n: number, random: () => number): Targets {
   const b = builder(n, "stack");
-  const cubeN = Math.round(n * CUBE_SHARE);
-  const plateN = Math.round(n * PLATE_SHARE);
+  const { modelEnd, systemEnd } = blocks(n);
+  const cubeN = modelEnd;
+  const plateN = systemEnd - modelEnd;
 
   const c = CUBE / 2;
   const cy = slotY(MODEL_SLOT);
@@ -269,16 +279,17 @@ export function flowTargets(n: number, flows: FlowInput[], viewport: { w: number
   const edgeN = edges.length ? Math.round(n * EDGE_SHARE) : 0;
   const perNode = split(nodeN, Math.max(1, nodes.length)).map((c, k) => (nodes[k] ? Math.min(c, capFor(nodes[k].kind, nodes[k].r)) : 0));
   const jitter = (d: number) => d * 0.85 + random() * 0.15;
-  let placed = 0;
+  type Dot = { x: number; y: number; kind: Kind; delay: number; group: number; flow?: [number, number, number, number] };
+  const model: Dot[] = [];
+  const system: Dot[] = [];
 
-  // Model steps first, then the rest from the top down.
-  const order = nodes.map((node, k) => ({ node, count: perNode[k] }));
-  order.sort((p, q) => Number(q.node.kind === "model") - Number(p.node.kind === "model") || p.node.y - q.node.y);
+  // Steps from the top down; model steps' dots go to the model block.
+  const order = nodes.map((node, k) => ({ node, count: perNode[k] })).sort((p, q) => p.node.y - q.node.y);
   for (const { node, count } of order) {
+    const isModel = node.kind === "model";
     for (let k = 0; k < count; k++) {
       const [x, y] = shapePoint(node.kind, node.x, node.y, node.r, k, random);
-      b.put(x, y, 0, node.kind === "model" ? 2 : 1, jitter(node.delay), node.group);
-      placed++;
+      (isModel ? model : system).push({ x, y, kind: isModel ? 2 : 1, delay: jitter(node.delay), group: node.group });
     }
   }
 
@@ -299,12 +310,11 @@ export function flowTargets(n: number, flows: FlowInput[], viewport: { w: number
       const side = (random() - 0.5) * 1.6;
       const sx = e.a.x + ux * gapA - uy * side;
       const sy = e.a.y + uy * gapA + ux * side;
-      b.put(sx, sy, 0, 1, jitter(e.a.delay), -1, [ux * span, uy * span, 0, random()]);
-      placed++;
+      system.push({ x: sx, y: sy, kind: 1, delay: jitter(e.a.delay), group: -1, flow: [ux * span, uy * span, 0, random()] });
     }
   });
 
-  for (let k = placed; k < n; k++) {
+  const dust = () => {
     let x = 0;
     let y = 0;
     for (let tries = 0; tries < 64; tries++) {
@@ -314,6 +324,20 @@ export function flowTargets(n: number, flows: FlowInput[], viewport: { w: number
     }
     if (inside(mask, x, y)) x = viewport.w - random() * viewport.w * 0.1;
     b.put(x, y, 0, 0, random(), -1);
+  };
+  const put = (d: Dot) => b.put(d.x, d.y, 0, d.kind, d.delay, d.group, d.flow);
+
+  const { modelEnd, systemEnd } = blocks(n);
+  let i = 0;
+  for (const d of model.slice(0, modelEnd)) {
+    put(d);
+    i++;
   }
+  for (; i < modelEnd; i++) dust();
+  for (const d of system.slice(0, systemEnd - modelEnd)) {
+    put(d);
+    i++;
+  }
+  for (; i < n; i++) dust();
   return b.done();
 }

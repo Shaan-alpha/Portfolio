@@ -104,6 +104,48 @@ test("flowTargets keeps steps and edges light enough to read as dots", () => {
   assert.ok(streaming > 20 && streaming <= 200, `${streaming} streaming dots`);
 });
 
+test("consecutive scenes send each part to its counterpart", () => {
+  // Dot i keeps its index from scene to scene. The plates must become the
+  // thesis rail and the cube its model step; a grey dot never turns yellow.
+  const n = 16000;
+  const wide = { w: 1536, h: 720 };
+  const text = [{ x: 0, y: 0, w: 620, h: 720 }];
+  const stack = stackTargets(n, rng(1));
+  const rail = flowTargets(
+    n,
+    [{ radius: 24, nodes: (["io", "grid", "model", "guard", "human", "io"] as const).map((kind, k) => ({ x: 1000, y: 170 + k * 80, kind })) }],
+    wide,
+    text,
+    rng(2),
+  );
+  const lanes = flowTargets(
+    n,
+    [
+      ["io", "step", "step", "model", "io"],
+      ["io", "model", "guard", "step", "io"],
+      ["io", "model", "model", "guard", "human", "step"],
+      ["io", "model", "human", "model", "guard", "model", "io"],
+      ["guard", "model", "io"],
+      ["io", "guard", "model", "step", "guard"],
+    ].map((kinds, lane) => ({ radius: 10, nodes: kinds.map((kind, k) => ({ x: 700 + lane * 110, y: 260 + k * 34, kind: kind as "io" })) })),
+    wide,
+    text,
+    rng(3),
+  );
+  let railSystem = 0;
+  let fromPlates = 0;
+  for (let i = 0; i < n; i++) {
+    if (rail.kind[i] === 2) assert.equal(stack.kind[i], 2, `rail model dot ${i} came from a non-model dot`);
+    if (rail.kind[i] === 1) {
+      railSystem++;
+      assert.notEqual(stack.kind[i], 2, `rail dot ${i} came from the cube`);
+      if (stack.kind[i] === 1) fromPlates++;
+    }
+    if (lanes.kind[i] === 2) assert.notEqual(rail.kind[i], 1, `grey rail dot ${i} turned yellow`);
+  }
+  assert.ok(fromPlates / railSystem >= 0.9, `${fromPlates} of ${railSystem} rail dots came from the plates`);
+});
+
 test("slot labels line up with the drawing", () => {
   const tops = slotLabelTops();
   assert.equal(tops.length, 5);

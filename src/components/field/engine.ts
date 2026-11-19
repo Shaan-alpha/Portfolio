@@ -25,6 +25,7 @@ import { AZIMUTH, ELEVATION, VIEW_H } from "../stack/geometry.ts";
 import { IDENTITY_FRAME, TIMING, dotProgress, snapshot, stackFrame, type Frame, type MorphState } from "./morph.ts";
 import type { Rect, Targets } from "./targets.ts";
 import { FRAGMENT, VERTEX } from "./shaders.ts";
+import { createLoop } from "./loop.ts";
 
 type RGB = [number, number, number];
 
@@ -163,23 +164,22 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
   const frameNow = (): Frame =>
     targetFrame === "stack" ? stackFrame(az, ELEVATION, [tilt[0], tilt[1]], center, scale) : IDENTITY_FRAME;
 
-  let raf = 0;
-  let running = false;
-  let lastTick = 0;
-  const render = () => renderer.render(scene, camera);
+  const loop = createLoop({
+    raf: (cb) => requestAnimationFrame(cb),
+    caf: (id) => cancelAnimationFrame(id),
+    hidden: () => document.hidden,
+    clock,
+    motion,
+    frame: (now, dt) => {
+      update(now, dt);
+      renderer.render(scene, camera);
+    },
+  });
+  let disposed = false;
+  // A disposed field ignores late calls (a timer or an observer that fires
+  // after the page has moved on).
   const wake = () => {
-    if (raf || document.hidden) return;
-    if (running && motion) {
-      lastTick = clock();
-      raf = requestAnimationFrame(tick);
-    } else {
-      // Reduced motion, or stopped: draw the new state once.
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        update(clock(), 0);
-        render();
-      });
-    }
+    if (!disposed) loop.wake();
   };
 
   function update(now: number, dt: number) {
@@ -219,17 +219,6 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     u.uFrameS.value = f.s;
     u.uStack.value = targetFrame === "stack" ? 1 : 0;
     u.uNow.value = now;
-  }
-
-  function tick() {
-    raf = 0;
-    if (!running || document.hidden) return;
-    const now = clock();
-    const dt = Math.min(0.05, Math.max(0, now - lastTick));
-    lastTick = now;
-    update(now, dt);
-    render();
-    raf = requestAnimationFrame(tick);
   }
 
   const onVisibility = () => {
@@ -344,8 +333,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
       wake();
     },
     setRunning(on) {
-      running = on;
-      if (on) wake();
+      if (!disposed) loop.setRunning(on);
     },
     resize(width, height, dpr) {
       w = Math.max(1, width);
@@ -357,9 +345,8 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
       wake();
     },
     dispose() {
-      running = false;
-      if (raf) cancelAnimationFrame(raf);
-      raf = 0;
+      disposed = true;
+      loop.cancel();
       document.removeEventListener("visibilitychange", onVisibility);
       o.canvas.removeEventListener("webglcontextlost", onLost);
       geometry.dispose();

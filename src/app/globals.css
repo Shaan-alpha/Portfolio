@@ -412,6 +412,11 @@ body > footer {
 [data-reading] :is(section, article, li)[id] {
   scroll-margin-top: calc(var(--header) + 24px);
 }
+/* Keyboard focus is never hidden under the fixed header, however the browser
+   scrolls a focused control into view (WCAG 2.2, focus not obscured). */
+[data-reading] :is(a, button, input, select, textarea, summary, [tabindex]) {
+  scroll-margin-top: calc(var(--header) + 24px);
+}
 html[data-film] header {
   border-color: transparent;
 }

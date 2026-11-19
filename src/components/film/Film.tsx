@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { installFilm, probeCoveringSnap } from "@/components/field/snap";
-import { readColors, readScene } from "@/components/field/dom";
+import { readColors, readScene, viewportOf } from "@/components/field/dom";
+import { createSequence } from "@/components/film/sequence";
 import { flowTargets, rng, stackTargets, type Rect, type Targets } from "@/components/field/targets";
 import type { Field } from "@/components/field/engine";
 
@@ -54,7 +55,6 @@ export default function Film({ children }: { children: React.ReactNode }) {
     const view: HTMLCanvasElement = canvas;
     let cancelled = false;
     const cleanups: (() => void)[] = [];
-    const timers: number[] = [];
 
     // `data-film` is on while the film holds the screen, that is until the
     // reading part reaches the top of the viewport (a 1% band at the top).
@@ -98,8 +98,8 @@ export default function Film({ children }: { children: React.ReactNode }) {
       // Every scene's targets, from its own layout.
       let targets = new Map<string, { t: Targets; mask: Rect[] }>();
       const build = () => {
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
+        // The canvas's own box: with a classic scrollbar the window is wider.
+        const { w: vw, h: vh } = viewportOf(view);
         field.resize(vw, vh, Math.min(window.devicePixelRatio || 1, 2));
         const next = new Map<string, { t: Targets; mask: Rect[] }>();
         scenes.forEach((s, k) => {
@@ -119,6 +119,18 @@ export default function Film({ children }: { children: React.ReactNode }) {
 
       let active: string | null = null;
       let thesisPlayed = false;
+      // Once, on the thesis: the three phrases light their parts in turn.
+      const sequence = createSequence({
+        groups: [1, 3, 4],
+        startMs: 1500,
+        stepMs: 500,
+        highlight: (g) => {
+          if (!stopped) field.highlight(g);
+        },
+        schedule: (fn, ms) => window.setTimeout(fn, ms),
+        cancel: (id) => window.clearTimeout(id),
+      });
+      cleanups.push(() => sequence.stop());
       const visible = (on: boolean) => {
         canvas.style.opacity = on ? "1" : "0";
         field.setRunning(on);
@@ -128,6 +140,11 @@ export default function Film({ children }: { children: React.ReactNode }) {
         if (name === active && !opts.quick && !opts.instant) {
           if (name) visible(true);
           return;
+        }
+        if (name !== active) {
+          // A new scene: nothing lit carries over from the last one.
+          sequence.stop();
+          field.highlight(-1);
         }
         active = name;
         const scene = name ? targets.get(name) : undefined;
@@ -140,15 +157,8 @@ export default function Film({ children }: { children: React.ReactNode }) {
         field.show(scene.t, opts);
         visible(true);
         if (name === "thesis" && !thesisPlayed && !reducedMotion) {
-          // Once: the three phrases light their parts in turn.
           thesisPlayed = true;
-          [1, 3, 4, -1].forEach((g, k) =>
-            timers.push(
-              window.setTimeout(() => {
-                if (active === "thesis") field.highlight(g);
-              }, 1500 + k * 500),
-            ),
-          );
+          sequence.start();
         }
       };
 
@@ -236,7 +246,6 @@ export default function Film({ children }: { children: React.ReactNode }) {
 
     return () => {
       cancelled = true;
-      timers.forEach((t) => window.clearTimeout(t));
       cleanups.reverse().forEach((c) => c());
       delete root.dataset.film;
     };

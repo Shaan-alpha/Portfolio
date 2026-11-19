@@ -8,6 +8,13 @@ import type { FlowInput, FlowNode, Rect } from "./targets.ts";
 
 export type SceneLayout = { flows: FlowInput[]; stackBox: Rect | null; mask: Rect[] };
 
+/** The field's viewport is the canvas's own box. With a classic scrollbar
+ *  the window is wider, and drawing to its width would set every dot off its
+ *  marker by a few pixels. */
+export function viewportOf(el: { clientWidth: number; clientHeight: number }): { w: number; h: number } {
+  return { w: Math.max(1, el.clientWidth), h: Math.max(1, el.clientHeight) };
+}
+
 export function readScene(section: HTMLElement): SceneLayout {
   const top = section.getBoundingClientRect().top;
   const rect = (el: Element): Rect => {

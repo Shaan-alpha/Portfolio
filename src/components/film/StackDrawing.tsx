@@ -38,7 +38,7 @@ export default function StackDrawing() {
           </g>
         ))}
       </svg>
-      <ul className="absolute inset-y-0 left-full hidden w-44 pl-6 lg:block">
+      <ul className="absolute inset-y-0 left-full hidden w-40 pl-5 lg:block">
         {layers.map((layer, slot) => (
           <li
             key={layer.id}

@@ -37,8 +37,13 @@ export default function HeroScene() {
         </p>
       </div>
 
-      <div className="flex justify-center lg:col-span-7 lg:justify-start lg:pl-[8%]">
-        <div data-stack-box className="relative aspect-[4.5/6.1] h-[34svh] lg:h-[min(70svh,640px)]">
+      <div className="flex justify-center lg:col-span-7 lg:justify-start lg:pl-[6%]">
+        {/* On wide screens the box leaves room for its labels: it narrows
+            before they could run off the screen, never the other way round. */}
+        <div
+          data-stack-box
+          className="relative aspect-[4.5/6.1] h-[34svh] lg:h-auto lg:w-[min(100%_-_10.5rem,calc(min(70svh,640px)*0.7377))]"
+        >
           <StackDrawing />
         </div>
       </div>

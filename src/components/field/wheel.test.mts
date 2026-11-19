@@ -6,7 +6,7 @@ import { decideWheel, type WheelContext, type WheelEventLike } from "./wheel.ts"
 
 // Three scenes, then the reading part's top, which is always the last stop.
 const stops = [0, 720, 1440, 2160];
-const base: Omit<WheelContext, "y"> = { stops, lastAt: -Infinity, moving: false, blocked: false };
+const base: Omit<WheelContext, "y"> = { stops, vh: 720, lastAt: -Infinity, moving: false, blocked: false };
 const ev = (over: Partial<WheelEventLike> = {}): WheelEventLike => ({ deltaX: 0, deltaY: 100, ctrlKey: false, timeStamp: 1000, ...over });
 const at = (y: number, over: Partial<Omit<WheelContext, "y">> = {}): WheelContext => ({ ...base, ...over, y });
 
@@ -50,4 +50,22 @@ test("swallows at the ends of the film", () => {
 
 test("decides from the nearest stop when the page sits between two", () => {
   assert.deepEqual(decideWheel(ev(), at(700)), { kind: "step", to: 1440 });
+});
+
+// A scene taller than the screen (zoom, a small window, large text): the
+// wheel scrolls through it, and steps only at its edges.
+const tall = { stops: [0, 1200, 1920, 2640] };
+
+test("scrolls through a scene taller than the screen, then steps at its bottom", () => {
+  assert.deepEqual(decideWheel(ev(), at(0, tall)), { kind: "pass" });
+  assert.deepEqual(decideWheel(ev(), at(480, tall)), { kind: "step", to: 1200 });
+});
+
+test("steps up into the bottom of a tall scene, then scrolls up through it", () => {
+  assert.deepEqual(decideWheel(ev({ deltaY: -100 }), at(1200, tall)), { kind: "step", to: 480 });
+  assert.deepEqual(decideWheel(ev({ deltaY: -100 }), at(480, tall)), { kind: "pass" });
+});
+
+test("never scrolls natively while a step is moving", () => {
+  assert.deepEqual(decideWheel(ev({ deltaY: -100 }), at(300, { ...tall, moving: true })), { kind: "swallow" });
 });
