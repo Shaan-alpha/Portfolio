@@ -264,6 +264,36 @@ System scene, desktop (Atlas): text left, flows right       System scene, phone
 └──────────────────────────────────────────────────────────┘
 ```
 
+## The look-and-feel pass
+
+A senior review of what the film touches and of the parts that stay. Shaan asked for this on approval: "act like a senior fullstack eng and ui-ux developer to better the website look good".
+
+1. **Seamless load** (phase 1).
+   - The hero's first paint is the existing SVG stack drawing.
+   - When the field is ready, the dots appear exactly on the drawing's plates. This works because the hero uses the same orthographic camera maths as `stack/geometry.ts`, as the October build did.
+   - Then the drawing fades, and only after that does the stack start to turn. There is no pop and no empty frame.
+2. **The header over the film** (phase 1).
+   - The header becomes an overlay (`position: fixed`), so every scene is truly full-screen. Scenes pad their content below it.
+   - Its hairline appears only in the reading part.
+   - The header's band is part of the text mask.
+3. **The archive as an index** (phase 1, because the building's sticky column goes now).
+   - It runs full width on the 12-column grid, with one hairline per row:
+     - columns 1–3: the name, kicker, status and date;
+     - columns 4–10: `desc` and the tags;
+     - columns 11–12: the links, right-aligned.
+   - Copy and order are unchanged.
+4. **The handoff** (phase 2).
+   - Leaving the last system, the dots settle into a single hairline exactly on the reading part's top border, and then the canvas fades.
+   - The film ends on the line the reading starts from.
+5. **The portrait joins the palette** (phase 3).
+   - It is grayscale in both themes, so yellow stays the only warm colour on the page.
+   - In light, `mix-blend-mode: multiply` lets the white studio backdrop take on the page's ground, so the photo sits like a print.
+   - In dark, it is toned down (brightness about 0.8, slightly more contrast) inside a hairline frame, so it stops being the brightest box on the page.
+   - A portrait on a plain mid-grey or dark backdrop would be better still; if Shaan has one, it swaps in.
+6. **Considered and dropped.**
+   - Depth dots for the toolkit: a résumé-template cliché. The words core, strong and working stay.
+   - Forcing dark mode for the film: the site keeps following the system theme.
+
 ## Fallbacks and accessibility
 
 - **No WebGL, Save-Data, or a lost context.** The scenes and snap still work.
@@ -300,9 +330,10 @@ Each phase ends with a screen recording for Shaan, made with the same in-page ca
 
 1. **The film and the field.**
    - The snap test and snap behaviour, the scene sections, the engine, and scenes 1 to 3.
+   - The seamless load, the overlay header and the archive as an index.
    - The building, GSAP and their CSS removed.
-2. **The six systems.** The step shapes, streaming, each system's behaviour, the case-study sheet and the scene ticks.
-3. **Polish.** Phones, both themes, every fallback, reduced motion, a performance pass, the README, then deploy.
+2. **The six systems.** The step shapes, streaming, each system's behaviour, the case-study sheet, the scene ticks and the hairline handoff.
+3. **Polish.** Phones, both themes, every fallback, reduced motion, the portrait, a performance pass, the README, then deploy.
 
 ## Verification
 
@@ -333,6 +364,7 @@ Each phase ends with a screen recording for Shaan, made with the same in-page ca
 9. In the no-snap mode, flows are HTML tiles and the field keeps only the stack and the dust, because dots can't stay on their labels there without following the scroll position.
 10. GSAP is removed.
 11. Each phase gets a recording, and nothing goes live without Shaan's yes.
+12. The look-and-feel pass: the seamless load, the overlay header, the archive as an index, the hairline handoff and the grayscale portrait. Toolkit depth dots were dropped.
 
 ## Left to the builder
 
