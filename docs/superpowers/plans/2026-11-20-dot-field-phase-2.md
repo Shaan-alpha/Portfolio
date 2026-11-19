@@ -584,3 +584,17 @@ GLSL can't run in node, so the final review checks the port against morph.ts by 
 - **Portrait:** the grayscale portrait.
 - **README.**
 - **WebKit and Shaan's phone:** the snap test, `scrollend`, and the sound check still outstanding from the sound work.
+
+### From phase 2's final review
+
+Phase 2 is done and reviewed; its fixes are in `fded2bf` to `5e5167b`. These are the minor findings it deferred.
+
+- **Packets:** a packet's ink colour and size snap off when a scene changes mid-flight. Carry a per-dot look across a retarget, the way `visFrom` carries visibility.
+- **The handoff line** sits in row 64, one row below the header's hairline in row 63. Drawing the header's hairline as a 1 px `box-shadow` would put both in row 64.
+- **The sheet:**
+  - a text selection dragged from the panel onto the backdrop closes it; close only when the press also began on the backdrop;
+  - on phones it jumps from its `h2` to Pipeline's `h4` flow names (heading order);
+  - below `md` its `100vw` width overflows by a classic scrollbar's gutter; use `100%`.
+- **Masks** past 16 are dropped silently. Atlas uses 12; a test over all nine scenes would guard the limit.
+- **Scrolling cost:** the header's scroll listener reads `scrollY` on every scroll event, which forces a layout each time. It was cleared as the cause of the long frames, but driving the header's hairline from the film's own observer would remove it.
+- **Frame timing:** a scene change now costs about 14 ms on the main thread. The remaining rare gaps over 25 ms in headless runs had an idle main thread, so they came from outside the page. Re-measure in Shaan's Chrome with the window in front.
