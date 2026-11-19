@@ -133,10 +133,10 @@ void main() {
     pos.xy += d / dist * 14.0 * f * f * uPointerAmt;
   }
 
-  vec4 w = mix(aLookFrom, onehot(aKindTo), p);
-  vec3 col = w.x * uDust + w.y * uSystem + w.z * uModel + w.w * uLine;
-  float alpha = w.x * uDustAlpha + w.y * 0.85 + w.z + w.w * uLineAlpha;
-  float size = w.x * 1.4 + w.y * 2.2 + w.z * 2.6 + w.w * 1.2;
+  vec4 look = mix(aLookFrom, onehot(aKindTo), p);
+  vec3 col = look.x * uDust + look.y * uSystem + look.z * uModel + look.w * uLine;
+  float alpha = look.x * uDustAlpha + look.y * 0.85 + look.z + look.w * uLineAlpha;
+  float size = look.x * 1.4 + look.y * 2.2 + look.z * 2.6 + look.w * 1.2;
   // The stack has depth: nearer dots are slightly larger.
   if (uStack > 0.5) size *= 1.0 + clamp(pos.z / (uFrameS * 2.5), -0.15, 0.15);
 
@@ -166,7 +166,7 @@ void main() {
     }
   }
 
-  vModel = w.z;
+  vModel = look.z;
   vColor = col;
   vAlpha = alpha;
   vSize = size * uDpr;
