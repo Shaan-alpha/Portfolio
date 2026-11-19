@@ -1,4 +1,5 @@
 import type { StepKind } from "@/content/projects";
+import { THESIS_TITLE } from "./places";
 
 /** The thesis rail, top to bottom: input, deterministic scoring, the model,
  *  a check that fails closed, a human approval, output. No labels: the
@@ -10,13 +11,14 @@ const RAIL: (StepKind | "grid")[] = ["io", "grid", "model", "guard", "human", "i
 export default function ThesisScene() {
   return (
     <section
+      id="thesis"
       data-scene="thesis"
       aria-labelledby="thesis-title"
       className="container-x grid grid-cols-1 content-center gap-x-12 gap-y-10 pb-10 lg:grid-cols-12"
     >
       <div data-mask="text" className="lg:col-span-5">
         <h2 id="thesis-title" className="t-h2 text-ink">
-          The model is a component, not the architecture.
+          {THESIS_TITLE}
         </h2>
         <p className="t-lead mt-7 max-w-[36ch] text-ink-2">
           I build agents and retrieval systems with the guardrails designed in:{" "}

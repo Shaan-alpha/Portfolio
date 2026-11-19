@@ -1,6 +1,7 @@
 import { PipelineLegend } from "@/components/Pipeline";
 import { flagship, lab, liveCount, projects } from "@/content/projects";
 import { spell } from "@/lib/format";
+import { WORK_TITLE } from "./places";
 
 /** Scene 3: the six systems side by side. The thesis's one flow splits into
  *  six lanes, one per system, each its real flows step by step (an empty gap
@@ -16,7 +17,7 @@ export default function WorkScene() {
     >
       <div data-mask="text" className="lg:col-span-5">
         <h2 id="work-title" className="t-h2 text-ink">
-          Selected work
+          {WORK_TITLE}
         </h2>
         <p className="t-lead mt-7 text-ink-2">
           {spell(flagship.length, true)} systems in production, each drawn the way work moves through it, then{" "}

@@ -7,6 +7,8 @@ import SoundToggle from "./SoundToggle";
 import Mark from "./Mark";
 import { profile } from "@/content/profile";
 import { play } from "@/lib/sound";
+import { navCurrent } from "@/components/film/places";
+import { flagship } from "@/content/projects";
 
 const NAV = [
   { id: "work", label: "Work" },
@@ -15,10 +17,13 @@ const NAV = [
   { id: "contact", label: "Contact" },
 ] as const;
 
-const IDS = NAV.map((n) => n.id);
+// Work stays current from the work scene down through the six systems and
+// the archive below them.
+const SYSTEM_IDS = flagship.map((p) => p.id);
+const SPY = ["work", ...SYSTEM_IDS, "also-shipped", "about", "experience", "contact"];
 
 export default function Header() {
-  const active = useActiveSection(IDS);
+  const active = navCurrent(useActiveSection(SPY), SYSTEM_IDS);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);

@@ -4,6 +4,7 @@ import HeroScene from "@/components/film/HeroScene";
 import ThesisScene from "@/components/film/ThesisScene";
 import WorkScene from "@/components/film/WorkScene";
 import SystemScene from "@/components/film/SystemScene";
+import SceneTicks from "@/components/film/SceneTicks";
 import Archive from "@/components/Archive";
 import About from "@/components/About";
 import Experience from "@/components/Experience";
@@ -27,6 +28,7 @@ export default function Home() {
           {flagship.map((p) => (
             <SystemScene key={p.id} project={p} />
           ))}
+          <SceneTicks />
         </Film>
         <div id="reading" data-reading>
           <Archive />
