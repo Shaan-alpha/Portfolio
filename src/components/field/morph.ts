@@ -108,6 +108,17 @@ export function stackFrame(
   };
 }
 
+/** Ink, for the programs drawn in ink: packets, bounces and an arriving
+ *  approval, each a single piece of work against the grey stream. */
+export function inkOf(mode: number): number {
+  return mode === MODE.packet || mode === MODE.bounce || mode === MODE.arrive ? 1 : 0;
+}
+
+/** Grey, for a held dot once it rests at the end of its edge. */
+export function greyOf(mode: number, c: number, b: number): number {
+  return mode === MODE.hold ? smoothstep(b, b + 0.1, c) : 0;
+}
+
 /** One morph. `from` and `mid` are viewport pixels; `to` is in the target
  *  frame. `flow` holds, per dot, an edge vector (target-frame units) and a
  *  phase; a pulsing dot's vector instead points from its step's centre to it.
@@ -124,15 +135,20 @@ export type MorphState = {
   flow: Float32Array;
   loop: Float32Array;
   wander: Float32Array;
+  /** Each dot's target kind (0 dust, 1 system, 2 model, 3 line), for its look. */
+  kind?: Float32Array;
   start: number;
   duration: number;
   stagger: number;
 };
 
-/** What a scene change carries over besides positions: how much of each dot
- *  shows (updated in place, as `shownVisibility` would) and each dot's
- *  progress through its morph. */
-export type Carry = { visFrom: Float32Array; progress: Float32Array };
+/** What a scene change carries over besides positions, each updated in place
+ *  to what the dot shows at that moment: how much of it shows (`visFrom`, as
+ *  `shownVisibility` would), its look (`look`: the weights of dust, system,
+ *  model and line, four per dot) and its tints (`tint`: ink and grey, two per
+ *  dot), with each dot's progress through its morph. With the look carried
+ *  too, a dot caught mid-morph keeps its colour, size and brightness. */
+export type Carry = { visFrom: Float32Array; progress: Float32Array; look?: Float32Array; tint?: Float32Array };
 
 /** The one implementation behind `dotPosition` and `snapshot`, so a scene
  *  change walks the dots once and the shader has one formula to match. */
@@ -169,7 +185,31 @@ function place(out: Float32Array, o: number, st: MorphState, i: number, now: num
     const v = visibility(mode, c, u, lo, hi, moving);
     carry.visFrom[i] += (v - carry.visFrom[i]) * p;
     carry.progress[i] = p;
+    if (carry.look && carry.tint && st.kind) {
+      const kind = st.kind[i];
+      const g = 4 * i;
+      for (let q = 0; q < 4; q++) carry.look[g + q] += ((q === kind ? 1 : 0) - carry.look[g + q]) * p;
+      const h = 2 * i;
+      carry.tint[h] += (inkOf(mode) - carry.tint[h]) * p;
+      carry.tint[h + 1] += (greyOf(mode, c, hi) - carry.tint[h + 1]) * p;
+    }
   }
+}
+
+/** What dot `i` shows at `now`, without changing anything: the weights of
+ *  its four kinds, then its visibility, ink and grey, written to `out`. The
+ *  shader blends the same seven numbers into a colour, alpha and size. */
+export function shownLook(st: MorphState, i: number, now: number, clock: number, carry: Required<Carry>, out: Float32Array): void {
+  const p = dotProgress(now, st.start, st.delay[i], st.duration, st.stagger);
+  const f = 4 * i;
+  const mode = st.loop[f];
+  const hi = st.loop[f + 3];
+  const c = cycle(st.flow[f + 3], st.loop[f + 1], clock);
+  const kind = st.kind ? st.kind[i] : 0;
+  for (let q = 0; q < 4; q++) out[q] = carry.look[4 * i + q] + ((q === kind ? 1 : 0) - carry.look[4 * i + q]) * p;
+  out[4] = shownVisibility(st, i, now, clock, carry.visFrom);
+  out[5] = carry.tint[2 * i] + (inkOf(mode) - carry.tint[2 * i]) * p;
+  out[6] = carry.tint[2 * i + 1] + (greyOf(mode, c, hi) - carry.tint[2 * i + 1]) * p;
 }
 
 /** Where dot `i` is at `now`: a quadratic Bézier from its source through its

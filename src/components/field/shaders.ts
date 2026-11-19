@@ -19,7 +19,8 @@ in vec4 aFlow;    // edge vector (target frame) and phase; a pulse's vector from
 in vec4 aLoop;    // mode, rate (cycles per second), window a, b
 in float aWander; // drift multiplier: 0 is rigid
 in float aVisFrom;
-in float aKindFrom;
+in vec4 aLookFrom; // the look a dot leaves with: weights of dust, system, model, line
+in vec2 aTintFrom; // and its ink and grey
 in float aKindTo;
 in float aGroup;
 
@@ -101,9 +102,12 @@ float visibility(float mode, float c, float u, float a, float b, bool moving) {
   return 1.0;
 }
 
-vec3 kindColor(float k) { return k < 0.5 ? uDust : (k < 1.5 ? uSystem : (k < 2.5 ? uModel : uLine)); }
-float kindAlpha(float k) { return k < 0.5 ? uDustAlpha : (k < 1.5 ? 0.85 : (k < 2.5 ? 1.0 : uLineAlpha)); }
-float kindSize(float k) { return k < 0.5 ? 1.4 : (k < 1.5 ? 2.2 : (k < 2.5 ? 2.6 : 1.2)); }
+// A kind as weights (dust, system, model, line), and the two tints (morph.ts
+// inkOf, greyOf). A dot's look is a blend of these, so it can be carried
+// across a scene change without a jump.
+vec4 onehot(float k) { return vec4(k < 0.5 ? 1.0 : 0.0, k >= 0.5 && k < 1.5 ? 1.0 : 0.0, k >= 1.5 && k < 2.5 ? 1.0 : 0.0, k >= 2.5 ? 1.0 : 0.0); }
+float inkOf(float mode) { return isMode(mode, 1.0) || isMode(mode, 3.0) || isMode(mode, 5.0) ? 1.0 : 0.0; }
+float greyOf(float mode, float c, float b) { return isMode(mode, 2.0) ? smoothstep(b, b + 0.1, c) : 0.0; }
 
 void main() {
   float p = dotProgress(uNow, uStart, aDelay, uDuration, uStagger);
@@ -128,9 +132,10 @@ void main() {
     pos.xy += d / dist * 14.0 * f * f * uPointerAmt;
   }
 
-  vec3 col = mix(kindColor(aKindFrom), kindColor(aKindTo), p);
-  float alpha = mix(kindAlpha(aKindFrom), kindAlpha(aKindTo), p);
-  float size = mix(kindSize(aKindFrom), kindSize(aKindTo), p);
+  vec4 w = mix(aLookFrom, onehot(aKindTo), p);
+  vec3 col = w.x * uDust + w.y * uSystem + w.z * uModel + w.w * uLine;
+  float alpha = w.x * uDustAlpha + w.y * 0.85 + w.z + w.w * uLineAlpha;
+  float size = w.x * 1.4 + w.y * 2.2 + w.z * 2.6 + w.w * 1.2;
   // The stack has depth: nearer dots are slightly larger.
   if (uStack > 0.5) size *= 1.0 + clamp(pos.z / (uFrameS * 2.5), -0.15, 0.15);
 
@@ -140,14 +145,14 @@ void main() {
 
   // The program's look: packets and an arriving approval are drawn in ink, so
   // a single piece of work reads against the grey stream; a held dot greys
-  // once it rests; and every dot shows as much as its program says, eased
-  // from what it showed when its morph began.
-  if (isMode(mode, 1.0) || isMode(mode, 3.0) || isMode(mode, 5.0)) {
-    col = mix(col, uBright, p);
-    alpha = mix(alpha, 1.0, p);
-    size = mix(size, isMode(mode, 5.0) ? 3.0 : 2.6, p);
-  }
-  if (isMode(mode, 2.0)) col = mix(col, uDust, smoothstep(aLoop.w, aLoop.w + 0.1, c) * p);
+  // once it rests; and every dot shows as much as its program says. Each is
+  // eased from what the dot showed when its morph began.
+  float ink = mix(aTintFrom.x, inkOf(mode), p);
+  float grey = mix(aTintFrom.y, greyOf(mode, c, aLoop.w), p);
+  col = mix(col, uBright, ink);
+  alpha = mix(alpha, 1.0, ink);
+  size = mix(size, 2.8, ink);
+  col = mix(col, uDust, grey);
   alpha *= mix(aVisFrom, visibility(mode, c, u, aLoop.z, aLoop.w, dot(aFlow.xyz, aFlow.xyz) > 0.0), p);
 
   // No dots behind the copy: anything inside a mask rect fades to 15%.
@@ -160,7 +165,7 @@ void main() {
     }
   }
 
-  vModel = (isMode(aKindTo, 2.0) ? p : 0.0) + (isMode(aKindFrom, 2.0) ? 1.0 - p : 0.0);
+  vModel = w.z;
   vColor = col;
   vAlpha = alpha;
   vSize = size * uDpr;

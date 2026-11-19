@@ -87,13 +87,18 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     duration: 0,
     stagger: 0,
   };
-  const kindFrom = new Float32Array(n);
+  // Each dot's target kind, which the CPU mirror reads for the dot's look.
   const kindTo = new Float32Array(n);
+  st.kind = kindTo;
   const group = new Float32Array(n).fill(-1);
   const visFrom = new Float32Array(n).fill(1);
-  // A scene change's snapshot and what it carries, allocated once.
+  // A scene change's snapshot and what it carries, allocated once: how much
+  // of each dot shows, its look (weights of its kinds) and its tints.
   const snap = new Float32Array(3 * n);
-  const carry: Carry = { visFrom, progress: new Float32Array(n) };
+  const lookFrom = new Float32Array(4 * n);
+  for (let i = 0; i < n; i++) lookFrom[4 * i] = 1;
+  const tintFrom = new Float32Array(2 * n);
+  const carry: Carry = { visFrom, progress: new Float32Array(n), look: lookFrom, tint: tintFrom };
   let targetFrame: Targets["frame"] = "screen";
 
   // The scene's loop clock: its behaviour runs from `loopStart`; with reduced
@@ -117,7 +122,8 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
   const aLoop = attr("aLoop", st.loop, 4);
   const aWander = attr("aWander", st.wander, 1);
   const aVisFrom = attr("aVisFrom", visFrom, 1);
-  const aKindFrom = attr("aKindFrom", kindFrom, 1);
+  const aLookFrom = attr("aLookFrom", lookFrom, 4);
+  const aTintFrom = attr("aTintFrom", tintFrom, 2);
   const aKindTo = attr("aKindTo", kindTo, 1);
   const aGroup = attr("aGroup", group, 1);
 
@@ -264,12 +270,11 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
       if (t.n !== n) throw new Error(`field: targets for ${t.n} dots, but the field draws ${n}`);
       const now = clock();
       const clk = loopClock(now);
-      // Where every dot is right now, drift included, and how much of it
-      // shows, in the frame and the programs it is leaving: one pass.
+      // Where every dot is right now, drift included, and how it looks, in
+      // the frame and the programs it is leaving: one pass. Then the new
+      // targets' kinds.
       const base = snapshot(st, now, frameNow(), clk, drift, snap, carry);
-      const progress = carry.progress;
       for (let i = 0; i < n; i++) {
-        kindFrom[i] = progress[i] >= 0.5 ? kindTo[i] : kindFrom[i];
         kindTo[i] = t.kind[i];
         group[i] = t.group[i];
       }
@@ -329,7 +334,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
       u.uStart.value = st.start;
       u.uDuration.value = st.duration;
       u.uStagger.value = st.stagger;
-      for (const a of [aFrom, aMid, aTo, aDelay, aFlow, aLoop, aWander, aVisFrom, aKindFrom, aKindTo, aGroup]) a.needsUpdate = true;
+      for (const a of [aFrom, aMid, aTo, aDelay, aFlow, aLoop, aWander, aVisFrom, aLookFrom, aTintFrom, aKindTo, aGroup]) a.needsUpdate = true;
       wake();
     },
     setStackBox(box) {
