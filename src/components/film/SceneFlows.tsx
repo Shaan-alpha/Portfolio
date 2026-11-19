@@ -17,19 +17,19 @@ export default function SceneFlows({ flows, name }: { flows: Flow[]; name: strin
         return (
           <div key={flow.name ?? f} className="min-w-0">
             {named && (
-              <h3 data-mask className="mb-5 text-[14px] font-semibold text-ink-2">
+              <h3 data-mask className="mb-3 text-[14px] font-semibold text-ink-2 md:mb-5">
                 {flow.name}
               </h3>
             )}
-            <ol aria-label={`How ${title} runs, step by step`} className="flex flex-col gap-y-[clamp(0.75rem,3.6svh,2.25rem)]">
+            <ol aria-label={`How ${title} runs, step by step`} className="flex flex-col gap-y-2.5 md:gap-y-[clamp(0.75rem,3.6svh,2.25rem)]">
               {flow.steps.map((s) => (
-                <li key={s.label} className="flex items-center gap-4">
+                <li key={s.label} className="flex items-center gap-3 md:gap-4">
                   <span
                     data-node
                     data-kind={s.kind}
                     data-flow={String(f)}
                     data-step={s.label}
-                    className="relative size-[clamp(1.75rem,4.4svh,2.5rem)] shrink-0"
+                    className="relative size-6 shrink-0 md:size-[clamp(1.75rem,4.4svh,2.5rem)]"
                   >
                     <KindTile kind={s.kind} />
                   </span>

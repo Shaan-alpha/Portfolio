@@ -13,33 +13,35 @@ export default function WorkScene() {
       id="work"
       data-scene="work"
       aria-labelledby="work-title"
-      className="container-x grid grid-cols-1 content-center gap-x-12 gap-y-10 pb-10 lg:grid-cols-12"
+      className="container-x grid grid-cols-1 content-center gap-x-12 gap-y-6 pb-10 sm:gap-y-10 lg:grid-cols-12"
     >
       <div data-mask="text" className="lg:col-span-5">
         <h2 id="work-title" className="t-h2 text-ink">
           {WORK_TITLE}
         </h2>
-        <p className="t-lead mt-7 text-ink-2">
+        <p className="t-lead mt-5 text-ink-2 sm:mt-7">
           {spell(flagship.length, true)} systems in production, each drawn the way work moves through it, then{" "}
           {spell(lab.length)} more projects. {spell(liveCount, true)} of the {spell(projects.length)} have a live
           version you can open.
         </p>
-        <div className="mt-7">
+        <div className="mt-5 sm:mt-7">
           <PipelineLegend />
         </div>
       </div>
 
-      <ul className="grid grid-cols-3 gap-x-3 gap-y-8 sm:grid-cols-6 lg:col-span-7">
+      {/* On phones each lane is a row, its name and then its steps from left
+          to right; from sm up the lanes stand side by side, top to bottom. */}
+      <ul className="grid grid-cols-1 gap-y-2.5 sm:grid-cols-6 sm:gap-x-3 sm:gap-y-8 lg:col-span-7">
         {flagship.map((p, lane) => (
-          <li key={p.id} className="flex flex-col items-center gap-5">
-            <a href={`#${p.id}`} data-mask className="link min-h-[2.6em] text-center text-[13.5px] font-semibold leading-snug text-ink-2">
+          <li key={p.id} className="grid grid-cols-[6.5rem_1fr] items-center gap-x-3 sm:flex sm:flex-col sm:items-center sm:gap-5">
+            <a href={`#${p.id}`} data-mask className="link text-[13.5px] font-semibold leading-snug text-ink-2 sm:min-h-[2.6em] sm:text-center">
               {p.name}
             </a>
-            <ol aria-hidden className="flex flex-col items-center gap-y-3.5">
+            <ol aria-hidden className="flex flex-row items-center gap-x-1.5 sm:flex-col sm:gap-x-0 sm:gap-y-3.5">
               {(p.flows ?? []).flatMap((flow, f) => [
-                ...(f > 0 ? [<li key={`gap-${f}`} className="h-3" />] : []),
+                ...(f > 0 ? [<li key={`gap-${f}`} className="w-2.5 sm:h-3 sm:w-auto" />] : []),
                 ...flow.steps.map((s, k) => (
-                  <li key={`${f}-${k}`} data-node data-kind={s.kind} data-flow={`${lane}-${f}`} className="relative h-5 w-5">
+                  <li key={`${f}-${k}`} data-node data-kind={s.kind} data-flow={`${lane}-${f}`} className="relative h-4 w-4 sm:h-5 sm:w-5">
                     <KindTile kind={s.kind} icon="h-2.5 w-2.5" />
                   </li>
                 )),

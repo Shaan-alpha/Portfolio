@@ -7,6 +7,7 @@ import { createSequence } from "@/components/film/sequence";
 import { flowTargets, lineTargets, rng, stackTargets, type Rect, type Targets } from "@/components/field/targets";
 import { BEHAVIOURS } from "@/components/field/behaviours";
 import { holder } from "@/components/film/holder";
+import { resizeNeeds } from "@/components/field/polish";
 import type { Field } from "@/components/field/engine";
 
 type Nav = Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
@@ -289,12 +290,22 @@ export default function Film({ children }: { children: React.ReactNode }) {
       themeMo.observe(root, { attributes: true, attributeFilter: ["class"] });
       cleanups.push(() => themeMo.disconnect());
 
+      // A phone's URL bar changes the window's height but not 100svh: the
+      // scenes keep their layout, so only the canvas follows. Anything else
+      // moves the markers, and every scene's targets are rebuilt.
+      const sizeNow = () => ({ ...viewportOf(view), sceneH: scenes[0]?.offsetHeight ?? 0 });
+      let size = sizeNow();
       let resizeTimer = 0;
       const onResize = () => {
         window.clearTimeout(resizeTimer);
         resizeTimer = window.setTimeout(() => {
-          build();
-          if (active) activate(active, { quick: true });
+          const next = sizeNow();
+          const need = resizeNeeds(size, next);
+          size = next;
+          if (need === "rebuild") {
+            build();
+            if (active) activate(active, { quick: true });
+          } else if (need === "canvas" && !stopped) field.resize(next.w, next.h, Math.min(window.devicePixelRatio || 1, 2));
         }, 150);
       };
       window.addEventListener("resize", onResize);

@@ -590,7 +590,7 @@ html.dark .sheet[open]::backdrop {
 }
 @media (width < 48rem) {
   .sheet {
-    width: 100vw;
+    width: 100%;
     border-left: 0;
   }
 }
