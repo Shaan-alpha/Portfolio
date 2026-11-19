@@ -508,11 +508,19 @@ export function flowTargets(
 // ── The handoff ──────────────────────────────────────────────────────────
 
 /** The film's last frame: every dot on one hairline at `y`, spread evenly
- *  across `width` and drawn from left to right, with no drift. */
-export function lineTargets(n: number, y: number, width: number): Targets {
+ *  across `width` and drawn from left to right, with no drift. Given where
+ *  the dots are coming from (`from`, screen pixels), each keeps its place
+ *  across the screen: the dots drop onto the line rather than sweeping over
+ *  the page, the yellow ones least of all. */
+export function lineTargets(n: number, y: number, width: number, from?: Float32Array): Targets {
   const b = builder(n, "screen");
+  const rank = new Float32Array(n);
+  if (from) {
+    const order = Array.from({ length: n }, (_, i) => i).sort((p, q) => from[3 * p] - from[3 * q]);
+    order.forEach((i, k) => (rank[i] = k));
+  } else for (let i = 0; i < n; i++) rank[i] = i;
   for (let i = 0; i < n; i++) {
-    const x = ((i + 0.5) / n) * width;
+    const x = ((rank[i] + 0.5) / n) * width;
     b.put(x, y, 0, 3, x / Math.max(1, width), -1, undefined, undefined, 0);
   }
   return b.done();

@@ -393,3 +393,19 @@ test("the handoff is one hairline", () => {
     assert.ok(a > 0.02 && a < 0.6, `${dark ? "dark" : "light"}: ${a}`);
   }
 });
+
+test("the hairline keeps each dot's place across the screen", () => {
+  // Dots drop onto the line where they already are, so nothing, the yellow
+  // dots least of all, sweeps across the page on the way.
+  const random = rng(5);
+  const n = 3000;
+  const from = new Float32Array(3 * n);
+  for (let i = 0; i < n; i++) {
+    from[3 * i] = random() * 1440;
+    from[3 * i + 1] = random() * 900;
+  }
+  const t = lineTargets(n, 64.5, 1440, from);
+  const byX = [...Array(n).keys()].sort((a, b) => from[3 * a] - from[3 * b]);
+  for (let k = 1; k < n; k++) assert.ok(t.to[3 * byX[k]] > t.to[3 * byX[k - 1]], `dot ${byX[k]} is out of order on the line`);
+  assert.ok(t.to[3 * byX[0]] < 1 && t.to[3 * byX[n - 1]] > 1439, "the line still spans the screen");
+});

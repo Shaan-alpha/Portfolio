@@ -6,6 +6,7 @@ import { readColors, readScene, viewportOf } from "@/components/field/dom";
 import { createSequence } from "@/components/film/sequence";
 import { flowTargets, lineTargets, rng, stackTargets, type Rect, type Targets } from "@/components/field/targets";
 import { BEHAVIOURS } from "@/components/field/behaviours";
+import { holder } from "@/components/film/holder";
 import type { Field } from "@/components/field/engine";
 
 type Nav = Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
@@ -131,9 +132,12 @@ export default function Film({ children }: { children: React.ReactNode }) {
         });
         targets = next;
         // The handoff's hairline sits just under the header, where the
-        // header's own hairline appears once the reading part holds the screen.
+        // header's own hairline appears once the reading part holds the
+        // screen. The dots come from the last scene, so each keeps its place
+        // across the screen and drops straight onto the line.
         const header = document.querySelector("header");
-        line = lineTargets(count, (header?.getBoundingClientRect().bottom ?? 64) + 0.5, vw);
+        const last = next.get(scenes[scenes.length - 1]?.dataset.scene ?? "");
+        line = lineTargets(count, (header?.getBoundingClientRect().bottom ?? 64) + 0.5, vw, last?.t.frame === "screen" ? last.t.to : undefined);
       };
       build();
       field.setColors(readColors());
@@ -221,29 +225,37 @@ export default function Film({ children }: { children: React.ReactNode }) {
       // The markers' tiles step back too: the dots draw the steps now.
       root.dataset.field = "";
 
-      // Which scene holds the middle of the screen.
+      // Which part of the page the field draws for (`holder.ts`): the scene
+      // crossing the band across the middle of the screen, or the reading
+      // part as soon as its top comes up past 88% of the screen, so the line
+      // forms while the reader still sees it. One decision from both
+      // observers, so they can never pull the field two ways.
       const sections = [...scenes, reading];
-      const seen = new Set<Element>();
+      const nameOf = (s: Element) => (s === reading ? "reading" : ((s as HTMLElement).dataset.scene ?? ""));
+      const order = sections.map(nameOf);
+      const inBand = new Set<string>();
+      let readingUp = false;
+      const decide = () => {
+        const next = holder(order, inBand, readingUp);
+        if (next !== undefined) activate(next);
+      };
       const sceneIo = new IntersectionObserver(
         (entries) => {
           for (const e of entries) {
-            if (e.isIntersecting) seen.add(e.target);
-            else seen.delete(e.target);
+            if (e.isIntersecting) inBand.add(nameOf(e.target));
+            else inBand.delete(nameOf(e.target));
           }
-          const first = sections.find((s) => seen.has(s));
-          if (!first) return;
-          activate(first === reading ? null : (first.dataset.scene ?? null));
+          decide();
         },
         { rootMargin: "-38% 0px -58% 0px" },
       );
       sections.forEach((s) => sceneIo.observe(s));
       cleanups.push(() => sceneIo.disconnect());
-      // The handoff starts as soon as the reading part comes up, so the line
-      // forms while the reader still sees it; the band above still covers
-      // keys and the scrollbar.
       const leaving = new IntersectionObserver(
         ([e]) => {
-          if (e?.isIntersecting && active !== null) activate(null);
+          if (!e) return;
+          readingUp = e.isIntersecting;
+          decide();
         },
         { rootMargin: "0px 0px -12% 0px" },
       );
