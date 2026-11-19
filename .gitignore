@@ -18,8 +18,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
-.env*.local
+# env files: keys live here and never reach the repo
+.env
+.env*
+!.env.example
 
 # vercel
 .vercel
