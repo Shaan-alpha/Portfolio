@@ -17,16 +17,19 @@ export default function About() {
               rather than a full-width photo; the photo leads on wide ones. */}
           <div className="order-2 lg:order-1 lg:col-span-4">
             {/* A tighter 4:5 crop trims the studio-white backdrop of the ID-style
-                photo, and dark mode tones it down so it is not the brightest
-                thing on the page. */}
-            <div className="aspect-[4/5] w-full max-w-[240px] overflow-hidden rounded-[14px] bg-ground-2 shadow-[inset_0_0_0_1px_var(--line)] lg:max-w-[340px]">
+                photo. It is grayscale in both themes, so yellow stays the only
+                warm colour on the page. In light it multiplies onto the page,
+                so the white backdrop takes on the ground and the photo sits
+                like a print; in dark it is toned down inside a hairline frame,
+                so it is not the brightest thing on the page. */}
+            <div className="aspect-[4/5] w-full max-w-[240px] overflow-hidden rounded-[14px] lg:max-w-[340px] dark:bg-ground-2 dark:[outline-offset:-1px] dark:[outline:1px_solid_var(--line)]">
               <Image
                 src="/me-450.webp"
                 alt="Portrait of Shaan Satsangi"
                 width={450}
                 height={600}
                 sizes="(min-width: 1024px) 340px, 240px"
-                className="h-full w-full object-cover object-top dark:brightness-[0.78] dark:contrast-[1.05]"
+                className="h-full w-full object-cover object-top grayscale mix-blend-multiply dark:mix-blend-normal dark:brightness-[0.8] dark:contrast-[1.1]"
               />
             </div>
             <dl className="mt-8 grid max-w-[340px] grid-cols-[auto_1fr] gap-x-6 gap-y-3 text-[14.5px]">
