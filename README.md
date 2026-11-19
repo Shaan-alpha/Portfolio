@@ -11,11 +11,20 @@ The personal site of an AI systems engineer, built with **Next.js 16**, **React 
 
 ## Design
 
-- **An interactive model in the hero.** A three.js model of the shape most of these systems share: interfaces, guards, orchestration, and memory and state as plates, with the model as one yellow block between them and no plate of its own. Drag to turn it, and select a layer to see which projects use it. The callouts and the caption read the same data as the scene, so the 3D object and the text cannot disagree.
+- **An architect's model in the hero.** The site's line is built literally.
+  - **The model:** white card and aluminium, generated in code from about 1,200 parts, standing on a plinth engraved with "the model is a component, not the architecture".
+  - **Its five levels** are the layers most of these systems share: a vault for memory and state, a lobby for interfaces, a security hall for guards, and a plant floor for orchestration. The model itself is one yellow block hanging in the atrium, with no floor of its own.
+  - **As you scroll,** the hero holds while the building opens into its levels. Then the camera dives through the atrium to the block and climbs back out.
+  - **Interaction:** drag to turn it, and select a level to see which projects use it. The callouts and the caption read the same data as the scene, so the 3D object and the text cannot disagree.
 - **Pipelines instead of paragraphs.** Each production project is drawn as the path work takes through it, in the same visual language: yellow where a model runs, a shield where a guard or check sits, a hand where a person approves. A system with two separate paths, such as Atlas's chat replies and its gated morning briefing, gets two diagrams rather than one invented sequence.
 - **Type and colour.** Archivo at two widths: expanded for display, normal for reading. The neutrals are cool aluminium in light mode and graphite in dark, plus one signal colour that only ever means "a model runs here". Every text colour clears WCAG AA in both themes, and axe reports no violations.
-- **3D as an enhancement.** The page first renders a flat isometric drawing of the model, projected with the same camera maths as the WebGL scene. three.js loads after first paint (as its own ~140 KB chunk) and the drawing resolves into the model. Without WebGL or with Save-Data on, the drawing and the layer buttons are the whole experience, and three.js is never downloaded. With reduced motion you get the model without the intro, inertia or scroll-linked turn.
-- **Quiet everywhere else.** No scroll-jacking, no reveal-on-scroll, no custom cursor. Apart from one short intro as the model loads, motion only answers something you did: keys press down, layers lift, and the new theme grows out of the toggle.
+- **3D as an enhancement.**
+  - **Before the 3D loads,** the hero shows a still in your theme, rendered from the same scene by [`scripts/render-stills.mjs`](scripts/render-stills.mjs) using headless Chrome and ffmpeg.
+  - **three.js, the scene and GSAP** load after first paint as their own chunks, about 200 KB gzipped.
+  - **Without WebGL or with Save-Data on,** the still and the layer buttons are the whole experience, and none of the 3D code is downloaded.
+  - **With reduced motion,** the model stays but the flight does not: it cuts between two shots, and GSAP is never downloaded.
+  - **On a GPU that cannot keep up,** it drops ambient occlusion first, then detail.
+- **Quiet everywhere else.** No scroll-jacking: scrolling stays native, and the hero only holds while the building opens. No reveal-on-scroll, no custom cursor. Outside the hero's camera, motion only answers something you did: keys press down, levels lift, and the new theme grows out of the toggle.
 - **Sound that answers you.** Keys click as they bottom out, and the model ticks like a detented dial as you turn it. The theme toggle is a light switch, and selecting a layer, the menu, Copy and the contact form each have their own cue. Nothing plays on load, hover or scroll, and the speaker in the header mutes it and remembers. The sounds are [uisfx](https://github.com/romainsimon/uisfx)'s studio pack, synthesized in the page from recipes rather than audio files, and loaded after first paint. On iPhone the page asks Safari for its ambient audio session, which mixes with your music instead of pausing it and follows the silent switch.
 
 <p align="center">
@@ -26,7 +35,7 @@ The personal site of an AI systems engineer, built with **Next.js 16**, **React 
 
 - **Framework:** Next.js 16 (App Router, static export), React 19
 - **Styling:** Tailwind CSS 4, design tokens in [`globals.css`](src/app/globals.css)
-- **3D:** three.js 0.186, lazy-loaded, rendered on demand (the loop stops when nothing moves)
+- **3D:** three.js 0.186 with GTAO, lazy-loaded and rendered on demand (the loop stops when nothing moves); GSAP 3.15 ScrollTrigger pins the hero and scrubs the camera
 - **Fonts:** Archivo (variable width and weight) via `next/font`
 - **Sound:** uisfx 0.4.0 (pinned; MIT code, CC0 sounds), a 12 KB lazy chunk driven by [`src/lib/sound.ts`](src/lib/sound.ts)
 - **Hosting:** Cloudflare Workers static assets at [`shaansatsangi.com`](https://shaansatsangi.com) — Cloudflare DNS · WAF · CDN, security headers, an enforced CSP, HSTS, and an SSL Labs **A+** edge config.
@@ -36,8 +45,10 @@ The personal site of an AI systems engineer, built with **Next.js 16**, **React 
 
 ```
 src/content/            the content data: profile, projects (with their flows), skills, experience, the hero's layers
-src/components/stack/   the hero model: geometry.ts (shared camera maths), scene.ts (three.js),
-                        drawing.ts + StackDrawing.tsx (SVG stand-in), StackStage.tsx (callouts, caption, state)
+src/components/building/ the hero: blueprint.ts (the building as tested data), shots.ts (camera shots and the
+                        scroll choreography), scene.ts (three.js), BuildingStage.tsx (pin, callouts, caption, state)
+src/components/stack/   the October stack drawing, still used by the social card
+scripts/                the build stamp, and render-stills.mjs for the hero's fallback stills
 src/app/og.png/         the social card, rendered at build time with next/og
 worker/                 the Cloudflare Worker and its tests
 ```

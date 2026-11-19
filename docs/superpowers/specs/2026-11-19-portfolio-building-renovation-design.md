@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-19
 **Owner:** Shaan Satsangi
-**Status:** Design for approval. Shaan gave full creative authority; every call below is mine unless marked as his.
+**Status:** Phase 1 (acts I and II) built and verified locally on `feat/building`, not yet committed or deployed. Shaan gave full creative authority; every call below is mine unless marked as his.
 
 ## Intent
 

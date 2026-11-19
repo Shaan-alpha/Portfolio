@@ -32,6 +32,12 @@
   --part: #c4cad2;
   --part-2: #8d96a2;
   --shadow: rgba(17, 19, 24, 0.22);
+  /* The building's materials: white card, aluminium, frosted acrylic, and the
+     small status lights in the vault. Yellow stays the model's alone. */
+  --card: #f8f9fa;
+  --alu: #a7aeb6;
+  --acrylic: #cfd8df;
+  --glow: #8d96a2;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --header: 64px;
 }
@@ -60,6 +66,10 @@
   --part: #4a515c;
   --part-2: #6b7480;
   --shadow: rgba(0, 0, 0, 0.55);
+  --card: #2b2f36;
+  --alu: #6b7480;
+  --acrylic: #4a515c;
+  --glow: #dbe7ff;
 }
 
 @theme inline {
@@ -398,6 +408,37 @@
   .tile {
     border: 1px solid CanvasText;
   }
+}
+
+/* Still mode, for scripts/render-stills.mjs: only the hero's canvas, filling
+   the window, with nothing on top of it. */
+html[data-still] body * {
+  visibility: hidden;
+}
+html[data-still] [data-stage],
+html[data-still] [data-stage] canvas {
+  visibility: visible;
+}
+html[data-still] [data-stage] {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  aspect-ratio: auto;
+  max-height: none;
+  /* The stage is align-self: start in the grid, which would shrink a fixed
+     box to its content; everything in it is absolute, so that is zero. */
+  align-self: stretch;
+  justify-self: stretch;
+  width: 100vw;
+  height: 100vh;
+}
+html[data-still] [data-stage] > :not(canvas) {
+  display: none;
+}
+/* The live canvas fades in; a still must not catch it half-way. */
+html[data-still] [data-stage] canvas {
+  opacity: 1 !important;
+  transition: none !important;
 }
 
 @media print {

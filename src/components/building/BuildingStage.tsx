@@ -1,40 +1,46 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 import { layers, type LayerId } from "@/content/stack";
 import { projects } from "@/content/projects";
 import { play } from "@/lib/sound";
-import type { Anchor, StackScene } from "./scene";
-import { AZIMUTH, CUBE, ELEVATION, MODEL_SLOT, PLATE_D, PLATE_H, PLATE_W, VIEW_H, basis, project, slotY, type Vec3 } from "./geometry";
+import type { Anchor, BuildingScene } from "./scene";
 
 const nameOf = Object.fromEntries(projects.map((p) => [p.id, p.name]));
-
-/** Where each callout sits before the model has measured itself, as a
- *  percentage of the stage height. That is exact because the stage is never
- *  narrower than the drawing's aspect ratio on wide screens (see the stage's
- *  classes), so the drawing always scales to the stage height. The model's
- *  anchor is its right edge at mid-height, on the yellow face itself. */
-function restingTop(slot: number) {
-  const b = basis(AZIMUTH, ELEVATION);
-  const y = slotY(slot);
-  const pts: Vec3[] =
-    slot === MODEL_SLOT
-      ? [CUBE / 2, -CUBE / 2].flatMap((x) => [CUBE / 2, -CUBE / 2].map((z) => [x, y, z] as Vec3))
-      : [PLATE_W / 2, -PLATE_W / 2].flatMap((x) => [PLATE_D / 2, -PLATE_D / 2].map((z) => [x, y + PLATE_H / 2, z] as Vec3));
-  const best = pts.map((p) => project(p, b)).sort((a, c) => c[0] - a[0])[0];
-  return 50 - (best[1] / VIEW_H) * 100;
-}
+const LEVEL: Record<LayerId, string | null> = { state: "level B", interfaces: "level 0", guards: "level 1", orchestration: "level 2", model: null };
+/** Act II holds the hero for this much scroll, in viewport heights. */
+const PIN = 2.5;
 
 type Status = "loading" | "ready" | "static";
 
-export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
+/** `still` is the site still (see Still.tsx), shown until the 3D is live,
+ *  and `sectionStill` the act II still, rendered only when the stage stays
+ *  static, so only those visitors download it. `resting` holds each
+ *  callout's top, in percent, before the model loads (see resting.ts).
+ *  `sectionAt` is the section beat's scroll progress, and `settledAt` the
+ *  progress where the camera is back outside after the dive. All of it comes
+ *  from the server so none of it ships as first-load JS. */
+export default function BuildingStage({
+  still,
+  sectionStill,
+  resting,
+  sectionAt,
+  settledAt,
+}: {
+  still: React.ReactNode;
+  sectionStill: React.ReactNode;
+  resting: number[];
+  sectionAt: number;
+  settledAt: number;
+}) {
   const figureRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const linesRef = useRef<SVGSVGElement>(null);
   const captionRef = useRef<HTMLElement>(null);
-  const sceneRef = useRef<StackScene | null>(null);
+  const sceneRef = useRef<BuildingScene | null>(null);
   const calloutsRef = useRef(false);
 
   const [status, setStatus] = useState<Status>("loading");
@@ -43,8 +49,22 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
   const [previewed, setPreviewed] = useState<LayerId | null>(null);
   const [rotated, setRotated] = useState(false);
   const [callouts, setCallouts] = useState(false);
+  // True while the camera is over or inside the atrium, where the callouts
+  // have nothing outside the building to point at.
+  const [inside, setInside] = useState(false);
+  const insideRef = useRef(false);
+  // Without the 3D, the stage still shows act II: past the middle of the
+  // hero, the section still replaces the site still.
+  const [staticSection, setStaticSection] = useState(false);
+  const { setTheme } = useTheme();
 
-  const resting = useMemo(() => layers.map((_, slot) => restingTop(slot)), []);
+  // Still mode's theme, through next-themes, which would otherwise put its own
+  // class back. Kept apart from the scene's effect so a theme change can
+  // never recreate the scene.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("still")) setTheme(params.get("theme") === "dark" ? "dark" : "light");
+  }, [setTheme]);
 
   /** Drop positions written by placeCallouts, so the CSS resting positions
    *  (or the wrapped row on small screens) apply again. */
@@ -71,14 +91,13 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  // Load three.js only on the client and only when it can run. Save-Data and
-  // a missing WebGL context both leave the drawing in place.
+  // Load three.js, GSAP and the scene only on the client and only when they
+  // can run. Save-Data and a missing WebGL context both leave the still.
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const nav = navigator as Navigator & { connection?: { saveData?: boolean } };
-    // Probe for WebGL on a throwaway canvas first, so a device without it
-    // never downloads three.js only to have the renderer throw.
+    const figure = figureRef.current;
+    if (!canvas || !figure) return;
+    const nav = navigator as Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
     const probe = document.createElement("canvas");
     const gl = probe.getContext("webgl2") ?? probe.getContext("webgl");
     gl?.getExtension("WEBGL_lose_context")?.loseContext();
@@ -87,7 +106,17 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
       return;
     }
     let disposed = false;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let revert: (() => void) | null = null;
+    // Still mode (?still=site|section&theme=light|dark) renders one shot,
+    // full screen and at full quality, for scripts/render-stills.mjs.
+    const params = new URLSearchParams(window.location.search);
+    const stillShot = params.get("still");
+    const stillAt = stillShot === "site" ? 0 : stillShot === "section" ? sectionAt : null;
+    const stillDark = params.get("theme") === "dark";
+    if (stillAt !== null) document.documentElement.dataset.still = "";
+    const reducedMotion = stillAt === null && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const detail =
+      stillAt === null && (window.matchMedia("(pointer: coarse)").matches || window.innerWidth < 900 || (nav.deviceMemory ?? 8) <= 4) ? "low" : "high";
 
     const placeCallouts = (anchors: Anchor[]) => {
       const list = listRef.current;
@@ -95,7 +124,7 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
       const stage = stageRef.current;
       if (!list || !lines || !stage || !calloutsRef.current) return;
       const labelX = stage.offsetWidth + 24;
-      // Keep labels at least 44px apart when the stack is turned steeply.
+      // Keep labels at least 44px apart when the building is turned.
       const items = anchors
         .map((a) => ({ ...a, el: list.querySelector<HTMLElement>(`[data-layer="${a.id}"]`) }))
         .sort((a, b) => a.y - b.y);
@@ -117,31 +146,31 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
       }
     };
 
-    import("./scene")
-      .then(({ createStackScene }) => {
+    // GSAP only drives the pinned flight, so reduced motion and still mode
+    // never download it.
+    const flies = !reducedMotion && stillAt === null;
+    Promise.all([import("./scene"), flies ? import("gsap") : Promise.resolve(null), flies ? import("gsap/ScrollTrigger") : Promise.resolve(null)])
+      .then(([{ createBuildingScene }, gsapModule, triggerModule]) => {
         if (disposed) return;
+        let scene: BuildingScene;
         try {
-          sceneRef.current = createStackScene({
+          scene = createBuildingScene({
             canvas,
-            layers: layers.map((l) => l.id),
+            detail,
             reducedMotion,
             onReady: () => {
-              if (disposed) return;
-              setStatus("ready");
-              sceneRef.current?.playIntro();
+              if (!disposed) setStatus("ready");
             },
             onHover: setHovered,
             onPick: (id) => setSelected((cur) => (id === null || id === cur ? null : id)),
             onRotated: setRotated,
             // A detented dial: a quiet tick per notch, at least 45 ms apart so
-            // a hard spin never buzzes, each a few percent off in pitch so a
-            // run of them does not sound like a machine gun.
+            // a hard spin never buzzes, each a few percent off in pitch.
             onDetent: () => play("typing", { cooldownMs: 45, playbackRate: 0.97 + Math.random() * 0.06 }),
             onAnchors: placeCallouts,
-            // A lost context (iOS drops them in the background) takes the
-            // model down for good: dispose it so the hidden canvas stops
-            // answering drags and clicks, and hand the labels back to the
-            // drawing's resting positions.
+            // A lost context takes the model down for good: dispose it so the
+            // hidden canvas stops answering, and hand back to the still. The
+            // pin stays, so nothing on the page moves under the visitor.
             onLost: () => {
               sceneRef.current?.dispose();
               sceneRef.current = null;
@@ -153,16 +182,114 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
           });
         } catch {
           setStatus("static");
+          return;
         }
+        sceneRef.current = scene;
+
+        if (stillAt !== null) {
+          scene.setProgress(stillAt);
+          // The theme class lands a frame or two after setTheme; the scene
+          // re-reads its palette when it does, so wait for it first.
+          const themed = () =>
+            new Promise<void>((done) => {
+              const check = (n: number) =>
+                document.documentElement.classList.contains("dark") === stillDark || n > 120 ? done() : requestAnimationFrame(() => check(n + 1));
+              check(0);
+            });
+          document.fonts?.ready
+            .catch(() => {})
+            .then(themed)
+            .then(() => scene.renderStill())
+            .then(() => {
+              document.documentElement.dataset.stillReady = "1";
+            });
+          return;
+        }
+
+        if (reducedMotion) {
+          // No camera flight: hold the site shot until the stage has mostly
+          // scrolled away, then cut to the section behind a short dip.
+          const io = new IntersectionObserver(
+            ([entry]) => {
+              const p = entry.intersectionRatio < 0.6 && entry.boundingClientRect.top < 0 ? sectionAt : 0;
+              canvas.style.opacity = "0";
+              window.setTimeout(() => {
+                sceneRef.current?.setProgress(p);
+                canvas.style.opacity = "";
+              }, 150);
+            },
+            { threshold: [0.6] },
+          );
+          io.observe(figure);
+          revert = () => io.disconnect();
+          return;
+        }
+
+        if (!gsapModule || !triggerModule) return;
+        const { gsap } = gsapModule;
+        const { ScrollTrigger } = triggerModule;
+        gsap.registerPlugin(ScrollTrigger);
+        const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header")) || 64;
+        // Through the ref: after a lost context the scene is gone, but the pin
+        // stays so the page keeps its height and scroll position.
+        const onProgress = (p: number) => {
+          sceneRef.current?.setProgress(p);
+          const now = p > sectionAt + 0.03 && p < settledAt - 0.03;
+          if (now !== insideRef.current) {
+            insideRef.current = now;
+            setInside(now);
+          }
+        };
+        const ctx = gsap.context(() => {
+          const mm = gsap.matchMedia();
+          // Wide screens hold the whole hero, text beside the model. Narrow
+          // ones hold the figure (stage, layer buttons, caption), which sits
+          // under the text and fits a phone screen.
+          mm.add("(min-width: 64rem)", () => {
+            ScrollTrigger.create({
+              trigger: figure.closest("section") ?? figure,
+              start: `top top+=${header}`,
+              end: `+=${PIN * 100}%`,
+              pin: true,
+              scrub: 1,
+              onUpdate: (self) => onProgress(self.progress),
+            });
+          });
+          mm.add("(max-width: 63.99rem)", () => {
+            ScrollTrigger.create({
+              trigger: figure,
+              start: `top top+=${header}`,
+              end: `+=${PIN * 100}%`,
+              pin: true,
+              scrub: 1,
+              onUpdate: (self) => onProgress(self.progress),
+            });
+          });
+        }, figure);
+        revert = () => ctx.revert();
+        // Fonts and the callout column change the layout the pin measured.
+        document.fonts?.ready.then(() => ScrollTrigger.refresh()).catch(() => {});
       })
       .catch(() => setStatus("static"));
 
     return () => {
       disposed = true;
+      revert?.();
       sceneRef.current?.dispose();
       sceneRef.current = null;
     };
-  }, []);
+  }, [sectionAt, settledAt]);
+
+  // The static stage's act II: the same half-way cut reduced motion uses.
+  useEffect(() => {
+    const figure = figureRef.current;
+    if (status !== "static" || !figure) return;
+    const io = new IntersectionObserver(([entry]) => setStaticSection(entry.intersectionRatio < 0.6 && entry.boundingClientRect.top < 0), {
+      threshold: [0.6],
+    });
+    io.observe(figure);
+    return () => io.disconnect();
+  }, [status]);
 
   useEffect(() => sceneRef.current?.setSelected(selected), [selected, status]);
   // Selecting and clearing a layer sound the same whichever way they happen:
@@ -184,59 +311,23 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
   }, [selected]);
   useEffect(() => sceneRef.current?.setHighlighted(previewed), [previewed, status]);
 
-  // The stack turns and opens a little as the hero scrolls away. Motion tied
-  // to scroll is skipped entirely under reduced motion.
-  useEffect(() => {
-    if (status !== "ready") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const section = stageRef.current?.closest("section");
-    if (!section) return;
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const r = section.getBoundingClientRect();
-      sceneRef.current?.setScroll(-r.top / (r.height * 0.8));
-    };
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    update();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(frame);
-    };
-  }, [status]);
-
   const shown = layers.find((l) => l.id === (hovered ?? previewed ?? selected)) ?? null;
   const live = status === "ready";
 
   return (
     <figure ref={figureRef} className="relative grid grid-cols-1 gap-y-5 lg:grid-cols-[minmax(0,1fr)_minmax(150px,190px)] lg:gap-x-6">
-      {/* On wide screens the stage keeps at least the drawing's own aspect
-          ratio (VIEW_MIN_W : VIEW_H = 4.5 : 6.1): it is as tall as that ratio
-          allows, up to the height cap, so the drawing and the camera always
-          scale to its height and the callouts' resting percentages hold. */}
-      <div
-        ref={stageRef}
-        className="relative aspect-[1/1.05] w-full sm:aspect-[5/4] lg:aspect-[4.5/6.1] lg:max-h-[min(70vh,680px)] lg:self-start"
-      >
-        <div className={`absolute inset-0 transition-opacity duration-500 ${live ? "opacity-0" : "opacity-100"}`} aria-hidden>
-          {drawing}
-        </div>
+      <div ref={stageRef} data-stage="" className="relative aspect-[1/1.05] w-full bg-ground sm:aspect-[5/4] lg:aspect-[4/3] lg:self-start">
+        <div className={`absolute inset-0 transition-opacity duration-500 ${live || staticSection ? "opacity-0" : "opacity-100"}`}>{still}</div>
+        {status === "static" && (
+          <div className={`absolute inset-0 transition-opacity duration-500 ${staticSection ? "opacity-100" : "opacity-0"}`}>{sectionStill}</div>
+        )}
         <canvas
           ref={canvasRef}
           aria-hidden
-          className={`absolute inset-0 h-full w-full touch-pan-y transition-opacity duration-500 ${
-            live ? "opacity-100" : "pointer-events-none opacity-0"
-          }`}
+          className={`absolute inset-0 h-full w-full touch-pan-y transition-opacity duration-500 ${live ? "opacity-100" : "pointer-events-none opacity-0"}`}
         />
         {rotated && live && (
-          <button
-            type="button"
-            onClick={() => sceneRef.current?.resetView()}
-            className="key key-secondary key-sm absolute right-0 top-0"
-          >
+          <button type="button" onClick={() => sceneRef.current?.resetView()} className="key key-secondary key-sm absolute right-0 top-0">
             Reset view
           </button>
         )}
@@ -248,9 +339,7 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
         <svg
           ref={linesRef}
           aria-hidden
-          className={`pointer-events-none absolute left-0 top-0 h-px w-full overflow-visible transition-opacity duration-500 ${
-            live ? "opacity-100" : "opacity-0"
-          }`}
+          className={`pointer-events-none absolute left-0 top-0 h-px w-full overflow-visible transition-opacity duration-500 ${live && !inside ? "opacity-100" : "opacity-0"}`}
         >
           {layers.map((l) => {
             const on = shown?.id === l.id || selected === l.id;
@@ -268,15 +357,15 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
         <p className="mb-6 hidden text-[13px] leading-snug text-ink-3 lg:block">
           {live ? "Drag to turn the model. Select a layer for details." : "Select a layer for details."}
         </p>
-        <ul ref={listRef} aria-label="Layers of the model" className="flex flex-wrap gap-2 lg:absolute lg:inset-0 lg:block">
+        <ul
+          ref={listRef}
+          aria-label="Layers of the model"
+          className={`flex flex-wrap gap-2 transition-opacity duration-300 lg:absolute lg:inset-0 lg:block ${inside ? "lg:pointer-events-none lg:opacity-0" : ""}`}
+        >
           {layers.map((l, slot) => {
             const on = selected === l.id;
             const lit = shown?.id === l.id && !on;
             return (
-              // The resting position ships in the HTML as --t, so the
-              // callouts sit beside their plates before hydration and without
-              // JS. Once the model has measured itself, placeCallouts writes
-              // inline top and transform, which override these classes.
               <li
                 key={l.id}
                 data-layer={l.id}
@@ -289,10 +378,8 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
                   data-lit={lit || undefined}
                   className="layer-btn"
                   onClick={() => setSelected(on ? null : l.id)}
-                  // Only a real mouse previews. Touch browsers send an
-                  // emulated hover on tap and no leave, which would pin the
-                  // preview over the selection; a tap-focus is not
-                  // :focus-visible, a Tab is.
+                  // Only a real mouse previews. Touch browsers send an emulated
+                  // hover on tap and no leave, which would pin the preview.
                   onPointerEnter={(e) => e.pointerType === "mouse" && setPreviewed(l.id)}
                   onPointerLeave={(e) => e.pointerType === "mouse" && setPreviewed(null)}
                   onFocus={(e) => e.currentTarget.matches(":focus-visible") && setPreviewed(l.id)}
@@ -308,7 +395,10 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
                       l.id === "model" ? "bg-model shadow-[inset_0_0_0_1px_var(--model-edge)]" : on ? "bg-[var(--key-text)] lg:bg-ground" : "bg-line-2"
                     }`}
                   />
-                  {l.name}
+                  <span className="flex min-w-0 flex-row items-baseline gap-1.5 lg:flex-col lg:items-start lg:gap-0">
+                    <span>{l.name}</span>
+                    {LEVEL[l.id] && <span className="text-[12px] font-normal text-ink-3">{LEVEL[l.id]}</span>}
+                  </span>
                 </button>
               </li>
             );
@@ -327,7 +417,10 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
       >
         {shown ? (
           <div>
-            <p className="semi text-[17px] font-bold text-ink">{shown.name}</p>
+            <p className="semi text-[17px] font-bold text-ink">
+              {shown.name}
+              {LEVEL[shown.id] && <span className="font-normal text-ink-3">, {LEVEL[shown.id]}</span>}
+            </p>
             <p className="mt-1 max-w-[62ch] text-[15px] leading-[1.55] text-ink-2">{shown.summary}</p>
             <p className="mt-2 text-[14px] text-ink-3">
               Seen in{" "}
@@ -348,8 +441,6 @@ export default function StackStage({ drawing }: { drawing: React.ReactNode }) {
             <p className="mt-1 max-w-[62ch] text-[15px] leading-[1.55] text-ink-2">
               Most of what I build has this shape. The yellow block is the model; everything around it decides what the
               model sees, checks what it says, and keeps a record.{" "}
-              {/* Wide screens show this instruction beside the labels instead.
-                  Only offer turning when there is a model that can turn. */}
               <span className="lg:hidden">
                 {live ? (
                   <>
