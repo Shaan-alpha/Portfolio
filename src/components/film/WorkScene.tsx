@@ -1,4 +1,4 @@
-import { PipelineLegend } from "@/components/Pipeline";
+import { KindTile, PipelineLegend } from "@/components/Pipeline";
 import { flagship, lab, liveCount, projects } from "@/content/projects";
 import { spell } from "@/lib/format";
 import { WORK_TITLE } from "./places";
@@ -39,7 +39,9 @@ export default function WorkScene() {
               {(p.flows ?? []).flatMap((flow, f) => [
                 ...(f > 0 ? [<li key={`gap-${f}`} className="h-3" />] : []),
                 ...flow.steps.map((s, k) => (
-                  <li key={`${f}-${k}`} data-node data-kind={s.kind} data-flow={`${lane}-${f}`} className="h-5 w-5" />
+                  <li key={`${f}-${k}`} data-node data-kind={s.kind} data-flow={`${lane}-${f}`} className="relative h-5 w-5">
+                    <KindTile kind={s.kind} icon="h-2.5 w-2.5" />
+                  </li>
                 )),
               ])}
             </ol>

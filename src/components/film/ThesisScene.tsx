@@ -1,5 +1,6 @@
 import type { StepKind } from "@/content/projects";
 import { THESIS_TITLE } from "./places";
+import { KindTile } from "@/components/Pipeline";
 
 /** The thesis rail, top to bottom: input, deterministic scoring, the model,
  *  a check that fails closed, a human approval, output. No labels: the
@@ -40,7 +41,9 @@ export default function ThesisScene() {
       <div className="flex justify-center lg:col-span-7">
         <ol aria-hidden className="flex h-[30svh] flex-col items-center justify-between lg:h-[min(62svh,560px)]">
           {RAIL.map((kind, k) => (
-            <li key={k} data-node data-kind={kind} data-flow="0" className="h-12 w-12" />
+            <li key={k} data-node data-kind={kind} data-flow="0" className="relative h-12 w-12">
+              <KindTile kind={kind} icon="h-5 w-5" />
+            </li>
           ))}
         </ol>
       </div>

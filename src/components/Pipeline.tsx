@@ -1,4 +1,4 @@
-import { Box, Hand, ShieldCheck } from "lucide-react";
+import { Box, Grid3x3, Hand, ShieldCheck } from "lucide-react";
 import type { Flow, StepKind } from "@/content/projects";
 import { withCode } from "@/lib/withCode";
 
@@ -10,11 +10,26 @@ export const KIND_LABEL: Record<StepKind, string> = {
   human: "human approval",
 };
 
-export function KindIcon({ kind, className }: { kind: StepKind; className?: string }) {
+export function KindIcon({ kind, className }: { kind: StepKind | "grid"; className?: string }) {
+  if (kind === "grid") return <Grid3x3 aria-hidden className={className} />;
   if (kind === "model") return <Box aria-hidden className={className} />;
   if (kind === "guard") return <ShieldCheck aria-hidden className={className} />;
   if (kind === "human") return <Hand aria-hidden className={className} />;
   return null;
+}
+
+const TILE: Record<StepKind | "grid", string> = { io: "", step: "", grid: "", model: "tile-model", guard: "tile-guard", human: "" };
+
+/** A step as a tile, filling its marker: what a flow shows wherever the dot
+ *  field does not draw it (without WebGL, with Save-Data, after a lost
+ *  context, in no-snap mode, or in a scene too tall for the screen). The CSS
+ *  hides it while the dots form on the marker. */
+export function KindTile({ kind, icon = "h-3.5 w-3.5" }: { kind: StepKind | "grid"; icon?: string }) {
+  return (
+    <span data-glyph aria-hidden className={`tile ${TILE[kind]} absolute inset-0 !min-h-0 justify-center !p-0`}>
+      <KindIcon kind={kind} className={icon} />
+    </span>
+  );
 }
 
 /* A flow turns horizontal only when its own box is wide enough for the widest

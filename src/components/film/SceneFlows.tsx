@@ -1,8 +1,6 @@
-import { KIND_LABEL, KindIcon } from "@/components/Pipeline";
-import type { Flow, StepKind } from "@/content/projects";
+import { KIND_LABEL, KindTile } from "@/components/Pipeline";
+import type { Flow } from "@/content/projects";
 import { withCode } from "@/lib/withCode";
-
-const TILE: Record<StepKind, string> = { io: "", step: "", model: "tile-model", guard: "tile-guard", human: "" };
 
 /** A system's flows as its scene shows them: a rail running top to bottom,
  *  each step a marker with its label and note beside it. The field forms
@@ -33,9 +31,7 @@ export default function SceneFlows({ flows, name }: { flows: Flow[]; name: strin
                     data-step={s.label}
                     className="relative size-[clamp(1.75rem,4.4svh,2.5rem)] shrink-0"
                   >
-                    <span data-glyph aria-hidden className={`tile ${TILE[s.kind]} absolute inset-0 !min-h-0 justify-center !p-0`}>
-                      <KindIcon kind={s.kind} className="h-3.5 w-3.5" />
-                    </span>
+                    <KindTile kind={s.kind} />
                   </span>
                   <span data-mask className="min-w-0">
                     {/* Non-breaking hyphens, as in Pipeline: "Fact-check" wraps
