@@ -86,6 +86,12 @@ const personJsonLd = {
   sameAs: [profile.github, profile.linkedin],
 };
 
+/** Without JavaScript a case-study sheet cannot open, so each one reads in
+ *  place below its scene's keys instead, and its key and Close, which could
+ *  do nothing, are hidden. */
+const NO_SCRIPT_CSS =
+  '.sheet{display:block;position:static;translate:none;width:auto;max-width:none;height:auto;max-height:none;margin:1.5rem 0 0;padding:0;border:0;background:none;overflow:visible;flex-basis:100%}.sheet-body{padding:0}.sheet-head,[aria-haspopup="dialog"]{display:none!important}';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -104,6 +110,9 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        <noscript>
+          <style dangerouslySetInnerHTML={{ __html: NO_SCRIPT_CSS }} />
+        </noscript>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
