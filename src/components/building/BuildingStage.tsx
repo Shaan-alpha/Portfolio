@@ -107,6 +107,14 @@ export default function BuildingStage({
     }
     let disposed = false;
     let revert: (() => void) | null = null;
+    // Whether the visitor has scrolled, pressed or touched anything since load,
+    // so a late correction to a deep link never yanks someone who has moved.
+    let touched = false;
+    const touch = () => {
+      touched = true;
+    };
+    const inputs = ["wheel", "touchstart", "keydown", "pointerdown"] as const;
+    inputs.forEach((t) => window.addEventListener(t, touch, { passive: true, once: true }));
     // Still mode (?still=site|section&theme=light|dark) renders one shot,
     // full screen and at full quality, for scripts/render-stills.mjs.
     const params = new URLSearchParams(window.location.search);
@@ -249,7 +257,10 @@ export default function BuildingStage({
             p: 1,
             ease: "none",
             onUpdate: () => onProgress(flight.p),
-            scrollTrigger: { trigger, start: `top top+=${header}`, end: `+=${PIN * 100}%`, pin: true, scrub: 1 },
+            // Refreshed before every other trigger (higher runs first), so the
+            // pin's height is counted in the route stage's triggers below it,
+            // whichever of the two loaded first.
+            scrollTrigger: { trigger, start: `top top+=${header}`, end: `+=${PIN * 100}%`, pin: true, scrub: 1, refreshPriority: 1 },
           });
         };
         const ctx = gsap.context(() => {
@@ -265,6 +276,35 @@ export default function BuildingStage({
           });
         }, figure);
         revert = () => ctx.revert();
+        ScrollTrigger.refresh();
+        // A deep link (#atlas, #contact) was resolved by the browser before
+        // the pin added its height above the target, so the page now sits
+        // that much short of it. Land it again, once, if nobody has moved.
+        // Later refreshes (the font swap, the route stage's triggers) move it
+        // again, so it lands on each refresh for the first few seconds.
+        const hash = decodeURIComponent(window.location.hash.slice(1));
+        const target = hash && hash !== "top" ? document.getElementById(hash) : null;
+        const landing = header + 24; // html's scroll-padding-top
+        const land = () => {
+          if (target && !touched && Math.abs(target.getBoundingClientRect().top - landing) > 40) {
+            target.scrollIntoView({ block: "start", behavior: "instant" });
+          }
+        };
+        if (target) {
+          land();
+          // Not every late layout change refreshes ScrollTrigger, so it also
+          // checks on a short schedule while the page settles.
+          const timers = [300, 800, 1500, 2500, 4000].map((ms) => window.setTimeout(land, ms));
+          ScrollTrigger.addEventListener("refresh", land);
+          const stop = window.setTimeout(() => ScrollTrigger.removeEventListener("refresh", land), 5000);
+          const prev = revert;
+          revert = () => {
+            timers.forEach((t) => window.clearTimeout(t));
+            window.clearTimeout(stop);
+            ScrollTrigger.removeEventListener("refresh", land);
+            prev?.();
+          };
+        }
         // Fonts and the callout column change the layout the pin measured.
         document.fonts?.ready.then(() => ScrollTrigger.refresh()).catch(() => {});
       })
@@ -272,6 +312,7 @@ export default function BuildingStage({
 
     return () => {
       disposed = true;
+      inputs.forEach((t) => window.removeEventListener(t, touch));
       revert?.();
       sceneRef.current?.dispose();
       sceneRef.current = null;

@@ -140,6 +140,9 @@ export default function RouteStage({ still }: { still: React.ReactNode }) {
             }
           });
           revert = () => ctx.revert();
+          // The hero's pin may already exist; refresh sorts by priority, so
+          // its height is counted in these triggers either way.
+          ScrollTrigger.refresh();
         })
         .catch(() => setStatus("static"));
 
