@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "node scripts/gen-build-info.mjs && tsc --noEmit && tsc --noEmit -p worker",
-    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test worker/index.test.mts src/components/building/detents.test.mts src/components/building/blueprint.test.mts src/components/building/shots.test.mts src/components/building/degrade.test.mts src/components/building/routes.test.mts src/lib/soundEvents.test.mts",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test worker/index.test.mts src/components/building/detents.test.mts src/components/building/blueprint.test.mts src/components/building/shots.test.mts src/components/building/degrade.test.mts src/components/building/routes.test.mts src/lib/soundEvents.test.mts src/components/field/wheel.test.mts",
     "stills": "node scripts/render-stills.mjs"
   },
   "dependencies": {
