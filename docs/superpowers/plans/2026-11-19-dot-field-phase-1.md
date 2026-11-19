@@ -403,3 +403,24 @@
   - Combine a webm of the canvas with a screen-level GIF of the page.
   - Send it with SendUserFile, along with what is still to come in phase 2.
 - [ ] **Step 9: Run the final whole-branch review** as superpowers:executing-plans requires, and fix what it finds, each fix RED→GREEN.
+
+---
+
+## Follow-ups for phases 2 and 3
+
+Phase 1 is done and reviewed. Its fixes are in `e25311b`. These are the review's deferred items and the open checks; the next plans pick them up.
+
+- **Performance:** re-measure the scene-change frame in Shaan's Chrome without the extension capturing screenshots. Headless runs on his GPU measured 7 ms. If it is over 25 ms, pre-allocate the snapshot buffer and fold the kind pass into it.
+- **Morph polish:**
+  - a dot caught mid-morph jumps in colour, alpha and size on a retarget (only its position is continuous);
+  - pushing midpoints beside the text column bunches faint dust;
+  - pointer tilt isn't gated during the load crossfade.
+- **Masks:** add the lane names and the hero's layer labels to the mask, so no dust drifts behind them.
+- **Robustness:**
+  - catch failures in the probe chain and the engine import;
+  - assert `t.n === n` in `show()`;
+  - stop rebuilding targets after a context loss;
+  - prefer `powerPreference: "default"`.
+- **Fallbacks:** the thesis and the lanes are blank when the field doesn't run. Phase 3 owns this.
+- **Header scroll-spy:** "Work" isn't marked current while reading the case studies. Phase 2 makes them scenes.
+- **Phase 3 checks:** WebKit and Shaan's phone (the snap test, `scrollend`), reduced motion's 200 ms fade, the README, the phone layout, and mobile URL-bar resizes.
