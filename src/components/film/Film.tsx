@@ -317,11 +317,7 @@ export default function Film({ children }: { children: React.ReactNode }) {
       let resizeTimer = 0;
       const onResize = () => {
         const next = sizeNow();
-        let need = resizeNeeds(size, next);
-        // A height alone can still change which scenes fit the screen (a
-        // scene's height is its content's once that is taller), and a scene
-        // that changes fit swaps its tiles for dots or back: rebuild.
-        if (need === "canvas" && scenes.some((s, k) => s.offsetHeight > next.h + 1 !== targets.get(s.dataset.scene ?? String(k))?.tall)) need = "rebuild";
+        const need = resizeNeeds(size, next);
         if (need === "none") return;
         // The canvas follows the window in this same frame: its box already
         // has, and a buffer left at the old size would be stretched into it,
