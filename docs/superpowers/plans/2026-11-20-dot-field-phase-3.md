@@ -272,3 +272,27 @@ Shaan asked on 2026-11-20 to pause testing for later. Tasks 1 to 8 are built fir
   - Expected: no frame over 25 ms, and a scene change under 16 ms of main-thread work in a CPU profile.
 - [ ] **Step 9: The recordings.** Desktop in light and dark, plus a phone at 390×844, sent with SendUserFile.
 - [ ] **Step 10: The final whole-branch review,** as superpowers:executing-plans requires, with the fix pass RED→GREEN.
+
+## Left for later
+
+Phase 3 is built, tested and reviewed. The testing pass is `1ee3033` to `86b9540`; its fixes are `6d06972` (a dot's size as it leaves the stack), and, from the final review, `9930060` (highlight and masks carried across a scene change), `0f17804` (the URL bar followed in the same frame) and `ccdd4eb` (a hero taller than the screen keeps its drawing). The responsiveness sweep at 18 sizes added `4c7193c` (the work scene's lanes on a 320 px screen).
+
+### From phase 3's final review
+
+These are the minor findings it deferred, and what the testing pass could not settle on its own.
+
+- **Resizes:** `sceneH` reads only the hero, so on a short desktop window whose hero is taller than the screen a vertical resize leaves the other scenes' targets stale; and a change of pixel ratio alone (a window moved to another screen) never reaches `setPixelRatio`. Sum every scene's height, and give `Size` the ratio.
+- **Reduced motion:** a quick show (a rebuild mid-fade, the handoff line) skips the fade.
+- **Types:** `MorphState.kind` and `group`, and `Carry.look` and `tint`, are optional, so a caller that forgets them gets no carry. Make them required on the engine's path.
+- **Masks** past 16 are still dropped silently (Atlas uses 12). A unit test over the content would guard the limit.
+- **README screenshots** are 1422×804, the headless window's content area, not 1440×900.
+- **Thesis phrases** cannot be focused, so a keyboard user cannot light a part again.
+- **`uNow`** grows without bound; float32 keeps it within 2 ms for about nine hours open.
+- **Phones held sideways** fit no scene, so every system shows tiles and the hero its drawing. A landscape layout would bring the dots back.
+- **Scene-change cost.** Measured on 2026-11-23 on a quiet machine: the build before the review's fixes against the one after, interleaved, six runs each.
+  - Warm, the fixes add about 2 ms to a system step. That is the mask test that keeps dots under the copy from blinking.
+  - The first change into the work scene costs about 4.5 ms more, in native time while the larger snapshot is still cold. Warm, thesis → work costs the same in both builds.
+  - That change is the heaviest in both builds, and on this laptop it now runs over the 16 ms budget: its longest task is 15–21 ms before the fixes and 21–28 ms after. The field's own work is 17–24 ms of main thread there.
+  - The same pre-fix build measured every change under 12 ms on 2026-11-22, so the laptop's clock state moves these numbers by about 1.7×.
+  - Two ways down: run the snapshot once at idle after load, so the first changes run warm code; or split a change over two frames, the snapshot in one and the midpoints and upload in the next.
+- **Shaan's own checks:** the phone (the snap test, `scrollend`, sound) and frame timing in his Chrome with the window in front. Headless Chrome here draws on the same Intel Iris Xe GPU (ANGLE, D3D11), but with no window on screen.
