@@ -41,7 +41,8 @@ export type Field = {
    *  of the drawing). */
   show(t: Targets, opts?: { quick?: boolean; instant?: boolean }): void;
   setStackBox(box: Rect): void;
-  /** The first `MAX_MASKS` rects fade the dots inside them. No morph path
+  /** The first `MAX_MASKS` rects fade the dots inside them, from the next
+   *  `show()`: each dot eases into them with its morph. No morph path
    *  crosses left of `textRight`, the text column's right edge (0: none). */
   setMask(rects: Rect[], textRight: number): void;
   setPointer(x: number, y: number, inside: boolean): void;
@@ -60,6 +61,8 @@ const FADE_HALF = 0.1;
 const TURN_DEG_PER_S = 4;
 const TILT_DEG = 8;
 const SPRING = (2 * Math.PI) / 0.6; // a critically damped spring settling in about 0.6 s
+/** A highlight group no dot carries (dust and edges are -1). */
+const NO_GROUP = -1e4;
 
 const smoothstep = (a: number, b: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
@@ -90,17 +93,23 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     duration: 0,
     stagger: 0,
   };
-  // Each dot's target kind, which the CPU mirror reads for the dot's look.
+  // Each dot's target kind and highlight group, which the CPU mirror reads
+  // for the dot's look.
   const kindTo = new Float32Array(n);
   st.kind = kindTo;
   const group = new Float32Array(n).fill(-1);
+  st.group = group;
   const visFrom = new Float32Array(n).fill(1);
   // A scene change's snapshot and what it carries, allocated once: how much
-  // of each dot shows, its look (weights of its kinds) and its tints.
+  // of each dot shows, its look (weights of its kinds) and its tints (ink,
+  // grey, highlight and mask; unmasked to start).
   const snap = new Float32Array(3 * n);
   const lookFrom = new Float32Array(4 * n);
-  for (let i = 0; i < n; i++) lookFrom[4 * i] = 1;
-  const tintFrom = new Float32Array(2 * n);
+  const tintFrom = new Float32Array(4 * n);
+  for (let i = 0; i < n; i++) {
+    lookFrom[4 * i] = 1;
+    tintFrom[4 * i + 3] = 1;
+  }
   const carry: Carry = { visFrom, progress: new Float32Array(n), look: lookFrom, tint: tintFrom };
   let targetFrame: Targets["frame"] = "screen";
 
@@ -126,7 +135,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
   const aWander = attr("aWander", st.wander, 1);
   const aVisFrom = attr("aVisFrom", visFrom, 1);
   const aLookFrom = attr("aLookFrom", lookFrom, 4);
-  const aTintFrom = attr("aTintFrom", tintFrom, 2);
+  const aTintFrom = attr("aTintFrom", tintFrom, 4);
   const aKindTo = attr("aKindTo", kindTo, 1);
   const aGroup = attr("aGroup", group, 1);
 
@@ -149,7 +158,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     uMaskCount: { value: 0 },
     uPointer: { value: new Vector2(-1e4, -1e4) },
     uPointerAmt: { value: 0 },
-    uHighlight: { value: -1 },
+    uHighlight: { value: NO_GROUP },
     uHighlightAmt: { value: 0 },
     uSystem: { value: new Vector3() },
     uBright: { value: new Vector3() },
@@ -189,6 +198,9 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
   const pointer = { x: -1e4, y: -1e4, inside: false };
   let highlightGroup = -1;
   let textRight = 0;
+  // Masks set for the next scene, installed when its morph starts.
+  let nextMask: Rect[] | null = null;
+  let nextTextRight = 0;
 
   const COLOR_KEYS = ["system", "bright", "dust", "model", "modelEdge", "line"] as const;
   const colorsNow = { system: [0, 0, 0], bright: [0, 0, 0], dust: [0, 0, 0], model: [0, 0, 0], modelEdge: [0, 0, 0], line: [0, 0, 0] };
@@ -285,12 +297,32 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     const now = clock();
     const clk = loopClock(now);
     // Where every dot is right now, drift included, and how it looks, in
-    // the frame and the programs it is leaving: one pass. Then the new
-    // targets' kinds.
-    const base = snapshot(st, now, frameNow(), clk, drift, snap, carry);
+    // the frame, the programs and the scene (its lit group and its masks)
+    // it is leaving: one pass. Then the new targets' kinds and groups.
+    const masks: number[] = [];
+    for (let k = 0; k < u.uMaskCount.value; k++) {
+      const m = u.uMask.value[k];
+      masks.push(m.x, m.y, m.z, m.w);
+    }
+    const base = snapshot(st, now, frameNow(), clk, drift, snap, carry, { group: u.uHighlight.value, amount: u.uHighlightAmt.value, masks });
     for (let i = 0; i < n; i++) {
       kindTo[i] = t.kind[i];
       group[i] = t.group[i];
+    }
+    // The new scene starts with nothing lit (unless a part is lit now, as
+    // through a resize's quick move): what was lit fades with each dot's
+    // morph, carried, and no dot of the new scene answers the old number.
+    if (highlightGroup < 0) {
+      u.uHighlight.value = NO_GROUP;
+      u.uHighlightAmt.value = 0;
+    }
+    // The new scene's masks take over with its morph: each dot eases from
+    // the mask it showed (carried) to the one it meets.
+    if (nextMask) {
+      nextMask.forEach((r, k) => u.uMask.value[k].set(r.x, r.y, r.w, r.h));
+      u.uMaskCount.value = nextMask.length;
+      textRight = nextTextRight;
+      nextMask = null;
     }
     const wasStack = targetFrame === "stack";
     st.from.set(base);
@@ -376,11 +408,11 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
       wake();
     },
     setMask(rects, right) {
-      const list = rects.slice(0, MAX_MASKS);
-      list.forEach((r, k) => u.uMask.value[k].set(r.x, r.y, r.w, r.h));
-      u.uMaskCount.value = list.length;
-      textRight = right;
-      wake();
+      // Held for the next show(), so the dots ease from the old scene's
+      // masks to these with their morph (and, with reduced motion, change
+      // masks at the fade's floor).
+      nextMask = rects.slice(0, MAX_MASKS);
+      nextTextRight = right;
     },
     setPointer(x, y, inside) {
       pointer.x = x;

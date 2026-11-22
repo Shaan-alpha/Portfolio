@@ -17,7 +17,9 @@ import {
   stackFrame,
   travel,
   visibility,
+  type Frame,
   type MorphState,
+  type Overlay,
 } from "./morph.ts";
 import { basis, project, type Vec3 } from "../stack/geometry.ts";
 
@@ -72,21 +74,38 @@ function programState(n: number, random: () => number, start: number, spread: nu
 /** Each dot's target kind: 0 dust, 1 system, 2 model, 3 line. */
 const kinds = (n: number, random: () => number) => Float32Array.from({ length: n }, () => Math.floor(random() * 4));
 
+/** Each dot's highlight group: a step's index, or -1 for dust and edges. */
+const groups = (n: number, random: () => number) => Float32Array.from({ length: n }, () => Math.floor(random() * 7) - 1);
+
+/** A group no dot carries: what the field lights once a scene has changed. */
+const NONE = -1e4;
+
 /** What a scene change hands a morph, as if every dot were caught mid-morph:
- *  a blend of kinds (weights summing to 1), tints and visibility. */
+ *  a blend of kinds (weights summing to 1), visibility, and four tints: ink,
+ *  grey, highlight and mask (15% to 100%). */
 function randomCarry(n: number, random: () => number) {
   const look = new Float32Array(4 * n);
+  const tint = new Float32Array(4 * n);
   for (let i = 0; i < n; i++) {
     const w = [random(), random(), random(), random()];
     const sum = w[0] + w[1] + w[2] + w[3];
     for (let q = 0; q < 4; q++) look[4 * i + q] = w[q] / sum;
+    tint.set([random(), random(), random(), 0.15 + 0.85 * random()], 4 * i);
   }
   return {
     visFrom: Float32Array.from({ length: n }, random),
     progress: new Float32Array(n),
     look,
-    tint: Float32Array.from({ length: 2 * n }, random),
+    tint,
   };
+}
+
+/** Is (x, y) inside one of the rects (x, y, width, height, four numbers each)? */
+function insideAny(masks: number[], x: number, y: number) {
+  for (let k = 0; k < masks.length; k += 4) {
+    if (x >= masks[k] && x <= masks[k] + masks[k + 2] && y >= masks[k + 1] && y <= masks[k + 1] + masks[k + 3]) return true;
+  }
+  return false;
 }
 
 const copyCarry = (c: ReturnType<typeof randomCarry>) => ({
@@ -96,11 +115,12 @@ const copyCarry = (c: ReturnType<typeof randomCarry>) => ({
   tint: Float32Array.from(c.tint),
 });
 
-/** Every dot's seven shown values: four kind weights, visibility, ink, grey. */
-function looks(st: MorphState, now: number, clock: number, carry: ReturnType<typeof randomCarry>) {
+/** Every dot's nine shown values: four kind weights, visibility, ink, grey,
+ *  highlight and mask, with the scene's lit group and mask rects. */
+function looks(st: MorphState, now: number, clock: number, carry: ReturnType<typeof randomCarry>, at: { frame: Frame; drift: number; overlay: Overlay }) {
   return Array.from({ length: st.n }, (_, i) => {
-    const out = new Float32Array(7);
-    shownLook(st, i, now, clock, carry, out);
+    const out = new Float32Array(9);
+    shownLook(st, i, now, clock, carry, out, at);
     return out;
   });
 }
@@ -224,43 +244,59 @@ test("retargeting mid-morph moves no dot", () => {
 });
 
 test("a retarget keeps each dot's look", () => {
-  // A fast reader steps again mid-morph. At that moment every dot must show
-  // the same colour, size and brightness in the new morph as in the old one.
+  // A fast reader steps again mid-morph, with a phrase's part lit and the
+  // copy masking the dots behind it. At that moment every dot must show the
+  // same colour, size and brightness in the new morph as in the old one: the
+  // old scene's highlight and masks are carried, the new scene's are not yet
+  // shown.
   const random = lcg(53);
   const frame = stackFrame(52, 24, [3, -2], [900, 400], 70);
   const a = programState(600, random, 2, 1200, [1, 3, 0]);
   a.kind = kinds(a.n, random);
+  a.group = groups(a.n, random);
   const now = a.start + 0.6;
   const before = randomCarry(a.n, random);
-  const shown = looks(a, now, 1.3, before);
+  const left: Overlay = { group: 3, amount: 0.8, masks: [700, 250, 300, 260, -600, -600, 500, 700] };
+  const shown = looks(a, now, 1.3, before, { frame, drift: 1.2, overlay: left });
   // The scene change: one snapshot pass records what each dot shows now.
   const carry = copyCarry(before);
-  const s = snapshot(a, now, frame, 1.3, 1.2, undefined, carry);
+  const s = snapshot(a, now, frame, 1.3, 1.2, undefined, carry, left);
   const b = programState(600, random, now, 1200, [0, 1, 3]);
   b.from = s;
   b.seed = a.seed;
   b.kind = kinds(b.n, random);
-  const out = new Float32Array(7);
+  b.group = groups(b.n, random);
+  const entered: Overlay = { group: NONE, amount: 0, masks: [100, 100, 900, 500] };
+  const out = new Float32Array(9);
   for (let i = 0; i < b.n; i++) {
-    shownLook(b, i, now, -0.7, carry, out);
-    for (let k = 0; k < 7; k++) close(out[k], shown[i][k], 1e-6, `dot ${i}, value ${k}`);
+    shownLook(b, i, now, -0.7, carry, out, { frame: IDENTITY_FRAME, drift: 1.2, overlay: entered });
+    for (let k = 0; k < 9; k++) close(out[k], shown[i][k], 1e-6, `dot ${i}, value ${k}`);
   }
+  // The old scene's highlight and masks really were showing on some dots.
+  assert.ok(shown.some((v) => v[7] > 0.1), "some dots lit");
+  assert.ok(shown.some((v) => v[8] < 0.9), "some dots masked");
 });
 
-test("an arrived dot shows its own kind, ink and grey", () => {
+test("an arrived dot shows its own kind, ink, grey, highlight and mask", () => {
   // Whatever a dot looked like when its morph began, once it has arrived it
-  // looks like its own kind and program, and nothing of the old look is left.
+  // looks like its own kind, program and scene, and nothing of the old look
+  // is left.
   const random = lcg(59);
   const st = programState(300, random, 1, 800, [1]);
   st.kind = kinds(st.n, random);
+  st.group = groups(st.n, random);
   const carry = randomCarry(st.n, random);
   const later = st.start + st.stagger + st.duration + 0.01;
   const clock = 2.6;
+  const masks = [-10, -40, 50, 80];
+  const overlay: Overlay = { group: 2, amount: 0.7, masks };
   // Ink by program: stream, packet, hold, bounce, pulse, arrive.
   const INK = [0, 1, 0, 1, 0, 1];
-  const out = new Float32Array(7);
+  const out = new Float32Array(9);
+  const pos = new Float32Array(3);
+  let masked = 0;
   for (let i = 0; i < st.n; i++) {
-    shownLook(st, i, later, clock, carry, out);
+    shownLook(st, i, later, clock, carry, out, { frame: IDENTITY_FRAME, drift: 0, overlay });
     for (let q = 0; q < 4; q++) close(out[q], q === st.kind[i] ? 1 : 0, 1e-6, `dot ${i}, weight ${q}`);
     const [mode, rate, lo, hi] = st.loop.subarray(4 * i, 4 * i + 4);
     const v = st.flow[4 * i + 3] + clock * rate;
@@ -270,7 +306,14 @@ test("an arrived dot shows its own kind, ink and grey", () => {
     // A held dot greys over the tenth of a cycle after its window ends.
     const g = Math.min(1, Math.max(0, (c - hi) / 0.1));
     close(out[6], mode === MODE.hold ? g * g * (3 - 2 * g) : 0, 1e-6, `dot ${i}, grey`);
+    // Lit as much as the scene lights its group; 15% inside a mask rect.
+    close(out[7], st.group[i] === 2 ? 0.7 : 0, 1e-6, `dot ${i}, highlight`);
+    dotPosition(pos, 0, st, i, later, IDENTITY_FRAME, clock, 0);
+    const inside = insideAny(masks, pos[0], pos[1]);
+    if (inside) masked++;
+    close(out[8], inside ? 0.15 : 1, 1e-6, `dot ${i}, mask`);
   }
+  assert.ok(masked > 0 && masked < st.n, `${masked} of ${st.n} dots masked`);
 });
 
 test("a frozen loop clock holds every dot still", () => {
@@ -323,21 +366,22 @@ test("the stack frame matches the drawing's projection", () => {
 
 test("one pass carries each dot's look and progress with its position", () => {
   // A scene change does this for every dot, so it does it once: the same
-  // seven numbers as `shownLook`, from a single walk over the dots.
+  // nine numbers as `shownLook`, from a single walk over the dots.
   const random = lcg(41);
   const st = programState(500, random, 3, 900, [0, 1, 3]);
   st.kind = kinds(st.n, random);
+  st.group = groups(st.n, random);
   const now = st.start + 0.5;
   const before = randomCarry(st.n, random);
-  const want = looks(st, now, 1.9, before);
+  const overlay: Overlay = { group: 1, amount: 0.6, masks: [-200, -150, 300, 260] };
+  const want = looks(st, now, 1.9, before, { frame: IDENTITY_FRAME, drift: 1.2, overlay });
   const carry = copyCarry(before);
-  const s = snapshot(st, now, IDENTITY_FRAME, 1.9, 1.2, undefined, carry);
+  const s = snapshot(st, now, IDENTITY_FRAME, 1.9, 1.2, undefined, carry, overlay);
   const alone = snapshot(st, now, IDENTITY_FRAME, 1.9, 1.2);
   for (let i = 0; i < st.n; i++) {
     for (let q = 0; q < 4; q++) close(carry.look[4 * i + q], want[i][q], 1e-6, `look ${i}.${q}`);
     close(carry.visFrom[i], want[i][4], 1e-6, `visibility ${i}`);
-    close(carry.tint[2 * i], want[i][5], 1e-6, `ink ${i}`);
-    close(carry.tint[2 * i + 1], want[i][6], 1e-6, `grey ${i}`);
+    for (let q = 0; q < 4; q++) close(carry.tint[4 * i + q], want[i][5 + q], 1e-6, `tint ${i}.${q}`);
     close(carry.progress[i], dotProgress(now, st.start, st.delay[i], st.duration, st.stagger), 1e-6, `progress ${i}`);
   }
   for (let k = 0; k < s.length; k++) close(s[k], alone[k], 1e-9, `position ${k}`);

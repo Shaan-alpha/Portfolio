@@ -137,22 +137,55 @@ export type MorphState = {
   wander: Float32Array;
   /** Each dot's target kind (0 dust, 1 system, 2 model, 3 line), for its look. */
   kind?: Float32Array;
+  /** Each dot's highlight group (a step's index, -1 for dust and edges). */
+  group?: Float32Array;
   start: number;
   duration: number;
   stagger: number;
 };
 
+/** What the scene draws over every dot's own look: the highlighted group and
+ *  how lit it is (0 to 1), and the mask rects that fade the dots inside them
+ *  to 15%, four numbers each (x, y, width, height, in viewport pixels). */
+export type Overlay = { group: number; amount: number; masks: ArrayLike<number> };
+
+/** A mask rect's alpha factor at a point: 15% inside any rect, else 1. */
+function maskAt(masks: ArrayLike<number>, x: number, y: number): number {
+  for (let k = 0; k + 3 < masks.length; k += 4) {
+    if (x >= masks[k] && x <= masks[k] + masks[k + 2] && y >= masks[k + 1] && y <= masks[k + 1] + masks[k + 3]) return 0.15;
+  }
+  return 1;
+}
+
 /** What a scene change carries over besides positions, each updated in place
- *  to what the dot shows at that moment: how much of it shows (`visFrom`, as
- *  `shownVisibility` would), its look (`look`: the weights of dust, system,
- *  model and line, four per dot) and its tints (`tint`: ink and grey, two per
- *  dot), with each dot's progress through its morph. With the look carried
- *  too, a dot caught mid-morph keeps its colour, size and brightness. */
+ *  to what the dot shows at that moment: how much of it shows (`visFrom`),
+ *  its look (`look`: the weights of dust, system, model and line, four per
+ *  dot) and its tints (`tint`: ink, grey, highlight and mask, four per dot),
+ *  with each dot's progress through its morph. With all of it carried, a dot
+ *  caught mid-morph keeps its colour, size and brightness, and neither the
+ *  old scene's highlight nor its masks switch off in one frame. */
 export type Carry = { visFrom: Float32Array; progress: Float32Array; look?: Float32Array; tint?: Float32Array };
 
-/** The one implementation behind `dotPosition` and `snapshot`, so a scene
- *  change walks the dots once and the shader has one formula to match. */
-function place(out: Float32Array, o: number, st: MorphState, i: number, now: number, frame: Frame, clock: number, drift: number, carry?: Carry): void {
+/** The one implementation behind `dotPosition`, `shownLook` and `snapshot`,
+ *  so a scene change walks the dots once and the shader has one formula to
+ *  match. With `carry`, it works out everything the dot shows: each value
+ *  eased from what the dot showed when its morph began to what its program
+ *  and scene give it. Into `shown` when given (nine values, see
+ *  `shownLook`); otherwise into `carry` itself, the snapshot a new morph
+ *  starts from. */
+function place(
+  out: Float32Array,
+  o: number,
+  st: MorphState,
+  i: number,
+  now: number,
+  frame: Frame,
+  clock: number,
+  drift: number,
+  carry?: Carry,
+  overlay?: Overlay,
+  shown?: Float32Array,
+): void {
   const p = dotProgress(now, st.start, st.delay[i], st.duration, st.stagger);
   const f = 4 * i;
   const j = 3 * i;
@@ -171,45 +204,71 @@ function place(out: Float32Array, o: number, st: MorphState, i: number, now: num
   const tx = frame.t[0] + s * (m[0] * lx + m[1] * ly + m[2] * lz);
   const ty = frame.t[1] + s * (m[3] * lx + m[4] * ly + m[5] * lz);
   const tz = frame.t[2] + s * (m[6] * lx + m[7] * ly + m[8] * lz);
-  const q = 1 - p;
-  const a = q * q;
-  const b = 2 * q * p;
+  const r = 1 - p;
+  const a = r * r;
+  const b = 2 * r * p;
   const cc = p * p;
   const sd = st.seed[i];
   const w = p * drift * st.wander[i];
   out[o] = a * st.from[j] + b * st.mid[j] + cc * tx + w * Math.sin(now * (0.6 + 0.5 * sd) + 6.283 * sd);
   out[o + 1] = a * st.from[j + 1] + b * st.mid[j + 1] + cc * ty + w * Math.cos(now * (0.7 + 0.4 * sd) + 6.283 * sd);
   out[o + 2] = a * st.from[j + 2] + b * st.mid[j + 2] + cc * tz;
-  if (carry) {
-    const moving = st.flow[f] !== 0 || st.flow[f + 1] !== 0 || st.flow[f + 2] !== 0;
-    const v = visibility(mode, c, u, lo, hi, moving);
-    carry.visFrom[i] += (v - carry.visFrom[i]) * p;
+  if (!carry) return;
+  const moving = st.flow[f] !== 0 || st.flow[f + 1] !== 0 || st.flow[f + 2] !== 0;
+  const vis = carry.visFrom[i] + (visibility(mode, c, u, lo, hi, moving) - carry.visFrom[i]) * p;
+  if (shown) shown[4] = vis;
+  else {
+    carry.visFrom[i] = vis;
     carry.progress[i] = p;
-    if (carry.look && carry.tint && st.kind) {
-      const kind = st.kind[i];
-      const g = 4 * i;
-      for (let q = 0; q < 4; q++) carry.look[g + q] += ((q === kind ? 1 : 0) - carry.look[g + q]) * p;
-      const h = 2 * i;
-      carry.tint[h] += (inkOf(mode) - carry.tint[h]) * p;
-      carry.tint[h + 1] += (greyOf(mode, c, hi) - carry.tint[h + 1]) * p;
-    }
+  }
+  if (!carry.look || !carry.tint || !st.kind) return;
+  const kind = st.kind[i];
+  const g = 4 * i;
+  for (let q = 0; q < 4; q++) {
+    const weight = carry.look[g + q] + ((q === kind ? 1 : 0) - carry.look[g + q]) * p;
+    if (shown) shown[q] = weight;
+    else carry.look[g + q] = weight;
+  }
+  // The scene's highlight and masks, as the shader tests them: a dot of the
+  // lit group is lit by the amount; a dot inside a mask rect shows 15%.
+  // (Written out, not looped over an array: this runs for every dot at a
+  // scene change, and allocates nothing.)
+  const lit = overlay && st.group && Math.abs(st.group[i] - overlay.group) < 0.5 ? overlay.amount : 0;
+  const masked = overlay ? maskAt(overlay.masks, out[o], out[o + 1]) : 1;
+  const t = carry.tint;
+  const ink = t[g] + (inkOf(mode) - t[g]) * p;
+  const grey = t[g + 1] + (greyOf(mode, c, hi) - t[g + 1]) * p;
+  const hl = t[g + 2] + (lit - t[g + 2]) * p;
+  const mask = t[g + 3] + (masked - t[g + 3]) * p;
+  if (shown) {
+    shown[5] = ink;
+    shown[6] = grey;
+    shown[7] = hl;
+    shown[8] = mask;
+  } else {
+    t[g] = ink;
+    t[g + 1] = grey;
+    t[g + 2] = hl;
+    t[g + 3] = mask;
   }
 }
 
-/** What dot `i` shows at `now`, without changing anything: the weights of
- *  its four kinds, then its visibility, ink and grey, written to `out`. The
- *  shader blends the same seven numbers into a colour, alpha and size. */
-export function shownLook(st: MorphState, i: number, now: number, clock: number, carry: Required<Carry>, out: Float32Array): void {
-  const p = dotProgress(now, st.start, st.delay[i], st.duration, st.stagger);
-  const f = 4 * i;
-  const mode = st.loop[f];
-  const hi = st.loop[f + 3];
-  const c = cycle(st.flow[f + 3], st.loop[f + 1], clock);
-  const kind = st.kind ? st.kind[i] : 0;
-  for (let q = 0; q < 4; q++) out[q] = carry.look[4 * i + q] + ((q === kind ? 1 : 0) - carry.look[4 * i + q]) * p;
-  out[4] = shownVisibility(st, i, now, clock, carry.visFrom);
-  out[5] = carry.tint[2 * i] + (inkOf(mode) - carry.tint[2 * i]) * p;
-  out[6] = carry.tint[2 * i + 1] + (greyOf(mode, c, hi) - carry.tint[2 * i + 1]) * p;
+/** What dot `i` shows at `now`, without changing anything, written to
+ *  `out`: the weights of its four kinds, then its visibility, ink, grey,
+ *  highlight and mask. The shader blends the same nine numbers into a
+ *  colour, alpha and size. `at` gives the frame and drift that place the dot
+ *  (the masks test where it is) and the scene's overlay; without it, nothing
+ *  is lit and nothing masked. */
+export function shownLook(
+  st: MorphState,
+  i: number,
+  now: number,
+  clock: number,
+  carry: Required<Carry>,
+  out: Float32Array,
+  at?: { frame: Frame; drift: number; overlay: Overlay },
+): void {
+  place(new Float32Array(3), 0, st, i, now, at?.frame ?? IDENTITY_FRAME, clock, at?.drift ?? 0, carry, at?.overlay, out);
 }
 
 /** Where dot `i` is at `now`: a quadratic Bézier from its source through its
@@ -232,23 +291,19 @@ export function dotPosition(
 /** Every dot's position at `now`, drift included, so a morph that starts from
  *  this snapshot starts exactly where the dots are on screen. Writes into
  *  `out` when given one, so a scene change allocates nothing; with `carry`,
- *  the same pass updates each dot's visibility and records its progress. */
-export function snapshot(st: MorphState, now: number, frame: Frame, clock: number, drift: number, out?: Float32Array, carry?: Carry): Float32Array {
+ *  the same pass records what each dot shows (its look, under the scene's
+ *  `overlay`, the one being left) and its progress. */
+export function snapshot(
+  st: MorphState,
+  now: number,
+  frame: Frame,
+  clock: number,
+  drift: number,
+  out?: Float32Array,
+  carry?: Carry,
+  overlay?: Overlay,
+): Float32Array {
   const dst = out ?? new Float32Array(3 * st.n);
-  for (let i = 0; i < st.n; i++) place(dst, 3 * i, st, i, now, frame, clock, drift, carry);
+  for (let i = 0; i < st.n; i++) place(dst, 3 * i, st, i, now, frame, clock, drift, carry, overlay);
   return dst;
-}
-
-/** How much of dot `i` shows at `now`: from what it showed when its morph
- *  began (`visFrom`) to what its program shows, as it arrives. */
-export function shownVisibility(st: MorphState, i: number, now: number, clock: number, visFrom: Float32Array): number {
-  const p = dotProgress(now, st.start, st.delay[i], st.duration, st.stagger);
-  const f = 4 * i;
-  const mode = st.loop[f];
-  const a = st.loop[f + 2];
-  const b = st.loop[f + 3];
-  const c = cycle(st.flow[f + 3], st.loop[f + 1], clock);
-  const moving = st.flow[f] !== 0 || st.flow[f + 1] !== 0 || st.flow[f + 2] !== 0;
-  const v = visibility(mode, c, travel(mode, c, a, b), a, b, moving);
-  return visFrom[i] + (v - visFrom[i]) * p;
 }

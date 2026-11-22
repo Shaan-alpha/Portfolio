@@ -20,7 +20,7 @@ in vec4 aLoop;    // mode, rate (cycles per second), window a, b
 in float aWander; // drift multiplier: 0 is rigid
 in float aVisFrom;
 in vec4 aLookFrom; // the look a dot leaves with: weights of dust, system, model, line
-in vec2 aTintFrom; // and its ink and grey
+in vec4 aTintFrom; // and its ink, grey, highlight and mask
 in float aKindTo;
 in float aGroup;
 
@@ -142,7 +142,10 @@ void main() {
   // a dot's depth eases away with its morph, and a flat scene has none.
   size *= 1.0 + clamp(pos.z / (uDepthScale * 2.5), -0.15, 0.15);
 
-  float hl = abs(aGroup - uHighlight) < 0.5 ? uHighlightAmt : 0.0;
+  // A lit part, eased from what the dot showed when its morph began, so a
+  // scene change neither drops the old highlight nor lights the new scene.
+  float hlNow = abs(aGroup - uHighlight) < 0.5 ? uHighlightAmt : 0.0;
+  float hl = mix(aTintFrom.z, hlNow, p);
   col = mix(col, uBright, 0.6 * hl);
   alpha = min(1.0, alpha * (1.0 + 0.6 * hl));
 
@@ -158,15 +161,18 @@ void main() {
   col = mix(col, uDust, grey);
   alpha *= mix(aVisFrom, visibility(mode, c, u, aLoop.z, aLoop.w, dot(aFlow.xyz, aFlow.xyz) > 0.0), p) * uFade;
 
-  // No dots behind the copy: anything inside a mask rect fades to 15%.
+  // No dots behind the copy: anything inside a mask rect fades to 15%, eased
+  // from the mask the dot showed when its morph began.
+  float maskNow = 1.0;
   for (int i = 0; i < ${MAX_MASKS}; i++) {
     if (i >= uMaskCount) break;
     vec4 m = uMask[i];
     if (pos.x >= m.x && pos.x <= m.x + m.z && pos.y >= m.y && pos.y <= m.y + m.w) {
-      alpha *= 0.15;
+      maskNow = 0.15;
       break;
     }
   }
+  alpha *= mix(aTintFrom.w, maskNow, p);
 
   vModel = look.z;
   vColor = col;
