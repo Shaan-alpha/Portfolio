@@ -2,7 +2,7 @@
  *  flush to the top; a wheel gesture moves exactly one scene (the rule is in
  *  `wheel.ts`); touch, keyboard and the scrollbar use the snap alone; the
  *  reading part below scrolls natively. */
-import { decideWheel } from "./wheel.ts";
+import { decideWheel, NO_WHEEL_MEMORY, rememberWheel } from "./wheel.ts";
 
 /** Can the reader scroll freely inside a snap area taller than the screen?
  *  The reading part relies on it (CSS Scroll Snap: any position at which a
@@ -48,7 +48,7 @@ const LINE_PX = 33;
 export function installFilm(o: { scenes: () => HTMLElement[]; reading: () => HTMLElement; reducedMotion: boolean }): () => void {
   const root = document.documentElement;
   root.dataset.snap = "";
-  let lastAt = -Infinity;
+  let memory = NO_WHEEL_MEMORY;
   let moving = false;
   let timer = 0;
   const settle = () => {
@@ -62,13 +62,18 @@ export function installFilm(o: { scenes: () => HTMLElement[]; reading: () => HTM
     // The case-study sheet and the open phone menu scroll themselves.
     const blocked = Boolean(target?.closest("dialog[open]")) || root.style.overflow === "hidden";
     const scale = e.deltaMode === 1 ? LINE_PX : e.deltaMode === 2 ? window.innerHeight : 1;
-    const decision = decideWheel(
-      { deltaX: e.deltaX * scale, deltaY: e.deltaY * scale, ctrlKey: e.ctrlKey, timeStamp: e.timeStamp },
-      { y: window.scrollY, stops: [...o.scenes().map(top), top(o.reading())], vh: root.clientHeight, lastAt, moving, blocked },
-    );
+    const wheel = { deltaX: e.deltaX * scale, deltaY: e.deltaY * scale, ctrlKey: e.ctrlKey, timeStamp: e.timeStamp };
+    const decision = decideWheel(wheel, {
+      y: window.scrollY,
+      stops: [...o.scenes().map(top), top(o.reading())],
+      vh: root.clientHeight,
+      moving,
+      blocked,
+      ...memory,
+    });
     if (decision.kind === "pass") return;
     e.preventDefault();
-    lastAt = e.timeStamp;
+    memory = rememberWheel(memory, wheel, decision);
     if (decision.kind !== "step") return;
     moving = true;
     window.clearTimeout(timer);
