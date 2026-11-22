@@ -114,8 +114,9 @@ export default function Film({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Every scene's targets, from its own layout.
-      let targets = new Map<string, { t: Targets; mask: Rect[]; textRight: number }>();
+      // Every scene's targets, from its own layout, and whether the scene is
+      // too tall for the screen to be drawn by the field.
+      let targets = new Map<string, { t: Targets; mask: Rect[]; textRight: number; tall: boolean }>();
       let line: Targets | null = null;
       const build = () => {
         // After a lost context there is no field to build for.
@@ -123,21 +124,23 @@ export default function Film({ children }: { children: React.ReactNode }) {
         // The canvas's own box: with a classic scrollbar the window is wider.
         const { w: vw, h: vh } = viewportOf(view);
         field.resize(vw, vh, Math.min(window.devicePixelRatio || 1, 2));
-        const next = new Map<string, { t: Targets; mask: Rect[]; textRight: number }>();
+        const next = new Map<string, { t: Targets; mask: Rect[]; textRight: number; tall: boolean }>();
         scenes.forEach((s, k) => {
           const layout = readScene(s);
           const name = s.dataset.scene ?? String(k);
           // A scene taller than the screen is scrolled through, and a fixed
-          // field cannot follow it: its steps show as tiles over dust, and
-          // the hero keeps its drawing (a phone held sideways).
+          // field cannot follow it: its steps show as tiles, the hero keeps
+          // its drawing (a phone held sideways), and the field steps back
+          // (`activate`). Its dots still go to dust, so the next scene that
+          // fits forms out of it.
           const tall = s.offsetHeight > vh + 1;
           s.toggleAttribute("data-tiles", tall);
           if (layout.stackBox && !tall) {
             field.setStackBox(layout.stackBox);
-            next.set(name, { t: stackTargets(count, rng(1)), mask: layout.mask, textRight: layout.textRight });
+            next.set(name, { t: stackTargets(count, rng(1)), mask: layout.mask, textRight: layout.textRight, tall });
           } else {
             const t = flowTargets(count, tall ? [] : layout.flows, { w: vw, h: vh }, layout.mask, rng(2 + k), BEHAVIOURS[name]);
-            next.set(name, { t, mask: layout.mask, textRight: layout.textRight });
+            next.set(name, { t, mask: layout.mask, textRight: layout.textRight, tall });
           }
         });
         targets = next;
@@ -178,7 +181,7 @@ export default function Film({ children }: { children: React.ReactNode }) {
       const activate = (name: string | null, opts: { quick?: boolean; instant?: boolean } = {}) => {
         if (stopped) return;
         if (name === active && !opts.quick && !opts.instant) {
-          if (name) visible(true);
+          if (name) visible(!targets.get(name)?.tall);
           return;
         }
         if (name !== active) {
@@ -214,8 +217,15 @@ export default function Film({ children }: { children: React.ReactNode }) {
         canvas.style.zIndex = "";
         field.setMask(scene.mask, scene.textRight);
         field.show(scene.t, opts);
-        visible(true);
-        if (name === "thesis" && !thesisPlayed && !reducedMotion) {
+        // A scene that shows its tiles is not drawn: the dots, all dust
+        // there, would crowd into the margins around its copy. The thesis's
+        // phrases then have nothing to light, so their sequence waits until
+        // the thesis is drawn (a phone turned back upright).
+        visible(!scene.tall);
+        if (name === "thesis" && scene.tall && thesisPlayed) {
+          sequence.stop();
+          thesisPlayed = false;
+        } else if (name === "thesis" && !scene.tall && !thesisPlayed && !reducedMotion) {
           thesisPlayed = true;
           sequence.start();
         }
@@ -307,7 +317,11 @@ export default function Film({ children }: { children: React.ReactNode }) {
       let resizeTimer = 0;
       const onResize = () => {
         const next = sizeNow();
-        const need = resizeNeeds(size, next);
+        let need = resizeNeeds(size, next);
+        // A height alone can still change which scenes fit the screen (a
+        // scene's height is its content's once that is taller), and a scene
+        // that changes fit swaps its tiles for dots or back: rebuild.
+        if (need === "canvas" && scenes.some((s, k) => s.offsetHeight > next.h + 1 !== targets.get(s.dataset.scene ?? String(k))?.tall)) need = "rebuild";
         if (need === "none") return;
         // The canvas follows the window in this same frame: its box already
         // has, and a buffer left at the old size would be stretched into it,
