@@ -282,6 +282,7 @@ Phase 3 is built, tested and reviewed. The testing pass is `1ee3033` to `86b9540
 These are the minor findings it deferred, and what the testing pass could not settle on its own.
 
 - **Resizes:** `sceneH` reads only the hero, so on a short desktop window whose hero is taller than the screen a vertical resize leaves the other scenes' targets stale; and a change of pixel ratio alone (a window moved to another screen) never reaches `setPixelRatio`. Sum every scene's height, and give `Size` the ratio.
+  - A height-only resize also leaves each scene's fit as it was: tiles or dots, and since `077d5d4`, whether the field shows. Rebuilding whenever the fit changes was tried (`a1acdaf` reverts it): on a phone it fires on the URL bar, for a scene whose content falls between the small and large viewport. A fix has to tell the URL bar from a real resize.
 - **Reduced motion:** a quick show (a rebuild mid-fade, the handoff line) skips the fade.
 - **Types:** `MorphState.kind` and `group`, and `Carry.look` and `tint`, are optional, so a caller that forgets them gets no carry. Make them required on the engine's path.
 - **Masks** past 16 are still dropped silently (Atlas uses 12). A unit test over the content would guard the limit.
