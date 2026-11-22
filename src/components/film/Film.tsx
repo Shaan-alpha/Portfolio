@@ -127,14 +127,15 @@ export default function Film({ children }: { children: React.ReactNode }) {
         scenes.forEach((s, k) => {
           const layout = readScene(s);
           const name = s.dataset.scene ?? String(k);
-          if (layout.stackBox) {
+          // A scene taller than the screen is scrolled through, and a fixed
+          // field cannot follow it: its steps show as tiles over dust, and
+          // the hero keeps its drawing (a phone held sideways).
+          const tall = s.offsetHeight > vh + 1;
+          s.toggleAttribute("data-tiles", tall);
+          if (layout.stackBox && !tall) {
             field.setStackBox(layout.stackBox);
             next.set(name, { t: stackTargets(count, rng(1)), mask: layout.mask, textRight: layout.textRight });
           } else {
-            // A scene taller than the screen is scrolled through, and a fixed
-            // field cannot follow it: its steps show as tiles, over dust.
-            const tall = s.offsetHeight > vh + 1;
-            s.toggleAttribute("data-tiles", tall);
             const t = flowTargets(count, tall ? [] : layout.flows, { w: vw, h: vh }, layout.mask, rng(2 + k), BEHAVIOURS[name]);
             next.set(name, { t, mask: layout.mask, textRight: layout.textRight });
           }

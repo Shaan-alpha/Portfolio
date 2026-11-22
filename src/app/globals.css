@@ -443,8 +443,10 @@ html[data-field] [data-scene]:not([data-tiles]) [data-glyph] {
 #also-shipped {
   scroll-margin-top: 0;
 }
-/* Once the dots have formed on the drawing, the drawing steps back. */
-[data-stack-box][data-live] [data-drawing] {
+/* Once the dots have formed on the drawing, the drawing steps back, unless
+   the hero is taller than the screen: there the field cannot follow it, and
+   the drawing stays. */
+[data-scene]:not([data-tiles]) [data-stack-box][data-live] [data-drawing] {
   opacity: 0;
 }
 
