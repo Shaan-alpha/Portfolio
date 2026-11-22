@@ -84,6 +84,24 @@ test("a hidden page draws nothing until it is shown again", () => {
   assert.equal(drawn(), 3);
 });
 
+test("a fade draws its frames, even with reduced motion", () => {
+  // Reduced motion's scene change is a short fade. Every frame of it is
+  // drawn, then one more at its end so it finishes fully back in, then
+  // nothing until the next change.
+  const f = frames();
+  let t = 0;
+  let drawn = 0;
+  const loop = createLoop({ raf: f.raf, caf: f.caf, hidden: () => false, clock: () => t, motion: false, frame: () => drawn++ });
+  loop.runFor(0.25);
+  // Frames 1/64 s apart: 15 inside the fade, then the one at its end.
+  for (let k = 0; k < 40; k++) {
+    t += 1 / 64;
+    f.run(1);
+  }
+  assert.equal(drawn, 16);
+  assert.equal(f.pending(), 0);
+});
+
 test("stopping it lets the last frame go and nothing more", () => {
   const { f, loop, drawn } = setup();
   loop.setRunning(true);

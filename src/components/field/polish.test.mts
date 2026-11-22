@@ -2,7 +2,9 @@
 // function, so they can be checked without a browser.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { pushPast, tiltWanted } from "./polish.ts";
+import { fadeAlpha, pushPast, refade, tiltWanted } from "./polish.ts";
+
+const close = (a: number, b: number, eps: number, what: string) => assert.ok(Math.abs(a - b) <= eps, `${what}: ${a} vs ${b}`);
 
 test("midpoints past the text column keep their spread", () => {
   // A morph's midpoints that would cross the text column move past it. They
@@ -33,4 +35,28 @@ test("the stack waits for its drawing before it tilts", () => {
   // Once the stack starts to turn: half the tilt up, half to the right.
   assert.deepEqual(at(2), [4, 4]);
   assert.deepEqual(at(9), [4, 4]);
+});
+
+test("the fade goes out, then in", () => {
+  // Reduced motion's scene change: 100 ms out, the new scene placed, 100 ms in.
+  const at = (now: number) => fadeAlpha(now, 3, 0.1);
+  for (const [now, want] of [[3, 1], [3.05, 0.5], [3.1, 0], [3.15, 0.5], [3.2, 1]]) close(at(now), want, 1e-9, `at ${now}`);
+  // Outside a fade the field shows in full.
+  assert.equal(at(2), 1);
+  assert.equal(at(5), 1);
+});
+
+test("a second change mid-fade carries on from where it is", () => {
+  // A second step, or a theme change, during a fade: the field neither
+  // blanks nor flashes. It heads out again from the level it shows now.
+  const half = 0.1;
+  // Halfway out (level 0.5), the fade simply carries on.
+  close(refade(3.05, 3, half), 3, 1e-9, "halfway out");
+  // Halfway back in (level 0.5), a new fade-out starts from 0.5, not from 1.
+  const s = refade(3.15, 3, half);
+  close(s, 3.1, 1e-9, "halfway in");
+  close(fadeAlpha(3.15, s, half), 0.5, 1e-9, "the same level at the change");
+  close(fadeAlpha(3.17, s, half), 0.3, 1e-9, "then heading out");
+  close(fadeAlpha(3.2, s, half), 0, 1e-9, "out, where the new scene is placed");
+  close(fadeAlpha(3.3, s, half), 1, 1e-9, "and fully back in");
 });
