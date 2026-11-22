@@ -305,15 +305,24 @@ export default function Film({ children }: { children: React.ReactNode }) {
       let size = sizeNow();
       let resizeTimer = 0;
       const onResize = () => {
+        const next = sizeNow();
+        const need = resizeNeeds(size, next);
+        if (need === "none") return;
+        // The canvas follows the window in this same frame: its box already
+        // has, and a buffer left at the old size would be stretched into it,
+        // every dot off its marker until the field caught up.
+        if (!stopped) field.resize(next.w, next.h, Math.min(window.devicePixelRatio || 1, 2));
+        if (need === "canvas") {
+          size = next;
+          return;
+        }
+        // The markers moved: every scene's targets are built again once the
+        // window settles.
         window.clearTimeout(resizeTimer);
         resizeTimer = window.setTimeout(() => {
-          const next = sizeNow();
-          const need = resizeNeeds(size, next);
-          size = next;
-          if (need === "rebuild") {
-            build();
-            if (active) activate(active, { quick: true });
-          } else if (need === "canvas" && !stopped) field.resize(next.w, next.h, Math.min(window.devicePixelRatio || 1, 2));
+          size = sizeNow();
+          build();
+          if (active) activate(active, { quick: true });
         }, 150);
       };
       window.addEventListener("resize", onResize);
