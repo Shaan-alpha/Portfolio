@@ -142,7 +142,7 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     uRow2: { value: new Vector3(0, 0, 1) },
     uFrameT: { value: new Vector3() },
     uFrameS: { value: 1 },
-    uStack: { value: 0 },
+    uDepthScale: { value: 1 },
     uViewport: { value: new Vector2(1, 1) },
     uDpr: { value: 1 },
     uMask: { value: Array.from({ length: MAX_MASKS }, () => new Vector4()) },
@@ -258,7 +258,9 @@ export function createField(o: { canvas: HTMLCanvasElement; count: number; reduc
     u.uRow2.value.set(f.m[6], f.m[7], f.m[8]);
     u.uFrameT.value.set(f.t[0], f.t[1], f.t[2]);
     u.uFrameS.value = f.s;
-    u.uStack.value = targetFrame === "stack" ? 1 : 0;
+    // Depth sizes the stack's dots in every frame, so leaving the stack never
+    // snaps their size; never zero, so a flat scene's depth of 0 stays 0.
+    u.uDepthScale.value = Math.max(scale, 1e-3);
     u.uNow.value = now;
     u.uLoopClock.value = loopClock(now);
     u.uFade.value = fadeAlpha(now, fadeStart, FADE_HALF);

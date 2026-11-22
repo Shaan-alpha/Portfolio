@@ -35,7 +35,7 @@ uniform vec3 uRow1;
 uniform vec3 uRow2;
 uniform vec3 uFrameT;
 uniform float uFrameS;
-uniform float uStack;
+uniform float uDepthScale; // the stack's scale, px per unit, for depth's sizing
 uniform vec2 uViewport;
 uniform float uDpr;
 uniform vec4 uMask[${MAX_MASKS}];
@@ -137,8 +137,10 @@ void main() {
   vec3 col = look.x * uDust + look.y * uSystem + look.z * uModel + look.w * uLine;
   float alpha = look.x * uDustAlpha + look.y * 0.85 + look.z + look.w * uLineAlpha;
   float size = look.x * 1.4 + look.y * 2.2 + look.z * 2.6 + look.w * 1.2;
-  // The stack has depth: nearer dots are slightly larger.
-  if (uStack > 0.5) size *= 1.0 + clamp(pos.z / (uFrameS * 2.5), -0.15, 0.15);
+  // The stack has depth: nearer dots are slightly larger. Depth is part of
+  // where a dot is, so its size follows it without a jump: leaving the stack,
+  // a dot's depth eases away with its morph, and a flat scene has none.
+  size *= 1.0 + clamp(pos.z / (uDepthScale * 2.5), -0.15, 0.15);
 
   float hl = abs(aGroup - uHighlight) < 0.5 ? uHighlightAmt : 0.0;
   col = mix(col, uBright, 0.6 * hl);
