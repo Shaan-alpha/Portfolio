@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "node scripts/gen-build-info.mjs && tsc --noEmit && tsc --noEmit -p worker",
-    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test worker/index.test.mts src/lib/soundEvents.test.mts src/components/field/wheel.test.mts src/components/field/morph.test.mts src/components/field/targets.test.mts src/components/field/loop.test.mts src/components/field/dom.test.mts src/components/field/behaviours.test.mts src/components/film/sequence.test.mts src/components/film/places.test.mts src/components/film/holder.test.mts"
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test worker/index.test.mts src/lib/soundEvents.test.mts src/components/field/wheel.test.mts src/components/field/morph.test.mts src/components/field/polish.test.mts src/components/field/targets.test.mts src/components/field/loop.test.mts src/components/field/dom.test.mts src/components/field/behaviours.test.mts src/components/film/sequence.test.mts src/components/film/places.test.mts src/components/film/holder.test.mts"
   },
   "dependencies": {
     "lucide-react": "^1.14.0",
