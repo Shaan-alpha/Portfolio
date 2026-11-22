@@ -292,7 +292,7 @@ These are the minor findings it deferred, and what the testing pass could not se
 - **Scene-change cost.** Measured on 2026-11-23 on a quiet machine: the build before the review's fixes against the one after, interleaved, six runs each.
   - Warm, the fixes add about 2 ms to a system step. That is the mask test that keeps dots under the copy from blinking.
   - The first change into the work scene costs about 4.5 ms more, in native time while the larger snapshot is still cold. Warm, thesis → work costs the same in both builds.
-  - That change is the heaviest in both builds, and on this laptop it now runs over the 16 ms budget: its longest task is 15–21 ms before the fixes and 21–28 ms after. The field's own work is 17–24 ms of main thread there.
-  - The same pre-fix build measured every change under 12 ms on 2026-11-22, so the laptop's clock state moves these numbers by about 1.7×.
-  - Two ways down: run the snapshot once at idle after load, so the first changes run warm code; or split a change over two frames, the snapshot in one and the midpoints and upload in the next.
+  - That change is the heaviest in both builds. In the A/B its longest task was 15–21 ms before the fixes and 21–28 ms after, over the 16 ms budget.
+  - The final sweep of the shipped build, minutes later, measured it at 10.7 and 11.1 ms, with every change under 12 ms and no frame over 14 ms. This laptop's clock state moves these numbers by 2× or more, so only the A/B's differences are firm.
+  - For headroom on slow machines: run the snapshot once at idle after load, so the first changes run warm code; or split a change over two frames, the snapshot in one and the midpoints and upload in the next.
 - **Shaan's own checks:** the phone (the snap test, `scrollend`, sound) and frame timing in his Chrome with the window in front. Headless Chrome here draws on the same Intel Iris Xe GPU (ANGLE, D3D11), but with no window on screen.
