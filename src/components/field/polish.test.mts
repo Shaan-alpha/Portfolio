@@ -2,7 +2,7 @@
 // function, so they can be checked without a browser.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { fadeAlpha, pushPast, refade, tiltWanted } from "./polish.ts";
+import { fadeAlpha, pushPast, refade, resizeNeeds, tiltWanted } from "./polish.ts";
 
 const close = (a: number, b: number, eps: number, what: string) => assert.ok(Math.abs(a - b) <= eps, `${what}: ${a} vs ${b}`);
 
@@ -59,4 +59,19 @@ test("a second change mid-fade carries on from where it is", () => {
   close(fadeAlpha(3.17, s, half), 0.3, 1e-9, "then heading out");
   close(fadeAlpha(3.2, s, half), 0, 1e-9, "out, where the new scene is placed");
   close(fadeAlpha(3.3, s, half), 1, 1e-9, "and fully back in");
+});
+
+test("a phone's URL bar only resizes the canvas", () => {
+  // The bar hides as the reader scrolls: the window grows 56 px taller, but
+  // 100svh, and with it every scene and marker, stays where it was.
+  assert.equal(resizeNeeds({ w: 390, h: 788, sceneH: 788 }, { w: 390, h: 844, sceneH: 788 }), "canvas");
+});
+
+test("a new width or scene height rebuilds the field, and no change does nothing", () => {
+  // Turned sideways, narrowed, or text zoomed until the scenes grow: every
+  // marker moves, so every scene's targets are built again.
+  assert.equal(resizeNeeds({ w: 390, h: 844, sceneH: 844 }, { w: 844, h: 390, sceneH: 390 }), "rebuild");
+  assert.equal(resizeNeeds({ w: 1440, h: 900, sceneH: 900 }, { w: 1280, h: 900, sceneH: 900 }), "rebuild");
+  assert.equal(resizeNeeds({ w: 1440, h: 900, sceneH: 900 }, { w: 1440, h: 900, sceneH: 1100 }), "rebuild");
+  assert.equal(resizeNeeds({ w: 390, h: 844, sceneH: 844 }, { w: 390, h: 844, sceneH: 844 }), "none");
 });
