@@ -30,10 +30,15 @@ export default function WorkScene() {
       </div>
 
       {/* On phones each lane is a row, its name and then its steps from left
-          to right; from sm up the lanes stand side by side, top to bottom. */}
+          to right; from sm up the lanes stand side by side, top to bottom.
+          Below 360px the name column narrows, so the longest lane (eight
+          steps in two flows) still fits a 320px screen. */}
       <ul className="grid grid-cols-1 gap-y-2.5 sm:grid-cols-6 sm:gap-x-3 sm:gap-y-8 lg:col-span-7">
         {flagship.map((p, lane) => (
-          <li key={p.id} className="grid grid-cols-[6.5rem_1fr] items-center gap-x-3 sm:flex sm:flex-col sm:items-center sm:gap-5">
+          <li
+            key={p.id}
+            className="grid grid-cols-[5.25rem_1fr] items-center gap-x-2 min-[22.5rem]:grid-cols-[6.5rem_1fr] min-[22.5rem]:gap-x-3 sm:flex sm:flex-col sm:items-center sm:gap-5"
+          >
             <a href={`#${p.id}`} data-mask className="link text-[13.5px] font-semibold leading-snug text-ink-2 sm:min-h-[2.6em] sm:text-center">
               {p.name}
             </a>
