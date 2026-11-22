@@ -275,7 +275,7 @@ Shaan asked on 2026-11-20 to pause testing for later. Tasks 1 to 8 are built fir
 
 ## Left for later
 
-Phase 3 is built, tested and reviewed. The testing pass is `1ee3033` to `86b9540`; its fixes are `6d06972` (a dot's size as it leaves the stack), and, from the final review, `9930060` (highlight and masks carried across a scene change), `0f17804` (the URL bar followed in the same frame) and `ccdd4eb` (a hero taller than the screen keeps its drawing). The responsiveness sweep at 18 sizes added `4c7193c` (the work scene's lanes on a 320 px screen).
+Phase 3 is built, tested and reviewed. The testing pass is `1ee3033` to `86b9540`; its fixes are `6d06972` (a dot's size as it leaves the stack), and, from the final review, `9930060` (highlight and masks carried across a scene change), `0f17804` (the URL bar followed in the same frame) and `ccdd4eb` (a hero taller than the screen keeps its drawing). The responsiveness sweep at 18 sizes added `4c7193c` (the work scene's lanes on a 320 px screen). After the deploy, the review of the live site and Shaan's touchpad added `077d5d4` (no field behind a scene that shows its tiles) and `239bbbe` (a new swipe during the last one's momentum).
 
 ### From phase 3's final review
 
@@ -288,7 +288,12 @@ These are the minor findings it deferred, and what the testing pass could not se
 - **README screenshots** are 1422×804, the headless window's content area, not 1440×900.
 - **Thesis phrases** cannot be focused, so a keyboard user cannot light a part again.
 - **`uNow`** grows without bound; float32 keeps it within 2 ms for about nine hours open.
-- **Phones held sideways** fit no scene, so every system shows tiles and the hero its drawing. A landscape layout would bring the dots back.
+- **Phones held sideways** fit no scene, so every scene shows its tiles and the hero its drawing, with no field behind them (`077d5d4`). A landscape layout would bring the dots back.
+- **Swipes the touchpad rule still misses** (`239bbbe`), each as the old rule did:
+  - a swipe slower than 2.3 px/ms, or a flick of under about 90 px in 40 ms, made during momentum;
+  - a swipe made while the film is still moving, in the first half second after a step (by design);
+  - the weakest recorded swipe on a 30 Hz screen, in most frame phases.
+  - Mac trackpads were modelled, not recorded. Record one (Safari at 60 Hz, Chrome at 120 Hz) with the same wheel recorder before tuning for them.
 - **Scene-change cost.** Measured on 2026-11-23 on a quiet machine: the build before the review's fixes against the one after, interleaved, six runs each.
   - Warm, the fixes add about 2 ms to a system step. That is the mask test that keeps dots under the copy from blinking.
   - The first change into the work scene costs about 4.5 ms more, in native time while the larger snapshot is still cold. Warm, thesis → work costs the same in both builds.

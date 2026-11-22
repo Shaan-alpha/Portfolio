@@ -106,6 +106,11 @@ Header (unchanged)
 - **One scene per wheel gesture**, as in the reference.
   - **Inside the film:** a wheel handler on `window` (non-passive) cancels the browser's own scroll and calls `scrollTo({ behavior: "smooth" })` to the next or previous stop. The stops are the nine scene tops and the top of the reading part.
   - **What counts as a gesture:** a wheel event that comes more than 180 ms after the previous one starts a new gesture. The events that follow, such as the rest of a fast spin or a trackpad's inertia, are swallowed until the movement ends (`scrollend`).
+  - **A swipe during momentum:** a touchpad keeps sending ever smaller events for a second or more after the fingers lift, never pausing for 180 ms, so a swipe made during it would be swallowed, and its own momentum would swallow the next. Once the movement has ended, a new swipe shows as a jump in speed instead.
+    - **Speed** is the scroll of the last 40 ms, each event's spread over the time since the one before. The display's frame rate, its beat against the touchpad's own rate, and the events Chrome merges while the page is busy then change how the scroll is cut into events, never how fast it is.
+    - **The jump:** the gesture peaked and then slowed to a quarter of that peak or less, and the speed is now four times what it slowed to, and at least 2.3 px/ms. "What it slowed to" is measured 80 to 120 ms back, and the peak before that, so a new swipe's own first moments never count as either.
+    - **Measured** on Shaan's Windows precision touchpad on 2026-11-23 (`wheel.fixtures.ts`): fingers resting on the pad drift at up to 2 px/ms; a swipe runs at 2.7 px/ms or more.
+    - **Unchanged:** a mouse wheel does not slow down while it rolls, so a roll stays one gesture, and a swipe made while the film is still moving is swallowed, as before.
   - **Inside the reading part:** the handler stands aside. The only exception is a wheel-up at the reading part's very top, which steps back to the last system.
   - **Left alone:** Ctrl+wheel (zoom), horizontal wheels, and anything inside the case-study sheet.
   - **Other input:** touch, keyboard and the scrollbar use native snap.
@@ -243,6 +248,7 @@ The ticks are hidden below `md`. They are not the reference's numeric counter: t
   - Every scene fits one screen at 1280×640 (a 1366×768 laptop, once the browser's toolbars are taken off) and at 360×640.
   - At 1280×640 the longest scene is AI Reel Factory: seven steps at about 60 px each, about 420 px beside its text.
   - A scene that doesn't fit at the visitor's size (large text settings, a very small window) shows its flow as HTML tiles instead of dots, and can then be scrolled within.
+    - The field steps back there. With no flow to draw, all of its dots would be dust, crowding into the margins around the copy (a phone held sideways, 2026-11-23).
 
 ```
 System scene, desktop (Atlas): text left, flows right       System scene, phone
